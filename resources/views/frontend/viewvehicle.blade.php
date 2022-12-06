@@ -33,7 +33,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Add Vehicle Assignment</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Delete Vehicle</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -42,26 +42,26 @@
                     <form action="{{route('vehicle.delete')}}" method="POST">
                         @csrf
 
-                        <input type="hidden" name="vehicle_delete_id" id="vehicle_id" value=""/>
-                        <h5>Are you sure you want to delete this <b><i>Vehicle record</i></b> and any related <b><i>Vehicle
-                                    Assignments</i></b>?</h5>
-
+                        <input type="hidden" name="vehicle_delete_id" id="vehicle_id0" value=""/>
+                        <h6>Are you sure you want to delete this <b><i>Vehicle record</i></b> and any related <b><i>Vehicle
+                                    Assignments</i></b>?</h6>
+<hr>
                         <div class="form-group row">
                             <label for="staticEmail" class="col-sm-4 col-form-label">Vehicle Code:</label>
                             <div class="col-sm-5">
-                                <input type="text" readonly id="vehicleCode" class="form-control-plaintext" value="">
+                                <input type="text" readonly id="vehicleCode0" class="form-control-plaintext" value="">
                             </div>
                         </div>
                         <div class="form-group row">
                             <label for="staticEmail" class="col-sm-4 col-form-label">Plate No:</label>
                             <div class="col-sm-5">
-                                <input type="text" readonly id="plateNo" class="form-control-plaintext" value="">
+                                <input type="text" readonly id="plateNo0" class="form-control-plaintext" value="">
                             </div>
                         </div>
                         <div class="form-group row">
                             <label for="staticEmail" class="col-sm-4 col-form-label">Make & Type:</label>
                             <div class="col-sm-5">
-                                <input type="text" readonly id="vehicleType" class="form-control-plaintext" value="">
+                                <input type="text" readonly id="vehicleType0" class="form-control-plaintext" value="">
                             </div>
                         </div>
 
@@ -75,6 +75,7 @@
                 </div>
             </div>
         </div>
+
 
 
         <!-- Modal to assign a vehicle to a driver -->
@@ -93,7 +94,7 @@
                         <form action="{{route('vehicle.assignment')}}" method="POST">
                             @csrf
 
-                            <input type="hidden" name="vehicleId" id="vehicleId"/>
+                            <input type="hidden" name="vehicleId" id="vehicleId" value="" />
 
                             <div class="form-group row">
                                 <label for="staticEmail" class="col-sm-4 col-form-label">Vehicle Code:</label>
@@ -131,7 +132,7 @@
 
                     <div class="modal-footer">
                         <button type="button" class="btn btn-light" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary" style="background-color: rgb(0, 74, 111);">Assign
+                        <button type="submit" id="assignBtn" class="btn btn-primary" style="background-color: rgb(0, 74, 111);">Assign
                             Driver
                         </button>
                     </div>
@@ -479,10 +480,10 @@
                             // console.log(vehicleType['typeName']);
 
 
-                                        $('#vehicleCode').val(vehicle['vehicleCode']);
-                                        $('#plateNo').val(vehicle['plateNo']);
-                                        $('#vehicleType').val(makeAndType);
-                            $('#vehicle_id').val(vehicle['vehicle_id']);
+                                        $('#vehicleCode0').val(vehicle['vehicleCode']);
+                                        $('#plateNo0').val(vehicle['plateNo']);
+                                        $('#vehicleType0').val(makeAndType);
+                            $('#vehicle_id0').val(vehicle['vehicle_id']);
                         });
 
                     });
@@ -503,6 +504,7 @@
                             $('#vehicleCode').val(vehicle['vehicleCode']);
                             $('#plateNo').val(vehicle['plateNo']);
                             $('#vehicleType').val(makeAndType);
+                            $('#vehicleId').val(vehicle['vehicle_id']);
 
                             $.ajax(
                                 {
@@ -512,23 +514,27 @@
                                         let drivers = response.drivers;
                                         let driverSelect = document.getElementById('driver');
 
-
-
-
                                         // console.log(drivers);
                                         while (driverSelect.children[0]) {
                                             driverSelect.removeChild(driverSelect.lastChild);
                                         }
+
+                                        document.getElementById('assignBtn').disabled = '';
                                         if (drivers.length === 0) {
                                             let optionElement = document.createElement('option');
                                             optionElement.innerHTML = '<label style="color: red;">Sorry, no driver found who can drive this vehicle</label>';
                                             driverSelect.appendChild(optionElement);
-                                            return;
+                                            document.getElementById('assignBtn').disabled = 'true';
+
                                         }
+
+
 
                                         for (let i = 0; i < drivers.length; i++) {
                                             let optionElement = document.createElement('option');
                                             optionElement.innerHTML = drivers[i].stName;
+                                            // console.log(drivers[i]);
+                                            optionElement.value = drivers[i].staffId;
                                             driverSelect.appendChild(optionElement);
                                         }
 

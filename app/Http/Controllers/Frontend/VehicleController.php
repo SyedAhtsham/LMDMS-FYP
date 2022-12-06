@@ -302,7 +302,7 @@ class VehicleController extends Controller
     public function assignDriver($vehicleType): \Illuminate\Http\JsonResponse
     {
 
-        $drivers = DB::table('staff')->select('staff.name AS stName', 'driver.canDrive AS canDrive')
+        $drivers = DB::table('staff')->select('staff.name AS stName','driver.staff_id AS staffId', 'driver.canDrive AS canDrive')
             ->join('driver', 'staff.staff_id', '=', 'driver.staff_id')->where('canDrive', 'LIKE', "%$vehicleType%")
             ->get();
         return response()->json([
@@ -311,7 +311,27 @@ class VehicleController extends Controller
         ]);
     }
 
-    public function addVehicleAssignment($id){
+    public function addVehicleAssignment(Request $request){
+        $vehicleId = $request['vehicleId'];
+        $driverId = $request['driver'];
+        echo $driverId;
+
+        //a supervisor or a manager can assign a vehicle,
+        // therefore when he will be logged on to our system,
+        // we can get his id and insert it in this place
+        $assignedById = 452;
+
+        $vehicle = Vehicle::find($vehicleId);
+        $vehicle->assignStatus = 'Assigned';
+        $vehicle->save();
+
+        $vehicleAssignment = new VehicleAssignment;
+        $vehicleAssignment->vehicle_id = $vehicleId;
+        $vehicleAssignment->assignedTo = $driverId;
+        $vehicleAssignment->assignedBy = $assignedById;
+
+        $vehicleAssignment->save();
+        return redirect('/frontend/view-vehicle')->withSuccessMessage('Successfully Assigned!');
 
     }
 
