@@ -47,19 +47,19 @@
                                     Assignments</i></b>?</h6>
 <hr>
                         <div class="form-group row">
-                            <label for="staticEmail" class="col-sm-4 col-form-label">Vehicle Code:</label>
+                            <label for="staticEmail" class="col-sm-4 col-form-label"><strong>Vehicle Code:</strong></label>
                             <div class="col-sm-5">
                                 <input type="text" readonly id="vehicleCode0" class="form-control-plaintext" value="">
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label for="staticEmail" class="col-sm-4 col-form-label">Plate No:</label>
+                            <label for="staticEmail" class="col-sm-4 col-form-label"><strong>Plate No:</strong></label>
                             <div class="col-sm-5">
                                 <input type="text" readonly id="plateNo0" class="form-control-plaintext" value="">
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label for="staticEmail" class="col-sm-4 col-form-label">Make & Type:</label>
+                            <label for="staticEmail" class="col-sm-4 col-form-label"><strong>Make & Type:</strong></label>
                             <div class="col-sm-5">
                                 <input type="text" readonly id="vehicleType0" class="form-control-plaintext" value="">
                             </div>
@@ -97,20 +97,20 @@
                             <input type="hidden" name="vehicleId" id="vehicleId" value="" />
 
                             <div class="form-group row">
-                                <label for="staticEmail" class="col-sm-4 col-form-label">Vehicle Code:</label>
+                                <label for="staticEmail" class="col-sm-4 col-form-label"><strong>Vehicle Code:</strong></label>
                                 <div class="col-sm-5">
                                     <input type="text" readonly id="vehicleCode" class="form-control-plaintext"
                                            value="">
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <label for="staticEmail" class="col-sm-4 col-form-label">Plate No:</label>
+                                <label for="staticEmail" class="col-sm-4 col-form-label"><strong>Plate No:</strong></label>
                                 <div class="col-sm-5">
                                     <input type="text" readonly id="plateNo" class="form-control-plaintext" value="">
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <label for="staticEmail" class="col-sm-4 col-form-label">Make & Type:</label>
+                                <label for="staticEmail" class="col-sm-4 col-form-label"><strong>Make & Type:</strong></label>
                                 <div class="col-sm-5">
                                     <input type="text" readonly id="vehicleType" class="form-control-plaintext"
                                            value="">
@@ -522,7 +522,7 @@
                                         document.getElementById('assignBtn').disabled = '';
                                         if (drivers.length === 0) {
                                             let optionElement = document.createElement('option');
-                                            optionElement.innerHTML = '<label style="color: red;">Sorry, no driver found who can drive this vehicle</label>';
+                                            optionElement.innerHTML = '<label style="color: red;">Sorry, no driver found</label>';
                                             driverSelect.appendChild(optionElement);
                                             document.getElementById('assignBtn').disabled = 'true';
 

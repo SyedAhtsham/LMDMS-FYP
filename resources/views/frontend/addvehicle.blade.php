@@ -40,7 +40,7 @@
                 </div>
                 <div class="form-group col-md-4 pr-5">
                     <label for="inputModel">Year <span class="required">*</span></label>
-                    <input type="number" class="form-control" id="inputModel" name="model" min="1980" max="2099" step="1" value = "{{$vehicle->model ?? old('model')}}" placeholder="YYYY" required/>
+                    <input type="number" class="form-control" id="inputModel" name="model" min="1980" max="2099" step="1" value = "{{$vehicle->vehicleModel ?? old('model')}}" placeholder="YYYY" required/>
 
                     <span class="text-danger">
                     @error('model')

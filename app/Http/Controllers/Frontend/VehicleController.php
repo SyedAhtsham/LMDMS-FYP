@@ -44,7 +44,7 @@ class VehicleController extends Controller
         if($search != ""){
 
             $vehicle = Vehicle::with(['getContVehicle', 'getCompVehicle', 'getVehicleType'])
-            ->where('assignStatus','=', "$search")->orwhere('vehicleCode', "LIKE", "%$search%")->orwhere('plateNo', "LIKE", "%$search%")->orwhere('model', "LIKE", "%$search%")->orwhere('condition', "LIKE", "%$search%")->orwhere('status', "LIKE", "%$search%")
+            ->where('assignStatus','=', "$search")->orwhere('vehicleCode', "LIKE", "%$search%")->orwhere('plateNo', "LIKE", "%$search%")->orwhere('vehicleModel', "LIKE", "%$search%")->orwhere('condition', "LIKE", "%$search%")->orwhere('status', "LIKE", "%$search%")
                 ->orwhere('make', "LIKE", "%$search%")->paginate(20);
 
         }
@@ -94,7 +94,7 @@ class VehicleController extends Controller
         $vehicle = new Vehicle;
         $vehicle->vehicleCode = "";
         $vehicle->plateNo = $request['plateNo'];
-        $vehicle->model = $request['model'];
+        $vehicle->vehicleModel = $request['model'];
         $vehicle->condition = $request['condition'];
         $vehicle->status = $request['status'];
         $vehicle->make = $request['make'];
@@ -240,7 +240,7 @@ class VehicleController extends Controller
 
 
 
-        $vehicle->model = $request['model'];
+        $vehicle->vehicleModel = $request['model'];
         $vehicle->condition = $request['condition'];
         $vehicle->status = $request['status'];
         $vehicle->make = $request['make'];
@@ -303,7 +303,7 @@ class VehicleController extends Controller
     {
 
         $drivers = DB::table('staff')->select('staff.name AS stName','driver.staff_id AS staffId', 'driver.canDrive AS canDrive')
-            ->join('driver', 'staff.staff_id', '=', 'driver.staff_id')->where('canDrive', 'LIKE', "%$vehicleType%")
+            ->join('driver', 'staff.staff_id', '=', 'driver.staff_id')->where('canDrive', 'LIKE', "%$vehicleType%")->where('driver.status', 'Unassigned')
             ->get();
         return response()->json([
             'status' => 200,
