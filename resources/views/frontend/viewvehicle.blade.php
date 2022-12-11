@@ -415,8 +415,8 @@
                                 <li class="list-inline-item">
                                     <a href="{{route('vehicle.edit', ['id'=>$member->vehicle_id])}}">
                                         <button class="btn btn-sm rounded-0 change-color" id="editBtn" type="button"
-                                                data-toggle="tooltip" data-placement="top" title="Edit"><i
-                                                class="fa fa-edit"></i></button>
+                                                data-toggle="" data-placement="top" title="Edit"><i
+                                                   class="fa fa-edit"></i></button>
                                     </a>
                                 </li>
                                 {{--                    <li class="list-inline-item">--}}
