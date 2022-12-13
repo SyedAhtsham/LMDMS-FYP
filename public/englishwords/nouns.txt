@@ -1,0 +1,22 @@
+manager
+driver
+supervisor
+company
+contractual
+bike
+mini van
+shahzore
+suzuki
+honda
+toyota
+normal
+bad
+good
+idle
+carry
+hilux
+active
+in-workshop
+male
+female
+

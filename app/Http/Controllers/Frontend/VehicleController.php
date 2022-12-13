@@ -18,6 +18,19 @@ use function Sodium\compare;
 
 class VehicleController extends Controller
 {
+    private $words;
+    private $search;
+
+    function __construct()
+    {
+        $lines = file('englishwords/nouns.txt');
+        $count = 0;
+        $this->words = array();
+        foreach($lines as $line) {
+            $count += 1;
+            array_push($this->words,trim($line, " \t\n\r\0\x0B"));
+        }
+    }
 
     public function create()
     {
@@ -34,13 +47,74 @@ class VehicleController extends Controller
 
     public function view(Request $request){
 
-        $search = $request['search'] ?? "";
+        $this->search = $request['search'] ?? "";
+
+
+//    $vehicleObject = new VehicleController();
+//    foreach ($words as $word){
+//        echo $word;
+//        echo "<br>";
+//    }
+
+        $initialvalue = $this->search;
+
+if($this->search != "") {
+
+// input misspelled word
+    $input = $this->search;
+
+
+// no shortest distance found, yet
+    $shortest = -1;
+
+$lev = 0;
+$resultantLev = 0;
+// loop through words to find the closest
+    foreach ($this->words as $word) {
+
+
+        // calculate the distance between the input word,
+        // and the current word
+        $lev = levenshtein($input, $word);
+
+        // check for an exact match
+        if ($lev == 0) {
+
+            // closest word is this one (exact match)
+            $closest = $word;
+            $shortest = 0;
+
+            // break out of the loop; we've found an exact match
+            break;
+        }
+
+        // if this distance is less than the next found shortest
+        // distance, OR if a next shortest word has not yet been found
+        if ($lev <= $shortest || $shortest < 0) {
+            // set the closest match, and shortest distance
+            $closest = $word;
+            $shortest = $lev;
+        }
+    }
+
 
 //        $vehicle = Vehicle::with(['getContVehicle', 'getCompVehicle', 'getVehicleType'])->get();
 //        echo "<pre>";
 //        print_r($vehicle->toArray());
 //        die;
 
+    if ($closest != "" && strlen($closest) != 1 && $shortest <= 3)
+    {
+        $this->search = $closest;
+//        echo "<div style='margin-left: 400px;'>".$shortest."'</div>";
+    }
+}
+
+
+$search =  $this->search;
+
+$search = trim($search, " \t\n\r\0\x0B");
+//type of the vehicle should also be included in the query
         if($search != ""){
 
             $vehicle = Vehicle::with(['getContVehicle', 'getCompVehicle', 'getVehicleType'])
@@ -52,6 +126,7 @@ class VehicleController extends Controller
             $search = "";
             $vehicle = Vehicle::with(['getContVehicle', 'getCompVehicle', 'getVehicleType'])->paginate(20);
         }
+
 
         $data = compact('vehicle', 'search');
 
