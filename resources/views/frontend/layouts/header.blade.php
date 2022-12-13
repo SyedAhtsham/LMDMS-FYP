@@ -8,13 +8,23 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta2/css/bootstrap-select.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+{{--    <link rel="stylesheet" type="text/css" href="/css/m.css">--}}
 
+<link rel="stylesheet" type="text/css" href="/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/fontawesome.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+
+{{--    <link rel="stylesheet" type="text/css" href="/css/m.css">--}}
+
+{{--    --}}
+    <script type="text/javascript" src="/js/bootstrap.min.js"></script>
 
     <script src="https://kit.fontawesome.com/58bf3a6361.js" crossorigin="anonymous"></script>
 
     <style>
         body {
             font-family: "Lato", sans-serif;
+
         }
 
         .required{
@@ -136,6 +146,7 @@
     </style>
 {{--    <script src="https://kit.fontawesome.com/58bf3a6361.js" crossorigin="anonymous"></script>--}}
     <script src="https://kit.fontawesome.com/5c83a52b0b.js" crossorigin="anonymous"></script>
+
 </head>
 <body>
 
