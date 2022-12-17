@@ -69,7 +69,7 @@
                 </div>
                 <div class="ml-5">
                     <form action="" class="col-15 d-flex">
-                        <div class="form-group col-10">
+                        <div class="form-group col-8">
                             <input type="search" name="search" id="" class="form-control" value="{{($search=="checked-out" || $search=="un-checked-out") ? "" : $search}}" placeholder="Search by sheet id, driver id, vehicle id, area code..">
                         </div>
                         <div class="">
@@ -85,8 +85,18 @@
                                 </button>
                             </a>
                         </div>
+                        <div class="ml-lg-5">
+                            <a href="{{url('/frontend/generateDSheet')}}">
+{{--                                <button type="button" style="width: 11em;"--}}
+{{--                                        class="btn btn-success">Generate Delivery Sheets--}}
+{{--                                </button>--}}
+                                <button type="button" class="btn btn-success"><i class="fa fa-plus"></i> Delivery Sheets</button>
+                            </a>
+                        </div>
                     </form>
                 </div>
+
+
                 </li>
             </ul>
 

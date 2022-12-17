@@ -6,4 +6,7 @@
 6 vehicle vehicleCode varchar(10) 15/11/2022 23:10:16 VH-P92 
 7 vehicle plateNo varchar(12) 15/11/2022 23:10:27 49673397 
 8 vehicle plateNo varchar(12) 15/11/2022 23:10:35 LEC-124 
-9
+9 vehicle vehicleCode varchar(10) 16/12/2022 23:29:13 VH-R88 
+10 vehicle vehicleCode varchar(10) 16/12/2022 23:29:53 VH-P88 
+11 vehicle plateNo varchar(12) 16/12/2022 23:30:08 6123 
+12

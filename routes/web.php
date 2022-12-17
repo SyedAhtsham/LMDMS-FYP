@@ -57,7 +57,9 @@ Route::get('/frontend/view-deliverysheet/{id}', [DeliverySheetController::class,
 Route::post('/frontend/remove-consignment', [DeliverySheetController::class, 'removeConsignment'])->name('remove.consignment');
 Route::get('/frontend/dsheet', [DeliverySheetController::class, 'create']);
 Route::post('/frontend/checkout-deliverySheet', [DeliverySheetController::class, 'checkoutDeliverySheet'])->name('checkout.deliverySheet');
-Route::post('/frontend/dsheet', [DeliverySheetController::class, 'generate']);
+Route::get('/frontend/generateDSheet', [DeliverySheetController::class, 'generate']);
+
+
 
 Route::get('/frontend/view-vehicleAssignments', [VehicleAssignmentController::class, 'view']);
 Route::post('/frontend/view-vehicleAssignments', [VehicleAssignmentController::class, 'view']);
@@ -66,66 +68,81 @@ Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
+
+
+
+
+
 Route::get('/view', function () {
 
 
 
-    $lines = file('englishwords/nouns.txt');
-    $count = 0;
-    $words = array();
-    foreach($lines as $line) {
-        $count += 1;
-        array_push($words, $line);
-    }
+    $consignments = DB::table('consignment');
 
-//    foreach ($words as $word){
-//        echo $word;
-//        echo "<br>";
+
+    print_r($consignments);
+
+
+die;
+
+
+
+//    $lines = file('englishwords/nouns.txt');
+//    $count = 0;
+//    $words = array();
+//    foreach($lines as $line) {
+//        $count += 1;
+//        array_push($words, $line);
 //    }
-
-
-
-// input misspelled word
-    $input = 'drver';
-
-
-// no shortest distance found, yet
-    $shortest = -1;
-
-// loop through words to find the closest
-    foreach ($words as $word) {
-
-        // calculate the distance between the input word,
-        // and the current word
-        $lev = levenshtein($input, $word);
-
-        // check for an exact match
-        if ($lev == 0) {
-
-            // closest word is this one (exact match)
-            $closest = $word;
-            $shortest = 0;
-
-            // break out of the loop; we've found an exact match
-            break;
-        }
-//        echo $lev."<br>";
-        // if this distance is less than the next found shortest
-        // distance, OR if a next shortest word has not yet been found
-        if ($lev <= $shortest || $shortest < 0) {
-            // set the closest match, and shortest distance
-
-            $closest  = $word;
-            $shortest = $lev;
-        }
-    }
-
-    echo "Input word: $input\n";
-    if ($shortest == 0) {
-        echo "Exact match found: $closest\n";
-    } else {
-        echo "Did you mean: $closest?\n";
-    }
+//
+////    foreach ($words as $word){
+////        echo $word;
+////        echo "<br>";
+////    }
+//
+//
+//
+//// input misspelled word
+//    $input = 'drver';
+//
+//
+//// no shortest distance found, yet
+//    $shortest = -1;
+//
+//// loop through words to find the closest
+//    foreach ($words as $word) {
+//
+//        // calculate the distance between the input word,
+//        // and the current word
+//        $lev = levenshtein($input, $word);
+//
+//        // check for an exact match
+//        if ($lev == 0) {
+//
+//            // closest word is this one (exact match)
+//            $closest = $word;
+//            $shortest = 0;
+//
+//            // break out of the loop; we've found an exact match
+//            break;
+//        }
+////        echo $lev."<br>";
+//        // if this distance is less than the next found shortest
+//        // distance, OR if a next shortest word has not yet been found
+//        if ($lev <= $shortest || $shortest < 0) {
+//            // set the closest match, and shortest distance
+//
+//            $closest  = $word;
+//            $shortest = $lev;
+//        }
+//    }
+//
+//    echo "Input word: $input\n";
+//    if ($shortest == 0) {
+//        echo "Exact match found: $closest\n";
+//    } else {
+//        echo "Did you mean: $closest?\n";
+//    }
 
 
 
@@ -138,7 +155,7 @@ Route::get('/view', function () {
 //        ->get();
 //    print_r($drivers);
 
-    die;
+
 //    $vehicleAssignments = VehicleAssignment::with(['getVehicle','getVehicle.getVehicleType', 'getDriver', 'getSupervisor'])
 //        ->where('vehicleCode', "LIKE", "%$search%")->orwhere('getVehicle.make', "LIKE", "%$search%")->orwhere('getVehicle.getVehicleType.typeName', "LIKE", "%$search%")->orwhere('getDriver.name', "LIKE", "%$search%")->orwhere('getSupervisor.name', "LIKE", "%$search%")
 //        ->paginate(20);

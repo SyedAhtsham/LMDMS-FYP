@@ -33,8 +33,87 @@ class DeliverySheetController extends Controller
     {
         $area = $request['area'];
 
-        $consignments = Consignment::all()->where('area_id', $area);
+        $allAreas = Area::all();
 
+
+
+
+        $consBike = DB::table('consignment')->select('cons_id', 'area_id', 'consWeight', 'consVolume', 'created_at')->orderBy('created_at')->where('area_id', 4)->where('deliverySheet_id', '=', null)->where('consWeight', '<=', 2)->get();
+        $consVehicle = DB::table('consignment')->select('cons_id', 'area_id', 'consWeight', 'consVolume', 'created_at')->orderBy('created_at')->where('area_id', 4)->where('deliverySheet_id', '=', null)->where('consWeight', '>', 2)->get();
+        //$consignments = DB::table('consignment')->select('cons_id', 'area_id')->get();
+
+        $vehicle = DB::table('vehicle')->select('vehicle.vehicle_id', 'vehicle_type.volumeCap','vehicle_type.weightCap')->where('status', 'Idle')
+            ->join('vehicle_type', function($join){
+                $join->on('vehicle.vehicleType_id', '=', 'vehicle_type.vehicleType_id');
+
+            })->orderBy('vehicle_type.volumeCap')->first();
+
+        echo "<pre>";
+        print_r($vehicle);
+
+        die;
+
+        $consBikeArr = $consBike->toArray();
+        $consVehicleArr = $consVehicle->toArray();
+        echo "<pre>";
+        print_r($consVehicleArr);
+
+        define("MAXBIKE", 20);
+//        define("MAXBIKEWEIGHT", );
+
+        $lenBikeArr = count($consBikeArr);
+        $lenVehicleArr = count($consVehicleArr);
+
+        if($lenBikeArr > 0){
+
+            $k = 0;
+            $i = 0;
+            $flag = true;
+
+
+            foreach ($consVehicle as $cons){
+
+
+            if($flag){
+                    $deliverySheet = new DeliverySheet;
+
+
+                    $deliverySheet->deliverySheetCode = "DS-";
+
+                    $cons->deliverySheet_id = $deliverySheet->deliverySheet_id;
+
+                    $k++;
+                    $flag = false;
+                }else{
+                    $cons->deliverySheet_id = $deliverySheet->deliverySheet_id;
+                    $k++;
+                }
+                if($k == MAXBIKE || $i == ($lenVehicleArr-1)){
+
+                    $deliverySheet->noOfCons = $k;
+                    $deliverySheet->fuelAssigned = 2.5;
+                    $deliverySheet->area_id = 2;
+                    $deliverySheet->driver_id = 498;
+                    $deliverySheet->vehicle_id = 88;
+
+                    $deliverySheet->save();
+                    $deliverySheet->deliverySheetCode = $deliverySheet->deliverySheetCode."".$deliverySheet->deliverySheet_id;
+                    $deliverySheet->save();
+                    $flag = true;
+                    $k=0;
+                }
+                $i++;
+
+            }
+
+
+
+
+        }
+
+
+
+        die;
 
         $MAXBIKE = 20;
         $forBike = new ArrayList();
