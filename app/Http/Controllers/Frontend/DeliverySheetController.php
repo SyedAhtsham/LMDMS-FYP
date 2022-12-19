@@ -39,17 +39,33 @@ class DeliverySheetController extends Controller
 
 
         $consBike = DB::table('consignment')->select('cons_id', 'area_id', 'consWeight', 'consVolume', 'created_at')->orderBy('created_at')->where('area_id', 4)->where('deliverySheet_id', '=', null)->where('consWeight', '<=', 2)->get();
-        $consVehicle = DB::table('consignment')->select('cons_id', 'area_id', 'consWeight', 'consVolume', 'created_at')->orderBy('created_at')->where('area_id', 4)->where('deliverySheet_id', '=', null)->where('consWeight', '>', 2)->get();
+        //this query is sorting on the basis of the volume and then on the basis of the created_at because, we want to add consignments to the ddlivery sheet first the earlier one and the one with lower volume to the vehile with a lower volume capacity and then
+        $consVehicle = DB::table('consignment')->select('cons_id', 'area_id', 'consWeight', 'consVolume', 'created_at')->orderBy('consVolume')->orderBy('created_at')->where('area_id', 4)->where('deliverySheet_id', '=', null)->where('consWeight', '>', 2)->get();
         //$consignments = DB::table('consignment')->select('cons_id', 'area_id')->get();
 
-        $vehicle = DB::table('vehicle')->select('vehicle.vehicle_id', 'vehicle_type.volumeCap','vehicle_type.weightCap')->where('status', 'Idle')
-            ->join('vehicle_type', function($join){
-                $join->on('vehicle.vehicleType_id', '=', 'vehicle_type.vehicleType_id');
+        echo "<pre>";
+        print_r($consVehicle);
 
-            })->orderBy('vehicle_type.volumeCap')->first();
+        die;
+
+
+        $bikes = DB::table('vehicle')->select('vehicle.vehicle_id', 'vehicle_type.volumeCap','vehicle_type.weightCap')->where('status', 'Idle')
+            ->join('vehicle_type', function($join){
+                $join->on('vehicle.vehicleType_id', '=', 'vehicle_type.vehicleType_id')
+                    ->where('typeName', '=', 'Bike');
+            })->get();
+
+
+
+        $vehicles = DB::table('vehicle')->select('vehicle.vehicle_id', 'vehicle_type.volumeCap','vehicle_type.weightCap')->where('status', 'Idle')
+            ->join('vehicle_type', function($join){
+                $join->on('vehicle.vehicleType_id', '=', 'vehicle_type.vehicleType_id')
+                ->where('typeName', '!=', 'Bike');
+
+            })->orderBy('vehicle_type.volumeCap')->get();
 
         echo "<pre>";
-        print_r($vehicle);
+        print_r($bikes);
 
         die;
 
