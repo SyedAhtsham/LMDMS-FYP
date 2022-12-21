@@ -90,7 +90,7 @@
 {{--                                <button type="button" style="width: 11em;"--}}
 {{--                                        class="btn btn-success">Generate Delivery Sheets--}}
 {{--                                </button>--}}
-                                <button type="button" class="btn btn-success"><i class="fa fa-plus"></i> Delivery Sheets</button>
+                                <button type="button" class="btn btn-success" title="Generate Delivery Sheets"><i class="fa fa-plus"></i> Delivery Sheets</button>
                             </a>
                         </div>
                     </form>
