@@ -54,6 +54,7 @@
         <thead class="p-5" style="color:white; background-color: rgb(0, 73, 114);">
         <tr>
 
+            <th>Sr #</th>
             <th>Staff ID</th>
             <th>Name</th>
 {{--            <th>Email</th>--}}
@@ -84,6 +85,27 @@
     <center><i> Sorry, no record found! </i></center>
             @else
             @foreach($staff as $member)
+
+            <td>
+                <div class="d-inline-flex">
+                    <div>
+                        {{++$i}}
+                    </div>
+                    @php
+                        $createdAt = strtotime(\Carbon\Carbon::parse($member->created_at));
+                        $currentDate = time();
+
+                        $diff = ($currentDate-$createdAt)/3600;
+
+                        if($diff <= 72){
+
+                 echo '<div class="bg-warning rounded ml-1" style="width: 2.5em; text-align: center;">
+                      New
+                 </div>';
+                     }
+                    @endphp
+                </div>
+            </td>
 
             <td>{{$member->staffCode}}</td>
             <td style="width: 10em;">{{$member->name}}</td>

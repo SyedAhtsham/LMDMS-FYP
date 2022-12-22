@@ -16,6 +16,6 @@ class Consignment extends Model
     }
 
     public function getConsVolumeAttribute(){
-        return $this->attributes['consVolume']." m3";
+        return $this->attributes['consVolume']." m";
     }
 }

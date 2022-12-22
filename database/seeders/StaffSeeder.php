@@ -28,7 +28,7 @@ class StaffSeeder extends Seeder
             $staff->contact = $faker->phoneNumber;
             $staff->address = $faker->address;
             $staff->cnic = $faker->randomNumber();
-            $staff->position = 'Supervisor';
+            $staff->position = 'Driver';
             $staff->dob = $faker->date;
             $staff->gender = 'Male';
             $staff->save();

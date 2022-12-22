@@ -62,7 +62,30 @@
         @else
             @foreach($consignment as $member)
 
-                <td>{{++$i}}</td>
+
+
+                <td>
+                    <div class="d-inline-flex">
+                        <div>
+                 {{++$i}}
+                        </div>
+                        @php
+                           $createdAt = strtotime(\Carbon\Carbon::parse($member->created_at));
+                           $currentDate = time();
+
+                           $diff = ($currentDate-$createdAt)/3600;
+
+                           if($diff <= 24){
+
+                    echo '<div class="bg-warning rounded ml-1" style="width: 2.5em; text-align: center;">
+                         New
+                    </div>';
+                        }
+                        @endphp
+                    </div>
+                </td>
+
+
                 <td >{{$member->consCode}}</td>
                 <td class="pl-1">{{$member->fromAddress." (".$member->fromContact.")"}}</td>
                 {{--            <td>{{$member->email}}</td>--}}
@@ -71,10 +94,10 @@
                 <td style="padding-left: 3em;">{{$member->consWeight}}</td>
                 {{--                        <td>{{$member->getDob($member->dob)}}</td>--}}
                 <td>
-                    {{$member->consVolume}}
+                    {{$member->consVolume}}<sup>3</sup>
                 </td>
 
-                <td>{{$member->COD}}</td>
+                <td>{{$member->COD ?? "----"}}</td>
 
                 <td>{{$member->consType}}</td>
 

@@ -23,8 +23,8 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         $this->call([
-//            StaffSeeder::class
-        VehicleAssignmentSeeder::class
+            StaffSeeder::class
+//        VehicleAssignmentSeeder::class
 //        VehicleSeeder::class
 //            ConsignmentSeeder::class
         ]);

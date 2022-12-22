@@ -35,7 +35,7 @@ class DeliverySheetController extends Controller
 
         $allAreas = Area::all();
 
-
+$isGenerated = false;
 //        foreach ($allAreas as $area) {
 //            //Returned consignments should be added to a new devliery sheet
 //
@@ -57,8 +57,12 @@ class DeliverySheetController extends Controller
 //        }
 
 
-        $bikes = DB::table('vehicle')->select('vehicle.vehicle_id', 'vehicle_type.volumeCap','vehicle_type.weightCap')->where('status', 'Idle')
-            ->join('vehicle_type', function($join){
+        $bikes = DB::table('vehicle')->select('vehicle.vehicle_id', 'vehicle_assignment.assignedTo')->where('status', 'Idle')->where('dsAssigned', '=', '0')
+            ->leftJoin('vehicle_assignment', function($join){
+                $join->on('vehicle.vehicle_id', '=', 'vehicle_assignment.vehicle_id')
+                ;
+            })
+                ->join('vehicle_type', function($join){
                 $join->on('vehicle.vehicleType_id', '=', 'vehicle_type.vehicleType_id')
                     ->where('typeName', '=', 'Bike');
             })->get();
@@ -101,6 +105,7 @@ class DeliverySheetController extends Controller
 //        die;
 
         $j = -1;
+        $b = -1;
         foreach ($allAreas as $area) {
             //Returned consignments should be added to a new devliery sheet
 
@@ -112,13 +117,16 @@ class DeliverySheetController extends Controller
 //            echo "<pre>";
 //            echo "FOR AREA ID: ".$area->area_id."<br>";
 //            print_r($consVehicle->toArray());
-//        define("MAXBIKE", 20);
+
 //        define("MAXBIKEWEIGHT", );
 
             $lenBikeCons = count($consBike);
             $lenVehicleCons = count($consVehicle);
 
             $consVehicleArr = $consVehicle->toArray();
+            $consBikeArr = $consBike->toArray();
+
+
 
 //        if($lenVehicleCons > 0){
 //
@@ -162,6 +170,111 @@ class DeliverySheetController extends Controller
 //            }
 
 
+            if($lenBikeCons > 0){
+
+                $m = 0;
+                $n = 0;
+
+
+
+                while($n < $lenBikeCons) {
+
+                    if($m == 0){
+                        $deliverySheet = new DeliverySheet;
+                        $b++;
+
+                        $deliverySheet->deliverySheetCode = "DSB-";
+
+                        $isGenerated = true;
+                        $deliverySheet->area_id = $area->area_id;
+                        $deliverySheet->driver_id = $bikesArr[$b]->assignedTo ?? null;
+                        $deliverySheet->vehicle_id = $bikesArr[$b]->vehicle_id ?? null; // if null, then display a message about the need of hiring of vehicles of type
+
+                        $deliverySheet->save();
+
+                    }
+
+                    if($m < 40){
+
+                        $tempCons = Consignment::find($consBikeArr[$n]->cons_id);
+
+                        $tempCons->deliverySheet_id = $deliverySheet->deliverySheet_id;
+
+                        $tempCons->save();
+
+
+                        $m++;
+
+                    }else{
+
+                        $deliverySheet->noOfCons = $m;
+
+                        $deliverySheet->fuelAssigned = ceil((70/($bikesArr[$b]->mileage ?? 30)) + $area->extraFuel);
+
+                        $deliverySheet->save();
+                        $deliverySheet->deliverySheetCode = $deliverySheet->deliverySheetCode . "" . $deliverySheet->deliverySheet_id;
+                        $deliverySheet->save();
+
+
+
+
+                        // Update the status of a vehicle that the delivery sheet is assgned to this vehicle
+                        $tempVehicle = Vehicle::find($bikesArr[$b]->vehicle_id ?? null) ?? null;
+                        if($tempVehicle != null) {
+                            echo "<pre>";
+                            print($tempVehicle);
+                            $tempVehicle->dsAssigned = 1;
+                            $tempVehicle->save();
+                        }
+
+                        $m = 0;
+                    }
+
+                    if((($n == $lenBikeCons-1) || ($lenBikeCons == 1)) && ($m < 40)){
+
+//                        echo "<pre>";
+//                        echo $n;
+//                        echo "<br>";
+//                        echo $m;
+//                        echo "<br>";
+//                        print_r($deliverySheet);
+//                        echo "</pre>";
+//                        echo "<br>";echo "<br>";echo "<br>";
+
+                        $tempCons = Consignment::find($consBikeArr[$n]->cons_id);
+
+                        $tempCons->deliverySheet_id = $deliverySheet->deliverySheet_id;
+
+                        $tempCons->save();
+
+                        $n++;
+
+                        $deliverySheet->noOfCons = $m;
+
+                        $deliverySheet->fuelAssigned = ceil((70/($bikesArr[$b]->mileage ?? 30)) + $area->extraFuel);
+
+                        $deliverySheet->save();
+                        $deliverySheet->deliverySheetCode = $deliverySheet->deliverySheetCode . "" . $deliverySheet->deliverySheet_id;
+                        $deliverySheet->save();
+
+
+                        // Update the status of a vehicle that the delivery sheet is assgned to this vehicle
+                        $tempVehicle = Vehicle::find($bikesArr[$b]->vehicle_id ?? null) ?? null;
+                        if($tempVehicle != null) {
+                            $tempVehicle->dsAssigned = 1;
+                            $tempVehicle->save();
+                        }
+
+                        $m = 0;
+                    }
+                    else{
+                        $n++;
+                    }
+
+                }
+            }
+
+
             if ($lenVehicleCons > 0) {
 
                 $k = 0;
@@ -182,9 +295,9 @@ class DeliverySheetController extends Controller
                     if ($flag) {
 
                         $deliverySheet = new DeliverySheet;
-                        $deliverySheet->deliverySheetCode = "DS-";
+                        $deliverySheet->deliverySheetCode = "DSV-";
 
-
+                        $isGenerated = true;
                         $j++;
 
                         $deliverySheet->area_id = $area->area_id;
@@ -206,13 +319,23 @@ class DeliverySheetController extends Controller
 //                        echo $tempWeight;
 //
 //                        die;
-                        $volumeLimit = ($vehiclesArr[$j]->volumeCap ?? 600) - 200;
-                        $weightLimit = ($vehiclesArr[$j]->weightCap ?? 1200) - 100;
+                        $volumeLimit = ($vehiclesArr[$j]->volumeCap ?? 500) - 200;
+                        $weightLimit = ($vehiclesArr[$j]->weightCap ?? 800) - 100;
 
 //                        echo "<br>";
 //                        echo $vehiclesArr[$j]->volumeCap;
 //                    echo $vehiclesArr[$j]->weightCap;
 //                        die;
+
+//                    echo "<br>";
+//echo $volumeLimit;
+//
+//                    echo "<br>";
+//echo $tempVolume;
+//                    echo "<br>";
+//                    echo $weightLimit;
+//                    echo "<br>";
+//                 echo $tempWeight;
 
                     if ($tempVolume <= $volumeLimit && $tempWeight <= $weightLimit) {
 
@@ -230,7 +353,7 @@ class DeliverySheetController extends Controller
 
                         $currentWeight = $tempWeight;
                         $currentVolume = $tempVolume;
-                        $i++;
+
                         $k++;
                     }
                     else{
@@ -260,6 +383,33 @@ class DeliverySheetController extends Controller
 
                     }
 
+                    if($i == $lenVehicleCons-1){
+
+                        $deliverySheet->noOfCons = $k;
+
+                        $deliverySheet->fuelAssigned = ceil((70/($vehiclesArr[$j]->mileage ?? 15)) + $area->extraFuel);
+
+                        $deliverySheet->save();
+                        $deliverySheet->deliverySheetCode = $deliverySheet->deliverySheetCode . "" . $deliverySheet->deliverySheet_id;
+                        $deliverySheet->save();
+
+                        $currentWeight = 0;
+                        $currentVolume = 0;
+
+
+                        // Update the status of a vehicle that the delivery sheet is assgned to this vehicle
+                        $tempVehicle = Vehicle::find($vehiclesArr[$j]->vehicle_id ?? null) ?? null;
+                        if($tempVehicle != null) {
+                            $tempVehicle->dsAssigned = 1;
+                            $tempVehicle->save();
+                        }
+                        $i++;
+                        $flag = true;
+                        $k = 0;
+                    }else{
+                        $i++;
+                    }
+
 
 
                 }
@@ -269,28 +419,25 @@ class DeliverySheetController extends Controller
         }
 
 
-
-        die;
-
-        $MAXBIKE = 20;
-        $forBike = new ArrayList();
-        $i = 0;
-        foreach ($consignments as $consignment) {
-            if ($consignment->consWeight <= 2) {
-                echo $consignment->cons_id;
-                $i++;
-            }
-            echo "\n";
-        }
-
-//        echo "<pre>";
-//        print_r($forBike->toArray());
-
+if($isGenerated) {
+    return redirect('/frontend/view-deliverysheets/')->withSuccessMessage('Successfully Generated');
+}
+else{
+    return redirect('/frontend/view-deliverysheets/')->withErrorMessage('Failed to Generate');
+}
 
     }
 
     public function view(Request $request)
     {
+
+        //This will disable the Generate Delivery Sheets button if false
+        $newConsignments = true;
+        $cons = DB::table('consignment')->select('cons_id')->where('deliverySheet_id', '=', null)->get();
+        if(count($cons) == 0){
+            $newConsignments = false;
+        }
+
 
         $search = $request['search'] ?? "";
 
@@ -302,10 +449,10 @@ class DeliverySheetController extends Controller
         if ($search != "") {
 
             $deliverySheets = DB::table('delivery_sheet')->select('delivery_sheet.*', 'spv.name AS spvName', 'drv.name AS drvName', 'vehicle.vehicleCode AS vhCode', 'vehicle.make AS make', 'vehicle_type.typeName AS tpName', 'area.areaCode AS arCD', 'area.areaName AS arNM', 'area.city AS arCT')
-                ->join('staff AS drv', 'delivery_sheet.driver_id', '=', 'drv.staff_id')
+                ->leftJoin('staff AS drv', 'delivery_sheet.driver_id', '=', 'drv.staff_id')
                 ->leftJoin('staff AS spv', 'delivery_sheet.supervisor_id', '=', 'spv.staff_id')
-                ->join('vehicle', 'delivery_sheet.vehicle_id', '=', 'vehicle.vehicle_id')
-                ->join('vehicle_type', 'vehicle.vehicleType_id', '=', 'vehicle_type.vehicleType_id')
+                ->leftJoin('vehicle', 'delivery_sheet.vehicle_id', '=', 'vehicle.vehicle_id')
+                ->leftJoin('vehicle_type', 'vehicle.vehicleType_id', '=', 'vehicle_type.vehicleType_id')
                 ->join('area', 'delivery_sheet.area_id', '=', 'area.area_id')
                 ->where('delivery_sheet.status', '=', "$search")->orwhere('drv.name', 'LIKE', "%$search%")->orwhere('spv.name', 'LIKE', "%$search%")->orwhere('vehicle.vehicleCode', 'LIKE', "%$search%")->orwhere('vehicle_type.typeName', 'LIKE', "%$search%")->orwhere('area.areaName', 'LIKE', "%$search%")->orwhere('area.areaCode', 'LIKE', "%$search%")
                 ->orderBy('delivery_sheet.deliverySheet_id')->paginate(20);
@@ -314,16 +461,16 @@ class DeliverySheetController extends Controller
         } else {
             $search = "";
             $deliverySheets = DB::table('delivery_sheet')->select('delivery_sheet.*', 'spv.name AS spvName', 'drv.name AS drvName', 'vehicle.vehicleCode AS vhCode', 'vehicle.make AS make', 'vehicle_type.typeName AS tpName', 'area.areaCode AS arCD', 'area.areaName AS arNM', 'area.city AS arCT')
-                ->join('staff AS drv', 'delivery_sheet.driver_id', '=', 'drv.staff_id')
+                ->leftJoin('staff AS drv', 'delivery_sheet.driver_id', '=', 'drv.staff_id')
                 ->leftJoin('staff AS spv', 'delivery_sheet.supervisor_id', '=', 'spv.staff_id')
-                ->join('vehicle', 'delivery_sheet.vehicle_id', '=', 'vehicle.vehicle_id')
-                ->join('vehicle_type', 'vehicle.vehicleType_id', '=', 'vehicle_type.vehicleType_id')
+                ->leftJoin('vehicle', 'delivery_sheet.vehicle_id', '=', 'vehicle.vehicle_id')
+                ->leftJoin('vehicle_type', 'vehicle.vehicleType_id', '=', 'vehicle_type.vehicleType_id')
                 ->join('area', 'delivery_sheet.area_id', '=', 'area.area_id')
                 ->orderBy('delivery_sheet.deliverySheet_id')->paginate(20);
 
         }
 
-        $data = compact('deliverySheets', 'search');
+        $data = compact('deliverySheets', 'search', 'newConsignments');
 
 
         return view('frontend.viewdeliverysheets')->with($data);

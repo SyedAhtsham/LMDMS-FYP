@@ -86,12 +86,18 @@
                             </a>
                         </div>
                         <div class="ml-lg-5">
+                            @if(!$newConsignments)
+                            <button type="button" class="btn btn-success" title="Generate Delivery Sheets" disabled ><i class="fa fa-plus"></i> Delivery Sheets</button>
+
+                        @else
                             <a href="{{url('/frontend/generateDSheet')}}">
 {{--                                <button type="button" style="width: 11em;"--}}
 {{--                                        class="btn btn-success">Generate Delivery Sheets--}}
 {{--                                </button>--}}
-                                <button type="button" class="btn btn-success" title="Generate Delivery Sheets"><i class="fa fa-plus"></i> Delivery Sheets</button>
+                                <button type="button" class="btn btn-success" title="Generate Delivery Sheets" ><i class="fa fa-plus"></i> Delivery Sheets</button>
                             </a>
+
+                            @endif
                         </div>
                     </form>
                 </div>
@@ -104,7 +110,7 @@
             <table  class="table table-sm table-striped" >
                 <thead class="p-5" style="color:white; background-color: rgb(0, 73, 114);">
                 <tr>
-
+                    <th>Sr #</th>
                     <th>DS #</th>
                     <th>Area</th>
                     {{--            <th>Email</th>--}}
@@ -121,6 +127,7 @@
                 </thead>
 
                 <tbody>
+
                 <tr>
                     @php
                         $i = 0;
@@ -134,6 +141,29 @@
             <center><i> Sorry, no record found! </i></center>
             @else
                 @foreach($deliverySheets as $member)
+
+
+                    <td>
+                        <div class="d-inline-flex">
+                            <div>
+                                {{++$i}}
+                            </div>
+                            @php
+                                $createdAt = strtotime(\Carbon\Carbon::parse($member->created_at));
+                                $currentDate = time();
+
+                                $diff = ($currentDate-$createdAt)/3600;
+
+                                if($diff <= 1){
+
+                         echo '<div class="bg-warning rounded ml-1" style="width: 2.5em; text-align: center;">
+                              New
+                         </div>';
+                             }
+                            @endphp
+                        </div>
+                    </td>
+
 
                     <td>{{$member->deliverySheetCode}}</td>
 {{--                    <td>{{$member->arNM.", ".$member->arCT." (".$member->arCD.")"}}</td>--}}

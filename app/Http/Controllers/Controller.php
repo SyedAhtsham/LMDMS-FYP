@@ -19,12 +19,21 @@ class Controller extends BaseController
             if(session('success_message')){
                 Alert::success('Success!', session('success_message'))
                     ->focusConfirm(false)
-                    ->autoClose(1200);
+                    ->autoClose(1800);
 
             }
             return $next($request);
         });
 
+        $this->middleware(function ($request, $next){
+            if(session('error_message')){
+                Alert::error('Error!', session('error_message'))
+                    ->focusConfirm(false)
+                    ->autoClose(1800);
+
+            }
+            return $next($request);
+        });
 
     }
 }
