@@ -5,7 +5,7 @@
 
     <div class="main pt-5" style="margin-right: 2em;" >
 
-        <h4>View Consignments</h4>
+        <h4>Consignments</h4>
         <hr>
         <div class="row mt-2 mb-2 d-flex">
             <form action="" class="col-10 d-flex">

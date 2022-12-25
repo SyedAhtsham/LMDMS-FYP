@@ -274,7 +274,8 @@
                     <thead class="p-5" style="color:white; background-color: rgb(0, 73, 114);">
                     <tr>
 
-                        <th>Vehicle ID</th>
+                        <th>Sr #</th>
+                        <th>Veh #</th>
                         <th>Make</th>
                         {{--            <th>Email</th>--}}
                         <th>Plate No.</th>
@@ -295,7 +296,7 @@
                     <tbody>
                     <tr>
                         @php
-                            $i = 0;
+                            $i = 1;
                             $size = sizeof($vehicle);
 
                         @endphp
@@ -307,12 +308,51 @@
                 @else
                     @foreach($vehicle as $member)
 
+                        <td>
+                            <div class="d-inline-flex">
+                                <div>
+                                    @php
+                                    $total = (($vehicle->currentPage()-1) * 20) + $i;
+                                    echo $total;
+
+                                    $i++;
+                                    @endphp
+                                </div>
+                                @php
+                                    $createdAt = strtotime(\Carbon\Carbon::parse($member->created_at));
+                                    $currentDate = time();
+
+                                    $diff = ($currentDate-$createdAt)/3600;
+
+                                    if($diff <= 24){
+
+                             echo '<div class="bg-warning rounded ml-1" style="width: 2.5em; text-align: center;">
+                                  New
+                             </div>';
+                                 }
+                                @endphp
+                            </div>
+                        </td>
                         <td>{{$member->vehicleCode}}</td>
                         <td>{{$member->make}}</td>
                         {{--            <td>{{$member->email}}</td>--}}
                         <td>{{$member->plateNo}}</td>
 
-                        <td>{{$member->getVehicleType->typeName}}</td>
+                        <td>
+                            @if($member->getVehicleType->typeName == 'Bike')
+
+                                <i class="fa fa-motorcycle fa-lg"></i>
+                            @elseif($member->getVehicleType->typeName == 'Shahzore')
+                                <i class="fa fa-truck-moving fa-lg"></i>
+                            @elseif($member->getVehicleType->typeName == 'Carry')
+                                <i class="fas fa-shuttle-van fa-lg"></i>
+                            @elseif($member->getVehicleType->typeName == 'Hilux')
+                                <i class="fas fa-truck fa-lg"></i>
+                            @endif
+
+
+
+                                </td>
 
 
 
@@ -348,8 +388,12 @@
 
                         {{--            <td>{{$member->cnic}}</td>--}}
                         @if($member->condition == "Bad")
-                            <td style="color: red;">
-                                {{$member->condition}}
+
+                            <td>
+                                <div class="text-bg-danger rounded" style="width: 2.5em;  text-align: center;">
+                                    {{$member->condition}}
+
+                            </div>
                             </td>
                         @else
                             <td>
@@ -443,8 +487,10 @@
 
                         </table>
 
+
                         <div class="row pt-2">
                             {{$vehicle->links()}}
+
                         </div>
 
 

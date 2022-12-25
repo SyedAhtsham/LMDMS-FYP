@@ -27,7 +27,7 @@
 
 
 
-    <h4>View Staff</h4>
+    <h4>Staff</h4>
     <hr>
     <div class="row mt-2 mb-2 d-flex">
         <form action="" class="col-10 d-flex">

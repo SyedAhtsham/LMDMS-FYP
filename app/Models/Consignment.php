@@ -15,6 +15,14 @@ class Consignment extends Model
         return $this->attributes['consWeight']." kg";
     }
 
+    public function getWeight(){
+        return $this->attributes['consWeight'];
+    }
+
+    public function getVolume(){
+        return $this->attributes['consVolume'];
+    }
+
     public function getConsVolumeAttribute(){
         return $this->attributes['consVolume']." m";
     }

@@ -481,16 +481,19 @@ else{
 
         $search = $request['search'] ?? "";
 
+        $totalVolume = 0;
+        $totalWeight = 0;
+
         $dSheet = DeliverySheet::find($id);
         if ($dSheet == null) {
             return $this->view($request);
         }
 
         $deliverySheets = DB::table('delivery_sheet')->select('delivery_sheet.*', 'spv.name AS spvName', 'drv.name AS drvName', 'vehicle.vehicleCode AS vhCode', 'vehicle.make AS make', 'vehicle_type.typeName AS tpName', 'area.areaCode AS arCD', 'area.areaName AS arNM', 'area.city AS arCT')
-            ->join('staff AS drv', 'delivery_sheet.driver_id', '=', 'drv.staff_id')
+            ->leftJoin('staff AS drv', 'delivery_sheet.driver_id', '=', 'drv.staff_id')
             ->leftJoin('staff AS spv', 'delivery_sheet.supervisor_id', '=', 'spv.staff_id')
-            ->join('vehicle', 'delivery_sheet.vehicle_id', '=', 'vehicle.vehicle_id')
-            ->join('vehicle_type', 'vehicle.vehicleType_id', '=', 'vehicle_type.vehicleType_id')
+            ->leftJoin('vehicle', 'delivery_sheet.vehicle_id', '=', 'vehicle.vehicle_id')
+            ->leftJoin('vehicle_type', 'vehicle.vehicleType_id', '=', 'vehicle_type.vehicleType_id')
             ->join('area', 'delivery_sheet.area_id', '=', 'area.area_id')
             ->where('delivery_sheet.deliverySheet_id', '=', "$id")->get();
 
@@ -519,7 +522,15 @@ else{
 
         $deliverySheet = $deliverySheets[0];
 
-        $data = compact('deliverySheet', 'consignments', 'search');
+        foreach ($consignments as $cons){
+//            echo $cons->consWeight;
+
+            $totalWeight += $cons->getWeight();
+            $totalVolume += $cons->getVolume();
+        }
+
+
+        $data = compact('deliverySheet', 'consignments', 'search', 'totalWeight', 'totalVolume');
 
 
         return view('frontend.viewdeliverysheet')->with($data);
@@ -548,13 +559,16 @@ else{
         $id = $request->deliverySheet_id;
         $deliverySheet = DeliverySheet::find($id);
 
+
         if (!is_null($deliverySheet)) {
             if ($deliverySheet->status == 'checked-out') {
                 $deliverySheet->status = 'un-checked-out';
+                $deliverySheet->checkOutTime = date("Y-m-d H:i:s");
                 $deliverySheet->save();
                 return redirect('/frontend/view-deliverysheet/'.$id)->withSuccessMessage('Successfully Un-Checked-out');
             } else {
                 $deliverySheet->status = 'checked-out';
+                $deliverySheet->checkOutTime = date("Y-m-d H:i:s");
                 $deliverySheet->save();
                 return redirect('/frontend/view-deliverysheet/'.$id)->withSuccessMessage('Successfully Checked-out');
             }

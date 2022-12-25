@@ -76,7 +76,13 @@
 
     <div class="main pt-5" style="margin-right: 2em;" >
 
-        <h4>Delivery Sheet # {{$deliverySheet->deliverySheetCode}}</h4>
+        <h4>Delivery Sheet: <label style="font-weight: bolder; font-size: 20px;"> {{$deliverySheet->deliverySheetCode}}</label></h4>
+        <?php
+        if($deliverySheet->vhCode == ""){
+        echo '<label><img src="/images/icons8-error.gif" width="35em"/><u> Since there was no idle vehicle, therefore need to hire contractual vehicles!</u></label>';
+
+        }
+        ?>
         <hr>
 
 
@@ -84,36 +90,19 @@
 
             <tr>
                 <td ><b>Vehicle ID: </b></td>
-                <td class="p-lg-3">{{$deliverySheet->vhCode}}</td>
+                <td class="p-lg-3">{{$deliverySheet->vhCode ?? "----"}}</td>
                 <td class="pl-5">  </td>
                 <td> </td>
 
                 <td ><b>Driver: </b></td>
-                <td class="p-lg-3">{{$deliverySheet->drvName}}</td>
+                <td class="p-lg-3">{{$deliverySheet->drvName ?? "----"}}</td>
+                <td class="pl-5">  </td>
+                <td> </td>
 
-                <form action="">
-                <td class="" style="padding-left: 9.15em;">
-                    @php
-                if($deliverySheet->status == 'un-checked-out'){
+                <td ><b>Total Weight: </b></td>
+                <td class="p-lg-3">{{$totalWeight}} kg</td>
 
-                    @endphp
-                    <button type="submit" style="width: 8em;"
-                            class="btn btn-success btnCheckout" value={{$deliverySheet->deliverySheet_id}}>Check-out
-                    </button>
-                    @php
-                }
-                else{
-                    @endphp
-                    <button type="submit" style="width: 8em;"
-                            class="btn btn-danger btnUnCheckout" value={{$deliverySheet->deliverySheet_id}}>Un-Check-out
-                    </button>
-                    @php
-                }
 
-                @endphp
-
-                </td>
-                </form>
             </tr>
             <tr>
                 <td><b>Date: </b></td>
@@ -122,14 +111,20 @@
                 <td> </td>
                 <td><b>Area: </b></td>
                 <td  class="p-lg-3">{{$deliverySheet->arNM}}</td>
+                <td class="pl-5">  </td>
+                <td> </td>
+
+                <td ><b>Total Volume: </b></td>
+                <td class="p-lg-3">{{$totalVolume}} m<sup>3</sup></td>
+
             </tr>
         </table>
 
         <br>
 
         <div class="row mt-2 mb-2 d-flex">
-            <form action="" class="col-10 d-flex">
-                <div class="form-group col-7">
+            <form action="" class="col-14 d-flex">
+                <div class="form-group col-5">
                     <input type="search" name="search" id="" class="form-control" value="{{$search}}" placeholder="Search by consignment id, to-Address, ...">
                 </div>
                 <div class="">
@@ -145,15 +140,63 @@
                         </button>
                     </a>
                 </div>
+
+                <div class="col-2 ml-4">
+                    <form action="">
+
+                        @php
+                            if($deliverySheet->status == 'un-checked-out'){
+
+                        @endphp
+                        <button type="submit" style=""
+                                class="btn btn-success btnCheckout" value={{$deliverySheet->deliverySheet_id}}> <i class="fa fa-check"></i> Check-out
+                        </button>
+                        @php
+                            }
+                            else{
+                        @endphp
+
+
+
+                                @php
+                                    $createdAt = strtotime(\Carbon\Carbon::parse($deliverySheet->checkOutTime));
+                                    $currentDate = time();
+
+                                    $diff = ($currentDate-$createdAt)/3600;
+
+                                    if($diff <= 1){
+
+                             echo '<button type="submit" style=""
+                                class="btn btn-danger btnUnCheckout"  value='.$deliverySheet->deliverySheet_id.'><i class="fa fa-remove"></i> Un-check-out
+                        </button>';
+                                 }
+                                    else{
+                                        echo '<button type="submit" style=""
+                                class="btn btn-danger btnUnCheckout" disabled value='.$deliverySheet->deliverySheet_id.'><i class="fa fa-remove"></i> Un-check-out
+                        </button>';
+                                    }
+                                @endphp
+
+
+                        @php
+                            }
+
+                        @endphp
+
+
+                    </form>
+
+                </div>
+
             </form>
 
+
         </div>
+
 {{--        <br>--}}
 {{--        <div>--}}
 {{--            <ul class="nav nav-tabs" id="myTab" role="tablist">--}}
 {{--                <li class="nav-item">--}}
-
-
 {{--                    <form id="myForm0" action="">--}}
 {{--                        <input type="hidden" name="search" value="">--}}
 {{--                        @if(isset($search) && $search!="checked-out" && $search!="un-checked-out" || $search=="")--}}
@@ -213,6 +256,7 @@
                 <thead class="p-5" style="color:white; background-color: rgb(0, 73, 114);">
                 <tr>
 
+                    <th>Sr #</th>
                     <th>CN #</th>
                     <th >To</th>
                     <th>Contact</th>
@@ -232,7 +276,7 @@
                 <tbody>
                 <tr>
                     @php
-                        $i = 0;
+                        $i = 1;
                         $size = sizeof($consignments);
 
                     @endphp
@@ -244,6 +288,31 @@
             @else
                 @foreach($consignments as $member)
 
+                <td>
+                    <div class="d-inline-flex">
+                        <div>
+                            @php
+                                $total = (($consignments->currentPage()-1) * 20) + $i;
+                                echo $total;
+
+                                $i++;
+                            @endphp
+                        </div>
+                        @php
+                            $createdAt = strtotime(\Carbon\Carbon::parse($member->created_at));
+                            $currentDate = time();
+
+                            $diff = ($currentDate-$createdAt)/3600;
+
+                            if($diff <= 24){
+
+                     echo '<div class="bg-warning rounded ml-1" style="width: 2.5em; text-align: center;">
+                          New
+                     </div>';
+                         }
+                        @endphp
+                    </div>
+                </td>
                     <td>{{$member->consCode}}</td>
                     {{--                    <td>{{$member->arNM.", ".$member->arCT." (".$member->arCD.")"}}</td>--}}
 {{--                    <td>{{$member->arNM." (".$member->arCD.")"}}</td>--}}
