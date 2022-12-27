@@ -530,7 +530,68 @@ else{
         }
 
 
-        $data = compact('deliverySheet', 'consignments', 'search', 'totalWeight', 'totalVolume');
+    if(isset($deliverySheet->vehicle_id)){
+        //Query to fetch the assignedTo from the Vehicle assignment table along with the other vehicle's details
+        $vehicles1 = DB::table('vehicle')->select('vehicle.vehicle_id', 'vehicle.vehicleCode', 'vehicle.make', 'vehicle_type.typeName', 'vehicle_type.volumeCap', 'vehicle_type.weightCap', 'vehicle_assignment.assignedTo')->where('status', 'Idle')->where('dsAssigned', '=', '1')->where('vehicle.vehicle_id', $deliverySheet->vehicle_id)
+            ->leftJoin('vehicle_assignment', function ($join) {
+                $join->on('vehicle.vehicle_id', '=', 'vehicle_assignment.vehicle_id');
+
+            })->orderBy('vehicle_type.volumeCap')
+            ->join('vehicle_type', function ($join) use ($deliverySheet) {
+                $join->on('vehicle.vehicleType_id', '=', 'vehicle_type.vehicleType_id')->where('vehicle_type.typeName', $deliverySheet->tpName);
+
+            })->get();
+
+
+        $vehicles = DB::table('vehicle')->select('vehicle.vehicle_id', 'vehicle.vehicleCode', 'vehicle.make', 'vehicle_type.typeName', 'vehicle_type.volumeCap', 'vehicle_type.weightCap', 'vehicle_assignment.assignedTo')->where('status', 'Idle')->where('dsAssigned', '=', '0')
+            ->leftJoin('vehicle_assignment', function ($join) {
+                $join->on('vehicle.vehicle_id', '=', 'vehicle_assignment.vehicle_id');
+
+            })->orderBy('vehicle_type.volumeCap')
+            ->join('vehicle_type', function ($join) use ($deliverySheet) {
+                $join->on('vehicle.vehicleType_id', '=', 'vehicle_type.vehicleType_id')->where('vehicle_type.typeName', $deliverySheet->tpName);
+
+            })->get();
+        $vehicles->push($vehicles1[0]);
+//echo "<pre>";
+//
+//        print_r($vehicles);
+//        die;
+
+    }else {
+
+        if ($deliverySheet->tpName != "Bike") {
+
+            //Query to fetch the assignedTo from the Vehicle assignment table along with the other vehicle's details
+            $vehicles = DB::table('vehicle')->select('vehicle.vehicle_id', 'vehicle.vehicleCode', 'vehicle.make', 'vehicle_type.typeName', 'vehicle_type.volumeCap', 'vehicle_type.weightCap', 'vehicle_assignment.assignedTo')->where('status', 'Idle')->where('dsAssigned', '=', '0')
+                ->leftJoin('vehicle_assignment', function ($join) {
+                    $join->on('vehicle.vehicle_id', '=', 'vehicle_assignment.vehicle_id');
+
+                })->orderBy('vehicle_type.volumeCap')
+                ->join('vehicle_type', function ($join) {
+                    $join->on('vehicle.vehicleType_id', '=', 'vehicle_type.vehicleType_id')->where('typeName', '!=', 'Bike');
+
+                })->get();
+        } else {
+
+            $vehicles = DB::table('vehicle')->select('vehicle.vehicle_id', 'vehicle.vehicleCode', 'vehicle.make', 'vehicle_type.typeName', 'vehicle_type.volumeCap', 'vehicle_type.weightCap', 'vehicle_assignment.assignedTo')->where('status', 'Idle')->where('dsAssigned', '=', '0')
+                ->leftJoin('vehicle_assignment', function ($join) {
+                    $join->on('vehicle.vehicle_id', '=', 'vehicle_assignment.vehicle_id');
+
+                })->orderBy('vehicle_type.volumeCap')
+                ->join('vehicle_type', function ($join) {
+                    $join->on('vehicle.vehicleType_id', '=', 'vehicle_type.vehicleType_id')->where('typeName', '=', 'Bike');
+
+                })
+                ->get();
+        }
+    }
+
+//    echo "<pre>";
+//    print_r($vehicles);
+//    die;
+
+        $data = compact('deliverySheet', 'consignments', 'search', 'totalWeight', 'totalVolume', 'vehicles');
 
 
         return view('frontend.viewdeliverysheet')->with($data);

@@ -78,6 +78,7 @@
 
         <h4>Delivery Sheet: <label style="font-weight: bolder; font-size: 20px;"> {{$deliverySheet->deliverySheetCode}}</label></h4>
         <?php
+
         if($deliverySheet->vhCode == ""){
         echo '<label><img src="/images/icons8-error.gif" width="35em"/><u> Since there was no idle vehicle, therefore need to hire contractual vehicles!</u></label>';
 
@@ -86,16 +87,102 @@
         <hr>
 
 
+
+
         <table>
+
+
 
             <tr>
                 <td ><b>Vehicle ID: </b></td>
-                <td class="p-lg-3">{{$deliverySheet->vhCode ?? "----"}}</td>
+
+
+
+                <td class="p-lg-2"><div class="form-group mt-2">
+
+                        <select id="inputVehicle" onchange="showForDriver(this)" name="vehicle" disabled class="form-control"
+                                 required>
+
+
+
+                            <?php
+if(count($vehicles) == 0){
+    echo "<option> ---- </option>";
+}
+
+                            foreach ($vehicles as $vehicle){
+
+
+                                if(isset($deliverySheet->vehicle_id)){
+
+                                    if($vehicle->vehicle_id === $deliverySheet->vehicle_id){
+
+                                        echo "<option value='.$vehicle->vehicle_id.' selected>".$vehicle->vehicleCode.", ".$vehicle->make." ".$vehicle->typeName." (".$vehicle->weightCap."kg, ".$vehicle->volumeCap."m3)</option>";
+
+                                    }else{
+
+                                        echo "<option value='.$vehicle->vehicle_id.'>".$vehicle->vehicleCode.", ".$vehicle->make." ".$vehicle->typeName." (".$vehicle->weightCap."kg, ".$vehicle->volumeCap."m3)</option>";
+                                    }
+
+                                }
+                                else{
+                                    echo "<option value='.$vehicle->vehicle_id.'>".$vehicle->vehicleCode.", ".$vehicle->make." ".$vehicle->typeName." (".$vehicle->weightCap."kg, ".$vehicle->volumeCap."m3)</option>";
+                                }
+
+                            }
+
+                            ?>
+
+
+                        </select>
+
+                    </div></td>
                 <td class="pl-5">  </td>
                 <td> </td>
 
                 <td ><b>Driver: </b></td>
-                <td class="p-lg-3">{{$deliverySheet->drvName ?? "----"}}</td>
+
+                <td class="p-lg-2"><div class="form-group mt-2">
+
+                        <select id="inputDriver" onchange="showForDriver(this)" name="driver" disabled class="form-control"
+                                required>
+
+
+
+                            <?php
+                            if(count($vehicles) == 0){
+                                echo "<option> ---- </option>";
+                            }
+
+                            foreach ($vehicles as $vehicle){
+
+
+                                if(isset($deliverySheet->vehicle_id)){
+
+                                    if($vehicle->vehicle_id === $deliverySheet->vehicle_id){
+
+                                        echo "<option value='.$vehicle->vehicle_id.' selected>".$vehicle->vehicleCode.", ".$vehicle->make." ".$vehicle->typeName." (".$vehicle->weightCap."kg, ".$vehicle->volumeCap."m3)</option>";
+
+                                    }else{
+
+                                        echo "<option value='.$vehicle->vehicle_id.'>".$vehicle->vehicleCode.", ".$vehicle->make." ".$vehicle->typeName." (".$vehicle->weightCap."kg, ".$vehicle->volumeCap."m3)</option>";
+                                    }
+
+                                }
+                                else{
+                                    echo "<option value='.$vehicle->vehicle_id.'>".$vehicle->vehicleCode.", ".$vehicle->make." ".$vehicle->typeName." (".$vehicle->weightCap."kg, ".$vehicle->volumeCap."m3)</option>";
+                                }
+
+                            }
+
+                            ?>
+
+
+                        </select>
+
+                    </div></td>
+
+{{--                <td class="p-lg-3">{{$deliverySheet->drvName ?? "----"}}</td>--}}
                 <td class="pl-5">  </td>
                 <td> </td>
 

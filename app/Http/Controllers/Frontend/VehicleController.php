@@ -394,7 +394,7 @@ $search = trim($search, " \t\n\r\0\x0B");
         //a supervisor or a manager can assign a vehicle,
         // therefore when he will be logged on to our system,
         // we can get his id and insert it in this place
-        $assignedById = 452;
+        $assignedById = null;
 
         $vehicle = Vehicle::find($vehicleId);
         $vehicle->assignStatus = 'Assigned';
