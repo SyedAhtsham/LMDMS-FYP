@@ -489,7 +489,7 @@ else{
             return $this->view($request);
         }
 
-        $deliverySheets = DB::table('delivery_sheet')->select('delivery_sheet.*', 'spv.name AS spvName', 'drv.name AS drvName', 'vehicle.vehicleCode AS vhCode', 'vehicle.make AS make', 'vehicle_type.typeName AS tpName', 'area.areaCode AS arCD', 'area.areaName AS arNM', 'area.city AS arCT')
+        $deliverySheets = DB::table('delivery_sheet')->select('delivery_sheet.*', 'spv.name AS spvName', 'drv.name AS drvName', 'drv.staffCode AS staffCode', 'vehicle.vehicleCode AS vhCode', 'vehicle.make AS make', 'vehicle_type.typeName AS tpName', 'area.areaCode AS arCD', 'area.areaName AS arNM', 'area.city AS arCT')
             ->leftJoin('staff AS drv', 'delivery_sheet.driver_id', '=', 'drv.staff_id')
             ->leftJoin('staff AS spv', 'delivery_sheet.supervisor_id', '=', 'spv.staff_id')
             ->leftJoin('vehicle', 'delivery_sheet.vehicle_id', '=', 'vehicle.vehicle_id')
@@ -527,6 +527,42 @@ else{
 
             $totalWeight += $cons->getWeight();
             $totalVolume += $cons->getVolume();
+        }
+
+
+
+        if(isset($deliverySheet->driver_id)){
+$driver = DB::table('staff')->select('staff.staff_id','staff.staffCode','staff.name')->where('staff.staff_id', $deliverySheet->driver_id)->get();
+
+            $drivers = DB::table('staff')->select('staff.staff_id','staff.staffCode','staff.name')->where('staff.staff_id', '!=', $deliverySheet->driver_id)
+                ->leftJoin('driver', 'staff.staff_id', '=', 'driver.staff_id')->where('driver.canDrive', 'LIKE', "%$deliverySheet->tpName%")->where('driver.status', '=', 'Unassigned')
+                ->get();
+
+//            ->orwhere('driver.canDrive','LIKE', "%$deliverySheet->tpName%")->get();
+
+$drivers->push($driver[0]);
+//echo $deliverySheet->tpName;
+//echo "<br>";
+//echo "<pre>";
+//print_r($drivers1);
+//die;
+        }else{
+            $drivers = DB::table('staff')->select('staff.staff_id','staff.staffCode','staff.name')
+                ->leftJoin('driver', 'staff.staff_id', '=', 'driver.staff_id')->where('driver.canDrive', 'LIKE', "%$deliverySheet->tpName%")->where('driver.status', '=', 'Unassigned')
+                ->get();
+
+
+//            echo $deliverySheet->tpName;
+//            echo "<br>";
+//            echo "<pre>";
+//            print_r($drivers1);
+//            die;
+        }
+
+        if(count($drivers)>1){
+            $temp = $drivers[0];
+            $drivers[0] = $drivers[count($drivers)-1];
+            $drivers[count($drivers)-1] = $temp;
         }
 
 
@@ -587,11 +623,17 @@ else{
         }
     }
 
+        if(count($vehicles)>1){
+            $temp = $vehicles[0];
+            $vehicles[0] = $vehicles[count($vehicles)-1];
+            $vehicles[count($vehicles)-1] = $temp;
+        }
+
 //    echo "<pre>";
 //    print_r($vehicles);
 //    die;
 
-        $data = compact('deliverySheet', 'consignments', 'search', 'totalWeight', 'totalVolume', 'vehicles');
+        $data = compact('deliverySheet', 'consignments', 'search', 'totalWeight', 'totalVolume', 'vehicles','drivers');
 
 
         return view('frontend.viewdeliverysheet')->with($data);

@@ -44,7 +44,9 @@ Route::get('/frontend/edit-vehicle/{id}', [VehicleController::class, 'edit'])->n
 Route::get('/frontend/vehicle-assignment/{type}', [VehicleController::class, 'assignDriver'])->name('vehicle.assign');
 Route::post('/frontend/vehicle-assignment/', [VehicleController::class, 'addVehicleAssignment'])->name('vehicle.assignment');
 Route::post('/frontend/update-vehicle/{id}', [VehicleController::class, 'update'])->name('vehicle.update');
-
+Route::get('/frontend/vehicleAssignments/{id}', [VehicleController::class, 'fetchDrivers']);
+Route::get('/frontend/vehicleAssignment', [VehicleController::class, 'updateAssignment']);
+//Route::get('/frontend/vehicleAssignment', array('uses'  =>  'VehicleController@updateAssignment'));
 
 Route::get('/frontend/view-consignments', [ConsignmentController::class, 'view']);
 Route::post('/frontend/view-consignments', [ConsignmentController::class, 'view']);
@@ -77,13 +79,12 @@ Route::get('/view', function () {
 
 
 
-    $consignments = DB::table('consignment');
 
 
-    print_r($consignments);
+    die;
 
 
-die;
+
 
 
 

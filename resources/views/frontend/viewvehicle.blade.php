@@ -434,7 +434,7 @@
                             <ul class="list-inline m-0">
 
                                 {{--                    <li class="list-inline-item">--}}
-                                {{--                       <a href="{{url('/frontend/edit-staff/{id}')}}">--}}
+                                {{--                       <a href="{{urlfaddBtn('/frontend/edit-staff/{id}')}}">--}}
                                 {{--                        <button class="btn btn-success btn-sm rounded-0" style="background-color: rgb(11, 77, 114);" type="button" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-edit"></i></button>--}}
                                 {{--                       </a>--}}
                                 {{--                    </li>--}}

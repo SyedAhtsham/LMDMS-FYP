@@ -20,7 +20,7 @@ class StaffSeeder extends Seeder
     {
         $faker = Faker::create();
 
-        for($i=1; $i<=10; $i++) {
+        for($i=1; $i<=5; $i++) {
             $staff = new Staff;
             $staff->staffCode = "";
             $staff->name = $faker->name;
@@ -62,7 +62,7 @@ class StaffSeeder extends Seeder
             $driver->licenseNo = $faker->randomNumber(4);
 
             $driver->yearsExp = $faker->randomNumber(1);
-            $driver->canDrive = 'Hilux';
+            $driver->canDrive = 'Bike, Hilux';
 
             $driver->save();
             }

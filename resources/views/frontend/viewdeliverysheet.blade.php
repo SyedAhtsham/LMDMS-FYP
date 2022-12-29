@@ -76,6 +76,7 @@
 
     <div class="main pt-5" style="margin-right: 2em;" >
 
+<input id="dsID" value="{{$deliverySheet->deliverySheet_id}}" hidden>
         <h4>Delivery Sheet: <label style="font-weight: bolder; font-size: 20px;"> {{$deliverySheet->deliverySheetCode}}</label></h4>
         <?php
 
@@ -98,16 +99,19 @@
 
 
 
-                <td class="p-lg-2"><div class="form-group mt-2">
+                <td class="p-lg-2"><div class="form-group mt-2 d-flex">
 
-                        <select id="inputVehicle" onchange="showForDriver(this)" name="vehicle" disabled class="form-control"
+                        <div>
+                        <select id="inputVehicle"  name="vehicle" disabled class="form-control"
                                  required>
 
 
 
                             <?php
-if(count($vehicles) == 0){
-    echo "<option> ---- </option>";
+                            if(!isset($deliverySheet->vehicle_id)){
+
+    echo "<option value='' selected> None </option>";
+
 }
 
                             foreach ($vehicles as $vehicle){
@@ -117,16 +121,16 @@ if(count($vehicles) == 0){
 
                                     if($vehicle->vehicle_id === $deliverySheet->vehicle_id){
 
-                                        echo "<option value='.$vehicle->vehicle_id.' selected>".$vehicle->vehicleCode.", ".$vehicle->make." ".$vehicle->typeName." (".$vehicle->weightCap."kg, ".$vehicle->volumeCap."m3)</option>";
+                                        echo "<option value='$vehicle->vehicle_id' selected>".$vehicle->vehicleCode.", ".$vehicle->make." ".$vehicle->typeName." (".$vehicle->weightCap."kg, ".$vehicle->volumeCap."m3)</option>";
 
                                     }else{
 
-                                        echo "<option value='.$vehicle->vehicle_id.'>".$vehicle->vehicleCode.", ".$vehicle->make." ".$vehicle->typeName." (".$vehicle->weightCap."kg, ".$vehicle->volumeCap."m3)</option>";
+                                        echo "<option value='$vehicle->vehicle_id'>".$vehicle->vehicleCode.", ".$vehicle->make." ".$vehicle->typeName." (".$vehicle->weightCap."kg, ".$vehicle->volumeCap."m3)</option>";
                                     }
 
                                 }
                                 else{
-                                    echo "<option value='.$vehicle->vehicle_id.'>".$vehicle->vehicleCode.", ".$vehicle->make." ".$vehicle->typeName." (".$vehicle->weightCap."kg, ".$vehicle->volumeCap."m3)</option>";
+                                    echo "<option value='$vehicle->vehicle_id'>".$vehicle->vehicleCode.", ".$vehicle->make." ".$vehicle->typeName." (".$vehicle->weightCap."kg, ".$vehicle->volumeCap."m3)</option>";
                                 }
 
                             }
@@ -136,41 +140,57 @@ if(count($vehicles) == 0){
 
                         </select>
 
-                    </div></td>
+                        </div>
+                       &nbsp; <div class="mt-1" id="editBtn001Div">
+
+                            <button class="btn btn-sm rounded-0 change-color rounded-2" onclick="edit()" id="editBtn001" type="button"
+                                    data-toggle="" data-placement="top" title="Edit"><i
+                                    class="fa fa-edit"></i></button>
+
+
+
+
+                        </div>
+                    </div>
+
+    </td>
                 <td class="pl-5">  </td>
                 <td> </td>
 
                 <td ><b>Driver: </b></td>
 
-                <td class="p-lg-2"><div class="form-group mt-2">
+                <td class="p-lg-2"><div class="form-group mt-2 d-flex">
 
-                        <select id="inputDriver" onchange="showForDriver(this)" name="driver" disabled class="form-control"
+                        <div>
+                        <select id="inputDriver"  name="driver" disabled class="form-control"
                                 required>
 
 
 
                             <?php
-                            if(count($vehicles) == 0){
-                                echo "<option> ---- </option>";
+                            if(!isset($deliverySheet->driver_id)){
+
+                                echo "<option value='' selected> None </option>";
+
                             }
 
-                            foreach ($vehicles as $vehicle){
+                            foreach ($drivers as $driver){
 
 
-                                if(isset($deliverySheet->vehicle_id)){
+                                if(isset($deliverySheet->driver_id)){
 
-                                    if($vehicle->vehicle_id === $deliverySheet->vehicle_id){
+                                    if($driver->staff_id === $deliverySheet->driver_id){
 
-                                        echo "<option value='.$vehicle->vehicle_id.' selected>".$vehicle->vehicleCode.", ".$vehicle->make." ".$vehicle->typeName." (".$vehicle->weightCap."kg, ".$vehicle->volumeCap."m3)</option>";
+                                        echo "<option value='$driver->staff_id' selected>".$driver->staffCode." ".$driver->name."</option>";
 
                                     }else{
 
-                                        echo "<option value='.$vehicle->vehicle_id.'>".$vehicle->vehicleCode.", ".$vehicle->make." ".$vehicle->typeName." (".$vehicle->weightCap."kg, ".$vehicle->volumeCap."m3)</option>";
+                                        echo "<option value='$driver->staff_id'>".$driver->staffCode." ".$driver->name."</option>";
                                     }
 
                                 }
                                 else{
-                                    echo "<option value='.$vehicle->vehicle_id.'>".$vehicle->vehicleCode.", ".$vehicle->make." ".$vehicle->typeName." (".$vehicle->weightCap."kg, ".$vehicle->volumeCap."m3)</option>";
+                                    echo "<option value='$driver->staff_id'>".$driver->staffCode." ".$driver->name."</option>";
                                 }
 
                             }
@@ -180,7 +200,19 @@ if(count($vehicles) == 0){
 
                         </select>
 
-                    </div></td>
+                    </div>
+                    &nbsp; <div class="mt-1" id="btnDiv">
+
+                        <button class="btn btn-sm rounded-0 change-color rounded-2" onclick="edit1()" id="editBtnID" type="button"
+                                data-toggle="" data-placement="top" title="Edit"><i
+                                class="fa fa-edit"></i></button>
+
+
+
+
+                    </div>
+                    </div>
+                </td>
 
 {{--                <td class="p-lg-3">{{$deliverySheet->drvName ?? "----"}}</td>--}}
                 <td class="pl-5">  </td>
@@ -500,6 +532,188 @@ if(count($vehicles) == 0){
 
 
 @section('scripts')
+
+
+
+    <script>
+        let editBtn = document.getElementById('editBtn001');
+        const select = document.getElementById('inputVehicle');
+
+let editDiv = document.getElementById('editBtn001Div');
+
+        function edit(){
+            // editBtn.style.visibility = 'hidden';
+select.disabled = '';
+            editDiv.innerHTML = '';
+        editDiv.innerHTML = '<button class="btn btn-sm rounded-0 change-color2 rounded-2" onclick="save()" id="editBtn002" type="button" data-toggle="" data-placement="top" title="Save"><i class="fa fa-save"></i></button>';
+
+        }
+
+        let editBtn2 = document.getElementById('editBtn002');
+        function save(){
+            // editBtn.style.visibility = 'hidden';
+            select.disabled = 'disabled';
+            editDiv.innerHTML = '';
+            editDiv.innerHTML = '<button class="btn btn-sm rounded-0 change-color rounded-2" onclick="edit()" id="editBtn001" type="button" data-toggle="" data-placement="top" title="Edit"><i class="fa fa-edit"></i></button>';
+
+        }
+
+
+
+
+    </script>
+
+    <script>
+        let editBtn1 = document.getElementById('editBtnID');
+        const select1 = document.getElementById('inputDriver');
+
+        let editDiv1 = document.getElementById('btnDiv');
+
+        function edit1(){
+            // editBtn.style.visibility = 'hidden';
+            select1.disabled = '';
+            editDiv1.innerHTML = '';
+            editDiv1.innerHTML = '<button class="btn btn-sm rounded-0 change-color2 rounded-2" onclick="save1()" id="saveBtnID" type="button" data-toggle="" data-placement="top" title="Save"><i class="fa fa-save"></i></button>';
+
+        }
+
+        let editBtn3 = document.getElementById('saveBtnID');
+        function save1(){
+            // editBtn.style.visibility = 'hidden';
+            select1.disabled = 'disabled';
+            editDiv1.innerHTML = '';
+            editDiv1.innerHTML = '<button class="btn btn-sm rounded-0 change-color rounded-2" onclick="edit1()" id="editBtnID" type="button" data-toggle="" data-placement="top" title="Edit"><i class="fa fa-edit"></i></button>';
+
+        }
+
+        </script>
+
+
+
+<script>
+    $(document).ready(function () {
+
+        $(document).on('change', '#inputVehicle', function () {
+            let vehicleID = $(this).val();
+
+
+            $.ajax(
+                {
+
+                    type: "GET",
+                    url: "/frontend/vehicleAssignments/" + vehicleID,
+
+                    success: function (response) {
+                        let drivers = response.drivers;
+                        // let flag = response.flag;
+
+
+
+                        let driverSelect = document.getElementById('inputDriver');
+
+
+                        // console.log(drivers);
+                        while (driverSelect.children[0]) {
+                            driverSelect.removeChild(driverSelect.lastChild);
+                        }
+
+                        // document.getElementById('assignBtn').disabled = '';
+
+                        if (drivers.length === 0) {
+                            let optionElement = document.createElement('option');
+                            optionElement.innerHTML = '<label style="color:;">None</label>';
+                            driverSelect.appendChild(optionElement);
+                            // document.getElementById('assignBtn').disabled = 'true';
+
+                        }
+
+
+
+                        for (let i = 0; i < drivers.length; i++) {
+
+
+                            let optionElement = document.createElement('option');
+                            optionElement.innerHTML = drivers[i].staffCode + ", " + drivers[i].name;
+                            // console.log(drivers[i]);
+                            // console.log(drivers[i].staff_id);
+                            optionElement.value = drivers[i].staff_id;
+                            driverSelect.appendChild(optionElement);
+                        }
+
+
+                    }
+                }
+            );
+
+        });
+
+    });
+
+
+
+    $(document).ready(function () {
+
+        //editBtn002 is save button of vehicleField
+        $(document).on('click', '#editBtn002', function () {
+
+            let dsID = document.getElementById("dsID").value;
+
+            let inputVehicle = document.getElementById("inputVehicle");
+            let inputDriver = document.getElementById("inputDriver");
+            let vehicleID = inputVehicle.value;
+            let driverID = inputDriver.value;
+
+            let jsonObj = {vehicleID:vehicleID, driverID:driverID, dsID:dsID };
+
+            $.ajax(
+                {
+
+
+                    url: "/frontend/vehicleAssignment",
+                    type: "GET",
+                    headers:{"content-type" : "application/json"},
+                    data: JSON.stringify(jsonObj),
+                    success: function (response) {
+alert(response.dID);
+
+                    }
+
+                });
+
+            // alert(vehicleID);
+            // alert(driverID);
+
+
+        });
+
+    });
+
+    $(document).ready(function () {
+
+        //editBtn002 is save button of vehicleField
+        $(document).on('click', '#saveBtnID', function () {
+
+            let inputVehicle = document.getElementById("inputVehicle");
+            let inputDriver = document.getElementById("inputDriver");
+            let vehicleID = inputVehicle.value;
+            let driverID = inputDriver.value;
+
+
+            // alert(vehicleID);
+            alert(driverID);
+
+
+        });
+
+    });
+
+
+
+</script>
+
+
+
+
     <script>
         $(document).ready(function(){
             $('.btnCheckout').click(function(e){

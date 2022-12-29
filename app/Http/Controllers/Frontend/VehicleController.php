@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Frontend;
 use App\Http\Controllers\Controller;
 use App\Models\CompVehicle;
 use App\Models\ContVehicle;
+use App\Models\DeliverySheet;
 use App\Models\Driver;
 use App\Models\Staff;
 use App\Models\User;
@@ -389,7 +390,9 @@ $search = trim($search, " \t\n\r\0\x0B");
     public function addVehicleAssignment(Request $request){
         $vehicleId = $request['vehicleId'];
         $driverId = $request['driver'];
-        echo $driverId;
+        $driver = Driver::find($driverId);
+        $driver->status = "Assigned";
+        $driver->save();
 
         //a supervisor or a manager can assign a vehicle,
         // therefore when he will be logged on to our system,
@@ -410,4 +413,81 @@ $search = trim($search, " \t\n\r\0\x0B");
 
     }
 
+    public function fetchDrivers($id): \Illuminate\Http\JsonResponse{
+
+
+        $vehicleID = $id;
+
+        $vehicleType = DB::table('vehicle')->select('vehicle.vehicleType_id','vehicle_type.typeName')->where('vehicle.vehicle_id', '=', $vehicleID)
+            ->leftJoin('vehicle_type', 'vehicle.vehicleType_id', '=', 'vehicle_type.vehicleType_id')->get();
+
+        $typeName = $vehicleType[0]->typeName;
+
+$flag = false;
+
+        $drivers1 = DB::table('staff')->select('staff.staffCode','staff.name', 'staff.staff_id')
+            ->leftJoin('vehicle_assignment', 'staff.staff_id', '=', 'vehicle_assignment.assignedTo')->where('vehicle_assignment.vehicle_id', '=' , $vehicleID)->get();
+
+            $drivers = DB::table('staff')->select('staff.staffCode', 'staff.name', 'staff.staff_id')
+                ->leftJoin('driver', 'staff.staff_id', '=', 'driver.staff_id')->where('driver.canDrive', 'LIKE', "%$typeName%")->where('driver.status', 'Unassigned')->get();
+
+        if(count($drivers1)>0){
+            $flag = true;
+            $drivers->prepend($drivers1[0]);
+        }
+
+
+//WHICH ARE UNASSIGNED, should be displayed, not the one which are assigned
+//        echo "<pre>";
+//        print_r($drivers1);
+//
+//        print_r($drivers);
+
+        return response()->json([
+            'status' => 200,
+            'drivers' => $drivers,
+            'flag' => $flag,
+        ]);
+
+
+    }
+
+    public function updateAssignment(Request $request): \Illuminate\Http\JsonResponse
+    {
+
+
+//
+//            $dSheet = DeliverySheet::find($dsID);
+//
+//            $vehicle = Vehicle::find($dSheet->vehicle_id);
+//            $vehicle->dsAssigned = 0;
+//            $vehicle->status = 'Idle';
+//            $vehicle->save();
+//
+//            $driver = Driver::find($dSheet->assignedTo);
+//            $driver->status = 'Unassigned';
+//            $driver->save();
+//
+//            $dSheet->assignedTo = $driverID;
+//            $dSheet->vehicle_id = $vehicleID;
+//            $dSheet->save();
+//
+//            $vehicleNew = Vehicle::find($dSheet->vehicle_id);
+//            $vehicleNew->dsAssigned = 1;
+//
+//            $vehicleNew->save();
+//
+//
+//            $driver = Driver::find($dSheet->assignedTo);
+//            $driver->status = 'Assigned';
+//            $driver->save();
+
+//        return redirect('/frontend/view-deliverysheet/'.$dsID)->withSuccessMessage('Successfully Updated!');
+            return response()->json([
+                'status' => 200,
+                'dID' => $request,
+            ]);
+
+
+    }
 }
