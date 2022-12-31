@@ -268,7 +268,7 @@
 
                         @endphp
                         <button type="submit" style=""
-                                class="btn btn-success btnCheckout" value={{$deliverySheet->deliverySheet_id}}> <i class="fa fa-check"></i> Check-out
+                                class="btn btn-success btnCheckout" id="checkoutBtn" value={{$deliverySheet->deliverySheet_id}}> <i class="fa fa-check"></i> Check-out
                         </button>
                         @php
                             }
@@ -454,7 +454,7 @@
                     <td>{{$member->toContact}}</td>
                     <td>{{$member->consWeight}}</td>
 
-                    <td>{{$member->consVolume}}</td>
+                    <td>{{$member->consVolume}}<sup>3</sup></td>
                 <td>{{$member->COD}}</td>
 
 
@@ -591,6 +591,9 @@ select.disabled = '';
 
 
 <script>
+
+
+
     $(document).ready(function () {
 
         $(document).on('change', '#inputVehicle', function () {
@@ -647,9 +650,21 @@ select.disabled = '';
 
         });
 
+
     });
 
+    let inputVehicle1 = document.getElementById("inputVehicle");
+    let inputDriver1 = document.getElementById("inputDriver");
+    let vehicleID1 = inputVehicle1.value;
+    let driverID1 = inputDriver1.value;
 
+    let size = <?php echo $size; ?>;
+
+    if(vehicleID1 == "" || driverID1 == "" || size === 0){
+        document.getElementById('checkoutBtn').disabled = "true";
+    }else{
+        document.getElementById('checkoutBtn').disabled = ""
+    }
 
     $(document).ready(function () {
 
@@ -659,31 +674,49 @@ select.disabled = '';
             let dsID = document.getElementById("dsID").value;
 
             let inputVehicle = document.getElementById("inputVehicle");
+
             let inputDriver = document.getElementById("inputDriver");
             let vehicleID = inputVehicle.value;
-            let driverID = inputDriver.value;
+if(vehicleID !== "") {
+    let vehicleSelect = document.getElementById('inputVehicle');
+    vehicleSelect[0].remove();
+    let driverID = inputDriver.value;
 
-            let jsonObj = {vehicleID:vehicleID, driverID:driverID, dsID:dsID };
+    let str = vehicleID + "," + driverID + "," + dsID;
+    $.ajax(
+        {
 
-            $.ajax(
-                {
+            type: "GET",
+            url: "/frontend/vehicleAssignment/" + str,
 
+            success: function (response) {
 
-                    url: "/frontend/vehicleAssignment",
-                    type: "GET",
-                    headers:{"content-type" : "application/json"},
-                    data: JSON.stringify(jsonObj),
-                    success: function (response) {
-alert(response.dID);
+                swal({
+                    title: 'Success!',
+                    icon: 'success',
+                    text: 'Delivery Sheet Vehicle Updated!',
 
+                    timer: 2000,
+                    buttons: false,
+                }).then(
+                    function () {
+                    },
+                    // handling the promise rejection
+                    function (dismiss) {
+                        if (dismiss === 'timer') {
+                            //console.log('I was closed by the timer')
+                        }
                     }
+                )
 
-                });
+            }
 
-            // alert(vehicleID);
-            // alert(driverID);
+        });
 
+    // alert(vehicleID);
+    // alert(driverID);
 
+}
         });
 
     });
@@ -693,19 +726,56 @@ alert(response.dID);
         //editBtn002 is save button of vehicleField
         $(document).on('click', '#saveBtnID', function () {
 
+            let dsID = document.getElementById("dsID").value;
+
             let inputVehicle = document.getElementById("inputVehicle");
             let inputDriver = document.getElementById("inputDriver");
             let vehicleID = inputVehicle.value;
             let driverID = inputDriver.value;
+            if(driverID != "") {
+
+                let driverSelect = document.getElementById('inputDriver');
+                driverSelect[0].remove();
+                let str = vehicleID + "," + driverID + "," + dsID;
+                $.ajax(
+                    {
+
+                        type: "GET",
+                        url: "/frontend/vehicleAssignment/" + str,
+
+                        success: function (response) {
+
+                            swal({
+                                title: 'Success!',
+                                icon: 'success',
+                                text: 'Delivery Sheet Driver Updated!',
+
+                                timer: 2000,
+                                buttons: false,
+                            }).then(
+                                function () {
+                                },
+                                // handling the promise rejection
+                                function (dismiss) {
+                                    if (dismiss === 'timer') {
+                                        //console.log('I was closed by the timer')
+                                    }
+                                }
+                            )
 
 
-            // alert(vehicleID);
-            alert(driverID);
+                        }
 
+                    });
+
+                // alert(vehicleID);
+                // alert(driverID);
+            }
 
         });
 
     });
+
 
 
 

@@ -7,6 +7,9 @@ use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\StaffController;
 use App\Http\Controllers\Frontend\VehicleAssignmentController;
 use App\Http\Controllers\Frontend\VehicleController;
+use App\Models\DeliverySheet;
+use App\Models\Driver;
+use App\Models\Vehicle;
 use App\Models\VehicleAssignment;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -45,7 +48,8 @@ Route::get('/frontend/vehicle-assignment/{type}', [VehicleController::class, 'as
 Route::post('/frontend/vehicle-assignment/', [VehicleController::class, 'addVehicleAssignment'])->name('vehicle.assignment');
 Route::post('/frontend/update-vehicle/{id}', [VehicleController::class, 'update'])->name('vehicle.update');
 Route::get('/frontend/vehicleAssignments/{id}', [VehicleController::class, 'fetchDrivers']);
-Route::get('/frontend/vehicleAssignment', [VehicleController::class, 'updateAssignment']);
+Route::get('/frontend/vehicleAssignment/{str}', [VehicleController::class, 'updateAssignment']);
+
 //Route::get('/frontend/vehicleAssignment', array('uses'  =>  'VehicleController@updateAssignment'));
 
 Route::get('/frontend/view-consignments', [ConsignmentController::class, 'view']);
@@ -78,6 +82,10 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Route::get('/view', function () {
 
 
+$str = "1182,507,858";
+
+
+    $arr = explode(",", $str);
 
 
 

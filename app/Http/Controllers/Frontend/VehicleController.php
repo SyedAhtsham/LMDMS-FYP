@@ -452,42 +452,55 @@ $flag = false;
 
     }
 
-    public function updateAssignment(Request $request): \Illuminate\Http\JsonResponse
+    public function updateAssignment($str): \Illuminate\Http\JsonResponse
     {
+        $arr = explode(",", $str);
+
+        $vehicleID = $arr[0];
+        $driverID = $arr[1];
+        $dsID = $arr[2];
 
 
-//
-//            $dSheet = DeliverySheet::find($dsID);
-//
-//            $vehicle = Vehicle::find($dSheet->vehicle_id);
-//            $vehicle->dsAssigned = 0;
-//            $vehicle->status = 'Idle';
-//            $vehicle->save();
-//
-//            $driver = Driver::find($dSheet->assignedTo);
-//            $driver->status = 'Unassigned';
-//            $driver->save();
-//
-//            $dSheet->assignedTo = $driverID;
-//            $dSheet->vehicle_id = $vehicleID;
-//            $dSheet->save();
-//
-//            $vehicleNew = Vehicle::find($dSheet->vehicle_id);
-//            $vehicleNew->dsAssigned = 1;
-//
-//            $vehicleNew->save();
-//
-//
-//            $driver = Driver::find($dSheet->assignedTo);
-//            $driver->status = 'Assigned';
-//            $driver->save();
+        $dSheet = DeliverySheet::find($dsID);
+
+
+        if(isset($dSheet->vehicle_id)) {
+            $vehicle = Vehicle::find($dSheet->vehicle_id);
+            $vehicle->dsAssigned = 0;
+            $vehicle->status = 'Idle';
+            $vehicle->save();
+        }
+
+        if(isset($dSheet->driver_id)) {
+            $driver = Driver::find($dSheet->driver_id);
+            $driver->status = 'Unassigned';
+            $driver->save();
+        }
+
+
+        $dSheet->driver_id = $driverID;
+        $dSheet->vehicle_id = $vehicleID;
+        $dSheet->save();
+
+        $vehicleNew = Vehicle::find($dSheet->vehicle_id);
+        $vehicleNew->dsAssigned = 1;
+
+        $vehicleNew->save();
+
+
+        $driver = Driver::find($dSheet->driver_id);
+        $driver->status = 'Assigned';
+        $driver->save();
+
 
 //        return redirect('/frontend/view-deliverysheet/'.$dsID)->withSuccessMessage('Successfully Updated!');
-            return response()->json([
+
+        return response()->json([
                 'status' => 200,
-                'dID' => $request,
             ]);
 
 
     }
+
+
 }

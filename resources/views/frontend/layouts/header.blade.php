@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -14,6 +15,7 @@
     <link rel="stylesheet" type="text/css" href="/css/fontawesome.min.css">
     <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
 
+
 {{--    <link rel="stylesheet" type="text/css" href="/css/m.css">--}}
 
 {{--    --}}
@@ -22,6 +24,7 @@
     <script src="https://kit.fontawesome.com/58bf3a6361.js" crossorigin="anonymous"></script>
 
     <style>
+
         body {
             font-family: "Lato", sans-serif;
 
