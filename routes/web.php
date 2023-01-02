@@ -7,6 +7,7 @@ use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\StaffController;
 use App\Http\Controllers\Frontend\VehicleAssignmentController;
 use App\Http\Controllers\Frontend\VehicleController;
+use App\Models\Consignment;
 use App\Models\DeliverySheet;
 use App\Models\Driver;
 use App\Models\Vehicle;
@@ -64,6 +65,8 @@ Route::post('/frontend/remove-consignment', [DeliverySheetController::class, 're
 Route::get('/frontend/dsheet', [DeliverySheetController::class, 'create']);
 Route::post('/frontend/checkout-deliverySheet', [DeliverySheetController::class, 'checkoutDeliverySheet'])->name('checkout.deliverySheet');
 Route::get('/frontend/generateDSheet', [DeliverySheetController::class, 'generate']);
+Route::get('/frontend/add-consignments/{id}', [DeliverySheetController::class, 'addConsignments']);
+Route::get('/frontend/add-consignments-toDS/{str}', [DeliverySheetController::class, 'addConsignmentsToDeliverySheet']);
 
 
 
@@ -81,12 +84,14 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 Route::get('/view', function () {
 
+    $cons = Consignment::find(4870);
+    echo "<pre>";
+    print_r($cons->toArray());
 
-$str = "1182,507,858";
+    die;
+    $cons->deliverySheet_id = 864;
 
-
-    $arr = explode(",", $str);
-
+    $cons->save();
 
 
     die;

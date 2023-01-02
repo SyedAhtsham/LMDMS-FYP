@@ -191,6 +191,11 @@ $isGenerated = false;
                         $deliverySheet->vehicle_id = $bikesArr[$b]->vehicle_id ?? null; // if null, then display a message about the need of hiring of vehicles of type
 
                         $deliverySheet->save();
+    if(isset($deliverySheet->vehicle_id)){
+        $bike = Vehicle::find($deliverySheet->vehicle_id);
+        $bike->dsAssigned = 1;
+        $bike->save();
+    }
 
                     }
 
@@ -305,6 +310,13 @@ $isGenerated = false;
                         $deliverySheet->vehicle_id = $vehiclesArr[$j]->vehicle_id ?? null; // if null, then display a message about the need of hiring of vehicles of type
 
                         $deliverySheet->save();
+
+                        if(isset($deliverySheet->vehicle_id)){
+                            $vehicle = Vehicle::find($deliverySheet->vehicle_id);
+                            $vehicle->dsAssigned = 1;
+                            $vehicle->save();
+                        }
+
                         $flag = false;
                     }
 
@@ -540,7 +552,7 @@ $driver = DB::table('staff')->select('staff.staff_id','staff.staffCode','staff.n
 
 //            ->orwhere('driver.canDrive','LIKE', "%$deliverySheet->tpName%")->get();
 
-$drivers->push($driver[0]);
+$drivers->prepend($driver[0]);
 //echo $deliverySheet->tpName;
 //echo "<br>";
 //echo "<pre>";
@@ -559,11 +571,7 @@ $drivers->push($driver[0]);
 //            die;
         }
 
-        if(count($drivers)>1){
-            $temp = $drivers[0];
-            $drivers[0] = $drivers[count($drivers)-1];
-            $drivers[count($drivers)-1] = $temp;
-        }
+
 
 
     if(isset($deliverySheet->vehicle_id)){
@@ -588,7 +596,7 @@ $drivers->push($driver[0]);
                 $join->on('vehicle.vehicleType_id', '=', 'vehicle_type.vehicleType_id')->where('vehicle_type.typeName', $deliverySheet->tpName);
 
             })->get();
-        $vehicles->push($vehicles1[0]);
+        $vehicles->prepend($vehicles1[0]);
 //echo "<pre>";
 //
 //        print_r($vehicles);
@@ -623,11 +631,7 @@ $drivers->push($driver[0]);
         }
     }
 
-        if(count($vehicles)>1){
-            $temp = $vehicles[0];
-            $vehicles[0] = $vehicles[count($vehicles)-1];
-            $vehicles[count($vehicles)-1] = $temp;
-        }
+
 
 //    echo "<pre>";
 //    print_r($vehicles);
@@ -677,6 +681,222 @@ $drivers->push($driver[0]);
             }
         }
 
+    }
+
+    public function addConsignments($id, Request $request){
+
+        $search = $request['search'] ?? "";
+
+        $totalVolume = 0;
+        $totalWeight = 0;
+
+        $dSheet = DeliverySheet::find($id);
+        if ($dSheet == null) {
+            return $this->view($request);
+        }
+
+        $deliverySheets = DB::table('delivery_sheet')->select('delivery_sheet.*', 'spv.name AS spvName', 'drv.name AS drvName', 'drv.staffCode AS staffCode', 'vehicle.vehicleCode AS vhCode', 'vehicle.make AS make', 'vehicle_type.typeName AS tpName', 'area.areaCode AS arCD', 'area.areaName AS arNM', 'area.city AS arCT')
+            ->leftJoin('staff AS drv', 'delivery_sheet.driver_id', '=', 'drv.staff_id')
+            ->leftJoin('staff AS spv', 'delivery_sheet.supervisor_id', '=', 'spv.staff_id')
+            ->leftJoin('vehicle', 'delivery_sheet.vehicle_id', '=', 'vehicle.vehicle_id')
+            ->leftJoin('vehicle_type', 'vehicle.vehicleType_id', '=', 'vehicle_type.vehicleType_id')
+            ->join('area', 'delivery_sheet.area_id', '=', 'area.area_id')
+            ->where('delivery_sheet.deliverySheet_id', '=', "$id")->get();
+
+        $deliverySheet = $deliverySheets[0];
+//        echo "<pre>";
+//        print_r($deliverySheet->toArray());
+
+
+
+if($deliverySheet->tpName == "Bike") {
+    if ($search != "") {
+
+        $consignments = DB::table('consignment')->select('consignment.*')
+            ->orderBy('created_at')->where('area_id', $deliverySheet->area_id)
+            ->where('deliverySheet_id', '=', null)
+            ->where('consWeight', '<=', 2)
+            ->where(function ($query) use ($search) {
+                $query->where('consCode', 'LIKE', "%$search%")->orwhere('consWeight', 'LIKE', "%$search%")
+                    ->orwhere('consVolume', 'LIKE', "%$search%")->orwhere('toAddress', 'LIKE', "%$search%")
+
+                    ->orwhere('consType', 'LIKE', "%$search%");
+            })->orderBy('consignment.consVolume')
+            ->paginate(20);
+
+
+        //->orwhere('canDrive','LIKE', "%$search%")
+
+    } else {
+        $consignments = DB::table('consignment')->select('consignment.*')
+            ->orderBy('created_at')->where('area_id', $deliverySheet->area_id)
+            ->where('deliverySheet_id', '=', null)
+            ->where('consWeight', '<=', 2)->orderBy('consignment.consVolume')->paginate(20);
+    }
+}else {
+
+    if ($search != "") {
+
+        $consignments = DB::table('consignment')->select('consignment.*')
+            ->orderBy('created_at')->where('area_id', $deliverySheet->area_id)
+            ->where('deliverySheet_id', '=', null)
+            ->where('consWeight', '>', 2)
+            ->where(function ($query) use ($search) {
+                $query->where('consCode', 'LIKE', "%$search%")->orwhere('consWeight', 'LIKE', "%$search%")
+                    ->orwhere('consVolume', 'LIKE', "%$search%")->orwhere('toAddress', 'LIKE', "%$search%")
+
+                    ->orwhere('consType', 'LIKE', "%$search%");
+            })->orderBy('consignment.consVolume')->paginate(20);
+
+
+        //->orwhere('canDrive','LIKE', "%$search%")
+
+    } else {
+        $consignments = DB::table('consignment')->select('consignment.*')
+            ->orderBy('created_at')->where('area_id', $deliverySheet->area_id)
+            ->where('deliverySheet_id', '=', null)
+            ->where('consWeight', '>', 2)->orderBy('consignment.consVolume')->paginate(20);
+    }
+
+}
+//        echo "<pre>";
+//        print_r($consignments->toArray());
+
+        $deliverySheetCons = Consignment::select('consignment.*')
+            ->where('deliverySheet_id', '=', "$id")->get();
+
+        foreach ($deliverySheetCons as $cons){
+//            echo $cons->consWeight;
+
+            $totalWeight += $cons->getWeight();
+            $totalVolume += $cons->getVolume();
+        }
+
+
+
+        if(isset($deliverySheet->driver_id)){
+            $driver = DB::table('staff')->select('staff.staff_id','staff.staffCode','staff.name')->where('staff.staff_id', $deliverySheet->driver_id)->get();
+
+            $drivers = DB::table('staff')->select('staff.staff_id','staff.staffCode','staff.name')->where('staff.staff_id', '!=', $deliverySheet->driver_id)
+                ->leftJoin('driver', 'staff.staff_id', '=', 'driver.staff_id')->where('driver.canDrive', 'LIKE', "%$deliverySheet->tpName%")->where('driver.status', '=', 'Unassigned')
+                ->get();
+
+//            ->orwhere('driver.canDrive','LIKE', "%$deliverySheet->tpName%")->get();
+
+            $drivers->prepend($driver[0]);
+//echo $deliverySheet->tpName;
+//echo "<br>";
+//echo "<pre>";
+//print_r($drivers1);
+//die;
+        }else{
+            $drivers = DB::table('staff')->select('staff.staff_id','staff.staffCode','staff.name')
+                ->leftJoin('driver', 'staff.staff_id', '=', 'driver.staff_id')->where('driver.canDrive', 'LIKE', "%$deliverySheet->tpName%")->where('driver.status', '=', 'Unassigned')
+                ->get();
+
+
+//            echo $deliverySheet->tpName;
+//            echo "<br>";
+//            echo "<pre>";
+//            print_r($drivers1);
+//            die;
+        }
+
+
+
+
+        if(isset($deliverySheet->vehicle_id)){
+            //Query to fetch the assignedTo from the Vehicle assignment table along with the other vehicle's details
+            $vehicles1 = DB::table('vehicle')->select('vehicle.vehicle_id', 'vehicle.vehicleCode', 'vehicle.make', 'vehicle_type.typeName', 'vehicle_type.volumeCap', 'vehicle_type.weightCap', 'vehicle_assignment.assignedTo')->where('status', 'Idle')->where('dsAssigned', '=', '1')->where('vehicle.vehicle_id', $deliverySheet->vehicle_id)
+                ->leftJoin('vehicle_assignment', function ($join) {
+                    $join->on('vehicle.vehicle_id', '=', 'vehicle_assignment.vehicle_id');
+
+                })->orderBy('vehicle_type.volumeCap')
+                ->join('vehicle_type', function ($join) use ($deliverySheet) {
+                    $join->on('vehicle.vehicleType_id', '=', 'vehicle_type.vehicleType_id')->where('vehicle_type.typeName', $deliverySheet->tpName);
+
+                })->get();
+
+
+            $vehicles = DB::table('vehicle')->select('vehicle.vehicle_id', 'vehicle.vehicleCode', 'vehicle.make', 'vehicle_type.typeName', 'vehicle_type.volumeCap', 'vehicle_type.weightCap', 'vehicle_assignment.assignedTo')->where('status', 'Idle')->where('dsAssigned', '=', '0')
+                ->leftJoin('vehicle_assignment', function ($join) {
+                    $join->on('vehicle.vehicle_id', '=', 'vehicle_assignment.vehicle_id');
+
+                })->orderBy('vehicle_type.volumeCap')
+                ->join('vehicle_type', function ($join) use ($deliverySheet) {
+                    $join->on('vehicle.vehicleType_id', '=', 'vehicle_type.vehicleType_id')->where('vehicle_type.typeName', $deliverySheet->tpName);
+
+                })->get();
+            $vehicles->prepend($vehicles1[0]);
+//echo "<pre>";
+//
+//        print_r($vehicles);
+//        die;
+
+        }else {
+
+            if ($deliverySheet->tpName != "Bike") {
+
+                //Query to fetch the assignedTo from the Vehicle assignment table along with the other vehicle's details
+                $vehicles = DB::table('vehicle')->select('vehicle.vehicle_id', 'vehicle.vehicleCode', 'vehicle.make', 'vehicle_type.typeName', 'vehicle_type.volumeCap', 'vehicle_type.weightCap', 'vehicle_assignment.assignedTo')->where('status', 'Idle')->where('dsAssigned', '=', '0')
+                    ->leftJoin('vehicle_assignment', function ($join) {
+                        $join->on('vehicle.vehicle_id', '=', 'vehicle_assignment.vehicle_id');
+
+                    })->orderBy('vehicle_type.volumeCap')
+                    ->join('vehicle_type', function ($join) {
+                        $join->on('vehicle.vehicleType_id', '=', 'vehicle_type.vehicleType_id')->where('typeName', '!=', 'Bike');
+
+                    })->get();
+            } else {
+
+                $vehicles = DB::table('vehicle')->select('vehicle.vehicle_id', 'vehicle.vehicleCode', 'vehicle.make', 'vehicle_type.typeName', 'vehicle_type.volumeCap', 'vehicle_type.weightCap', 'vehicle_assignment.assignedTo')->where('status', 'Idle')->where('dsAssigned', '=', '0')
+                    ->leftJoin('vehicle_assignment', function ($join) {
+                        $join->on('vehicle.vehicle_id', '=', 'vehicle_assignment.vehicle_id');
+
+                    })->orderBy('vehicle_type.volumeCap')
+                    ->join('vehicle_type', function ($join) {
+                        $join->on('vehicle.vehicleType_id', '=', 'vehicle_type.vehicleType_id')->where('typeName', '=', 'Bike');
+
+                    })
+                    ->get();
+            }
+        }
+
+
+
+//    echo "<pre>";
+//    print_r($vehicles);
+//    die;
+
+        $data = compact('deliverySheet', 'consignments', 'search', 'totalWeight', 'totalVolume', 'vehicles','drivers');
+
+        return view('/frontend/addConsignments')->with($data);
+    }
+
+
+    public function addConsignmentsToDeliverySheet(Request $request){
+
+        $arr = json_decode($request->str);
+
+
+
+        for($i=1; $i<count($arr); $i++){
+            $cons = Consignment::find($arr[$i]);
+            $cons->deliverySheet_id = $arr[0];
+
+            $cons->save();
+        }
+
+
+        $ds = DeliverySheet::find($arr[0]);
+$ds->noOfCons = $ds->noOfCons + count($arr)-1;
+$ds->save();
+
+
+        return response()->json([
+            'status' => 200,
+'str' => count($arr),
+        ]);
     }
 
 

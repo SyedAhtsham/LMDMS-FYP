@@ -27,7 +27,8 @@
 
         body {
             font-family: "Lato", sans-serif;
-
+background-color: rgba(53, 54, 58, 1);
+            color: white;
         }
 
         .required{
@@ -53,7 +54,8 @@
             z-index: 1;
             top: 0;
             left: 0;
-            background-color: rgb(0, 73, 114);
+            /*background-color: rgb(0, 73, 114);*/
+            background-color: #1e2125;
             overflow-x: hidden;
             padding-top: 20px;
             padding-left: 10px;
@@ -138,6 +140,14 @@
             padding-right: 8px;
 
         }
+
+        #addConsignmentShort{
+            display: none;
+        }
+
+        #checkoutShort{
+            display: none;
+        }
         /*.nav-link{*/
         /*    font-weight: bold;*/
         /*}*/
@@ -145,7 +155,29 @@
         @media screen and (max-height: 450px) {
             .sidenav {padding-top: 15px;}
             .sidenav a {font-size: 18px;}
+
+
         }
+
+        @media (max-width: 1400px) {
+            #addConsignmentShort {
+                display: block;
+                margin-right: 0;
+
+            }
+            #addConsignmentLong{
+                display: none;
+            }
+            #checkoutLong{
+                display: none;
+
+            }
+            #checkoutShort{
+                display: block;
+                margin-left: 0;
+            }
+        }
+
     </style>
 {{--    <script src="https://kit.fontawesome.com/58bf3a6361.js" crossorigin="anonymous"></script>--}}
     <script src="https://kit.fontawesome.com/5c83a52b0b.js" crossorigin="anonymous"></script>

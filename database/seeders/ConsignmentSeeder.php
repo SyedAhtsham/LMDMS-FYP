@@ -27,11 +27,11 @@ class ConsignmentSeeder extends Seeder
 //        }
 
 
-        for($i=1; $i<=4; $i++) {
+        for($i=1; $i<=50; $i++) {
             $consignment = new Consignment;
             $consignment->consCode = "";
             $consignment->area_id = 4;
-            $consignment->consWeight = 1;
+            $consignment->consWeight = 4;
             $consignment->consVolume = $faker->randomNumber(2);
             $consignment->toAddress = $faker->address();
             $consignment->fromAddress = $faker->address();

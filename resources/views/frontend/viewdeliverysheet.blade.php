@@ -229,7 +229,7 @@
                 <td class="pl-5"> </td>
                 <td> </td>
                 <td><b>Area: </b></td>
-                <td  class="p-lg-3">{{$deliverySheet->arNM}}</td>
+                <td  class="p-lg-3">{{$deliverySheet->arNM}} ({{$deliverySheet->arCD}})</td>
                 <td class="pl-5">  </td>
                 <td> </td>
 
@@ -260,22 +260,42 @@
                     </a>
                 </div>
 
-                <div class="col-2 ml-4">
+                <div id="addConsignmentLong" class="col-2">
+                    <a href="{{url('/frontend/add-consignments/'.$deliverySheet->deliverySheet_id)}}">
+                <button type="button" style=""
+                        class="btn btn-secondary" id="" value=""> <i class="fa fa-add"></i> Add Consignments
+                </button>
+
+                    </a>
+                </div>
+
+                <div id="addConsignmentShort" class="col-2" style="">
+                    <a href="{{url('/frontend/add-consignments/'.$deliverySheet->deliverySheet_id)}}">
+                        <button type="button" style="" title="Add Consignments"
+                                class="btn btn-secondary" id="" value=""> <i class="fa fa-add"></i>
+                        </button>
+                    </a>
+                </div>
+
+
+                <div class="col-2 ">
                     <form action="">
 
                         @php
                             if($deliverySheet->status == 'un-checked-out'){
 
                         @endphp
-                        <button type="submit" style=""
+                        <button id="checkoutLong" type="submit" style=""
                                 class="btn btn-success btnCheckout" id="checkoutBtn" value={{$deliverySheet->deliverySheet_id}}> <i class="fa fa-check"></i> Check-out
+                        </button>
+
+                        <button id="checkoutShort" type="submit" style=""
+                                class="btn btn-success btnCheckout" id="checkoutBtn" title="Checkout" value={{$deliverySheet->deliverySheet_id}}> <i class="fa fa-check"></i>
                         </button>
                         @php
                             }
                             else{
                         @endphp
-
-
 
                                 @php
                                     $createdAt = strtotime(\Carbon\Carbon::parse($deliverySheet->checkOutTime));
@@ -307,71 +327,16 @@
 
                 </div>
 
+
             </form>
 
 
         </div>
 
-{{--        <br>--}}
-{{--        <div>--}}
-{{--            <ul class="nav nav-tabs" id="myTab" role="tablist">--}}
-{{--                <li class="nav-item">--}}
-{{--                    <form id="myForm0" action="">--}}
-{{--                        <input type="hidden" name="search" value="">--}}
-{{--                        @if(isset($search) && $search!="checked-out" && $search!="un-checked-out" || $search=="")--}}
-{{--                            <a class="nav-link active" id="alink0" data-toggle="tab" href="" onclick="submitFormFun0()" role="tab" aria-controls="profile" aria-selected="false">All</a>--}}
-{{--                        @else--}}
-{{--                            <a class="nav-link" id="alink0" data-toggle="tab" href="" onclick="submitFormFun0()" role="tab" aria-controls="profile" aria-selected="false">All</a>--}}
-{{--                        @endif--}}
-{{--                    </form>--}}
-{{--                </li>--}}
-{{--                <li class="nav-item">--}}
-{{--                    <form id="myForm1" action="">--}}
-{{--                        <input type="hidden" name="search" value="checked-out">--}}
-{{--                        @if(isset($search) && $search=="checked-out")--}}
-{{--                            <a class="nav-link active" id="alink2" data-toggle="tab" href="" onclick="submitFormFun1()" role="tab" aria-controls="profile" aria-selected="false">Checked out</a>--}}
-{{--                        @else--}}
-{{--                            <a class="nav-link" id="alink2" data-toggle="tab" href="" onclick="submitFormFun1()" role="tab" aria-controls="profile" aria-selected="false">Checked out</a>--}}
-{{--                        @endif--}}
-{{--                    </form>--}}
-{{--                </li>--}}
-{{--                <li class="nav-item">--}}
-{{--                    <form id="myForm2" action="">--}}
-{{--                        <input type="hidden" name="search" value="un-checked-out">--}}
-{{--                        @if(isset($search) && $search=="un-checked-out")--}}
-{{--                            <a class="nav-link active" id="alink3" data-toggle="tab" href="" onclick="submitFormFun2()" role="tab" aria-controls="contact" aria-selected="false">Un-checked out</a>--}}
-{{--                        @else--}}
-{{--                            <a class="nav-link" id="alink3" data-toggle="tab" href="" onclick="submitFormFun2()" role="tab" aria-controls="contact" aria-selected="false">Un-checked out</a>--}}
-{{--                        @endif--}}
-{{--                    </form>--}}
-{{--                </li>--}}
-{{--                <div>--}}
-{{--                </div>--}}
-{{--                <div class="ml-5">--}}
-{{--                    <form action="" class="col-15 d-flex">--}}
-{{--                        <div class="form-group col-10">--}}
-{{--                            <input type="search" name="search" id="" class="form-control" value="{{($search=="checked-out" || $search=="un-checked-out") ? "" : $search}}" placeholder="Search by sheet id, driver id, vehicle id, area code..">--}}
-{{--                        </div>--}}
-{{--                        <div class="">--}}
-{{--                            <button type="submit" style="width: 8em;  background-color: rgb(0, 74, 111);"--}}
-{{--                                    class="btn btn-primary">Search--}}
-{{--                            </button>--}}
-{{--                        </div>--}}
-
-{{--                        <div class="col-2">--}}
-{{--                            <a href="{{url('/frontend/view-deliverysheets')}}">--}}
-{{--                                <button type="button" style="width: 8em;"--}}
-{{--                                        class="btn btn-light">Reset--}}
-{{--                                </button>--}}
-{{--                            </a>--}}
-{{--                        </div>--}}
-{{--                    </form>--}}
-{{--                </div>--}}
-{{--                </li>--}}
-{{--            </ul>--}}
 
 
-            <table  class="table table-sm table-striped" >
+
+            <table  class="table table-sm table-striped table-dark" >
                 <thead class="p-5" style="color:white; background-color: rgb(0, 73, 114);">
                 <tr>
 
@@ -661,10 +626,16 @@ select.disabled = '';
     let size = <?php echo $size; ?>;
 
     if(vehicleID1 == "" || driverID1 == "" || size === 0){
-        document.getElementById('checkoutBtn').disabled = "true";
+        document.getElementsByClassName('btnCheckout')[0].disabled = "true";
+        document.getElementsByClassName('btnCheckout')[1].disabled = "true";
     }else{
-        document.getElementById('checkoutBtn').disabled = ""
+        document.getElementsByClassName('btnCheckout')[0].disabled = "";
+        document.getElementsByClassName('btnCheckout')[1].disabled = "";
     }
+
+    let inputVehicle = document.getElementById("inputVehicle");
+    let alreadySelected = inputVehicle.value;
+
 
     $(document).ready(function () {
 
@@ -677,9 +648,10 @@ select.disabled = '';
 
             let inputDriver = document.getElementById("inputDriver");
             let vehicleID = inputVehicle.value;
-if(vehicleID !== "") {
+if(vehicleID !== "" && alreadySelected !== vehicleID) {
+    alreadySelected = vehicleID;
     let vehicleSelect = document.getElementById('inputVehicle');
-    vehicleSelect[0].remove();
+    // vehicleSelect[0].remove();
     let driverID = inputDriver.value;
 
     let str = vehicleID + "," + driverID + "," + dsID;
@@ -721,9 +693,13 @@ if(vehicleID !== "") {
 
     });
 
+
+    let inputDriver = document.getElementById("inputDriver");
+    let alreadySelectedDriver = inputDriver.value;
+
     $(document).ready(function () {
 
-        //editBtn002 is save button of vehicleField
+        //editBtn002 is save button of driverField
         $(document).on('click', '#saveBtnID', function () {
 
             let dsID = document.getElementById("dsID").value;
@@ -732,10 +708,10 @@ if(vehicleID !== "") {
             let inputDriver = document.getElementById("inputDriver");
             let vehicleID = inputVehicle.value;
             let driverID = inputDriver.value;
-            if(driverID != "") {
-
+            if(driverID != "" && alreadySelectedDriver!== driverID) {
+                alreadySelectedDriver = driverID;
                 let driverSelect = document.getElementById('inputDriver');
-                driverSelect[0].remove();
+                // driverSelect[0].remove();
                 let str = vehicleID + "," + driverID + "," + dsID;
                 $.ajax(
                     {
