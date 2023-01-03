@@ -704,6 +704,9 @@ $drivers->prepend($driver[0]);
             ->where('delivery_sheet.deliverySheet_id', '=', "$id")->get();
 
         $deliverySheet = $deliverySheets[0];
+
+        $vehicleType = strval($deliverySheet->tpName);
+
 //        echo "<pre>";
 //        print_r($deliverySheet->toArray());
 
@@ -868,7 +871,7 @@ if($deliverySheet->tpName == "Bike") {
 //    print_r($vehicles);
 //    die;
 
-        $data = compact('deliverySheet', 'consignments', 'search', 'totalWeight', 'totalVolume', 'vehicles','drivers');
+        $data = compact('deliverySheet', 'consignments', 'search', 'totalWeight', 'totalVolume', 'vehicles','drivers', 'vehicleType');
 
         return view('/frontend/addConsignments')->with($data);
     }

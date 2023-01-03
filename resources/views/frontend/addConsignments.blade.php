@@ -1,6 +1,8 @@
 @extends('frontend.layouts.main')
 @section('main-container')
 
+
+
     <!-- Modal -->
     <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -72,11 +74,16 @@
     </div>
 
 
+
+
     <div class="main pt-5" style="margin-right: 2em;">
 
         <input id="dsID" value="{{$deliverySheet->deliverySheet_id}}" hidden>
         <h4>Delivery Sheet: <label
                 style="font-weight: bolder; font-size: 20px;"> {{$deliverySheet->deliverySheetCode}}</label></h4>
+
+
+
         <?php
 
         if ($deliverySheet->vhCode == "") {
@@ -119,6 +126,7 @@
                                             echo "<option value='$vehicle->vehicle_id' selected>" . $vehicle->vehicleCode . ", " . $vehicle->make . " " . $vehicle->typeName . " (" . $vehicle->weightCap . "kg, " . $vehicle->volumeCap . "m3)</option>";
                                             $weightCap = $vehicle->weightCap;
                                             $volumeCap = $vehicle->volumeCap;
+
                                         } else {
 
                                             echo "<option value='$vehicle->vehicle_id'>" . $vehicle->vehicleCode . ", " . $vehicle->make . " " . $vehicle->typeName . " (" . $vehicle->weightCap . "kg, " . $vehicle->volumeCap . "m3)</option>";
@@ -199,6 +207,7 @@
 
 
             </tr>
+
             <tr>
                 <td><b>Date: </b></td>
                 <td class="p-lg-3">{{$deliverySheet->created_at}}</td>
@@ -238,13 +247,13 @@
                 </div>
 
                 <div id="" class="col-2">
-                    <a href="{{url('/frontend/add-consignments/'.$deliverySheet->deliverySheet_id)}}">
+{{--                    <a href="{{url('/frontend/add-consignments/'.$deliverySheet->deliverySheet_id)}}">--}}
                         <button type="button" style=""
                                 class="btn btn-success btnCheckout" id="addToDS" value=""><i class="fa fa-add"></i> Add to Delivery
                             Sheet
                         </button>
 
-                    </a>
+{{--                    </a>--}}
                 </div>
 
 
@@ -272,11 +281,12 @@
                 {{--            <th>CNIC</th>--}}
 
                 <th style="width: 70px; text-align: center">
-                    <div class="form-check">
-                        <input class="form-check-input" title="Select All" style="height: 18px; width: 18px;"
-                               type="checkbox" value="" id="selectAll">
-                        {{--Action--}}
-                    </div>
+                    Action
+{{--                    <div class="form-check">--}}
+{{--                        <input class="form-check-input" title="Select All" style="height: 18px; width: 18px;"--}}
+{{--                               type="checkbox" value="" id="selectAll">--}}
+{{--                        --}}{{--Action--}}
+{{--                    </div>--}}
                 </th>
             </tr>
             </thead>
@@ -647,17 +657,19 @@
         let weightCap = <?php echo $weightCap; ?>;
         let volumeCap = <?php echo $volumeCap; ?>;
 
+        let vehicleType = <?php echo json_encode($vehicleType); ?>;
+
+
+        let noOfCons = <?php echo $deliverySheet->noOfCons; ?>;
+        let tempCons = noOfCons;
+
 
         let selectAll = document.getElementById('selectAll');
 
         for (let i = 0; i < allCheckboxes.length; i++) {
             allCheckboxes[i].addEventListener('change', function () {
 
-                if (document.querySelectorAll('input[type=checkbox]:checked').length < 1) {
-                    document.getElementById('addToDS').disabled = "true";
-                } else {
-                    document.getElementById('addToDS').disabled = "";
-                }
+
 
                 if (allCheckboxes[i].checked == true) {
 
@@ -665,14 +677,34 @@
                     weight += parseInt(document.getElementById(allCheckboxes[i].value).children[4].children[0].innerText);
                     volume += parseInt(document.getElementById(allCheckboxes[i].value).children[5].children[0].innerText);
 
-                    if(weight > weightCap-360 || volume > volumeCap-200){
-                        weight -= parseInt(document.getElementById(allCheckboxes[i].value).children[4].children[0].innerText);
-                        volume -= parseInt(document.getElementById(allCheckboxes[i].value).children[5].children[0].innerText);
 
-                        alert("Weight or Volume can not Exceed the Vehicle Capacity!");
-                        allCheckboxes[i].checked = false;
+                    if(vehicleType != "Bike") {
+                        if (weight > weightCap - 360 || volume > volumeCap - 200) {
+                            weight -= parseInt(document.getElementById(allCheckboxes[i].value).children[4].children[0].innerText);
+                            volume -= parseInt(document.getElementById(allCheckboxes[i].value).children[5].children[0].innerText);
+
+                            alert("Weight or Volume can not Exceed the Vehicle Capacity!");
+                            allCheckboxes[i].checked = false;
+                        }
+                    }else{
+
+                        tempCons++;
+                        if(tempCons > 40){
+                            weight -= parseInt(document.getElementById(allCheckboxes[i].value).children[4].children[0].innerText);
+                            volume -= parseInt(document.getElementById(allCheckboxes[i].value).children[5].children[0].innerText);
+tempCons--;
+                            alert("Number of consignments can't exceed 40 for a Bike!");
+                            allCheckboxes[i].checked = false;
+                        }
+
                     }
 
+
+                    if (document.querySelectorAll('input[type=checkbox]:checked').length < 1) {
+                        document.getElementById('addToDS').disabled = "true";
+                    } else {
+                        document.getElementById('addToDS').disabled = "";
+                    }
 
                     selectedConsignments.push(allCheckboxes[i].value);
                     // weight +=;
@@ -682,12 +714,21 @@
 // console.log(allCheckboxes[i].value);
                 } else {
 
+
+                    if (document.querySelectorAll('input[type=checkbox]:checked').length < 1) {
+                        document.getElementById('addToDS').disabled = "true";
+                    } else {
+                        document.getElementById('addToDS').disabled = "";
+                    }
+
+
                     weight -= parseInt(document.getElementById(allCheckboxes[i].value).children[4].children[0].innerText);
                     volume -= parseInt(document.getElementById(allCheckboxes[i].value).children[5].children[0].innerText);
                     // weight +=;
                     document.getElementById('weight').innerHTML = weight;
                     document.getElementById('volume').innerHTML = volume;
 
+                    tempCons--;
                     const index = selectedConsignments.indexOf(allCheckboxes[i].value);
                     selectAll.checked = false;
                     sessionStorage.setItem('selectAllFlag', "false");
@@ -695,7 +736,10 @@
                         selectedConsignments.splice(index, 1);
                     }
 
+
+
                 }
+
                 let checkedItems = document.querySelectorAll('input[type=checkbox]:checked');
                 selectedConsignments = [];
                 for (let i = 0; i < checkedItems.length; i++) {
@@ -714,6 +758,8 @@
                 for (let k = 0; k < selectedConsignments.length; k++) {
                     existingIDs.push(selectedConsignments[k]);
                 }
+
+
                 sessionStorage.setItem('selectedCons', JSON.stringify(existingIDs));
             });
         }
@@ -734,6 +780,7 @@ volume = consVolume;
                     volume += parseInt(document.getElementById(allCheckboxes[i].value).children[5].children[0].innerText);
                     // weight +=;
 
+                    if(vehicleType != "Bike"){
                     if(weight > weightCap-360 || volume > volumeCap-200){
                         weight -= parseInt(document.getElementById(allCheckboxes[i].value).children[4].children[0].innerText);
                         volume -= parseInt(document.getElementById(allCheckboxes[i].value).children[5].children[0].innerText);
@@ -742,6 +789,17 @@ volume = consVolume;
                         allCheckboxes[i].checked = false;
                         break;
                     }
+                }else{
+                    tempCons++;
+                    if(tempCons > 40){
+                        weight -= parseInt(document.getElementById(allCheckboxes[i].value).children[4].children[0].innerText);
+                        volume -= parseInt(document.getElementById(allCheckboxes[i].value).children[5].children[0].innerText);
+                        tempCons--;
+                        // alert("Number of consignments can't exceed 40 for a Bike!");
+                        allCheckboxes[i].checked = false;
+                    }
+
+                }
 
                     document.getElementById('weight').innerHTML = weight;
                     document.getElementById('volume').innerHTML = volume;
@@ -768,7 +826,7 @@ volume = consVolume;
                 volume = consVolume;
                 document.getElementById('weight').innerHTML = weight;
                 document.getElementById('volume').innerHTML = volume;
-
+tempCons = noOfCons;
 
                 let checkedItems = document.querySelectorAll('input[type=checkbox]:checked');
                 selectedConsignments = [];
