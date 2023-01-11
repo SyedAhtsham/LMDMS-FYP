@@ -14,6 +14,7 @@ use App\Models\VehicleAssignment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use RealRashid\SweetAlert\Facades\Alert;
+use RealRashid\SweetAlert\SweetAlertServiceProvider;
 use function Sodium\compare;
 
 
@@ -31,6 +32,8 @@ class VehicleController extends Controller
             $count += 1;
             array_push($this->words,trim($line, " \t\n\r\0\x0B"));
         }
+
+        parent::__construct(); //This constructor is called and now the sweet alert is working fine
     }
 
     public function create()
@@ -260,34 +263,34 @@ $search = trim($search, " \t\n\r\0\x0B");
 
     public function update($id, Request $request){
 
-        date_default_timezone_set("Asia/Karachi");
-
-        $line = '';
-        $f = fopen("logFile.txt", "r") or die("Unable to open file!");
-
-        $cursor = -1;
-        fseek($f, $cursor, SEEK_END);
-        $char = fgetc($f);
-//Trim trailing newline characters in the file
-        while ($char === "
-" || $char === "\r") {
-            fseek($f, $cursor--, SEEK_END);
-            $char = fgetc($f);
-        }
-//Read until the next line of the file begins or the first newline char
-        while ($char !== false && $char !== "
-" && $char !== "\r") {
-            //Prepend the new character
-            $line = $char . $line;
-            fseek($f, $cursor--, SEEK_END);
-            $char = fgetc($f);
-        }
-
-        $line = substr($line, 0, -1);
-        $lineNumber = (int) $line;
-        fclose($f);
-
-        $f = fopen("logFile.txt", "a") or die("Unable to open file!");
+//        date_default_timezone_set("Asia/Karachi");
+//
+//        $line = '';
+//        $f = fopen("logFile.txt", "r") or die("Unable to open file!");
+//
+//        $cursor = -1;
+//        fseek($f, $cursor, SEEK_END);
+//        $char = fgetc($f);
+////Trim trailing newline characters in the file
+//        while ($char === "
+//" || $char === "\r") {
+//            fseek($f, $cursor--, SEEK_END);
+//            $char = fgetc($f);
+//        }
+////Read until the next line of the file begins or the first newline char
+//        while ($char !== false && $char !== "
+//" && $char !== "\r") {
+//            //Prepend the new character
+//            $line = $char . $line;
+//            fseek($f, $cursor--, SEEK_END);
+//            $char = fgetc($f);
+//        }
+//
+//        $line = substr($line, 0, -1);
+//        $lineNumber = (int) $line;
+//        fclose($f);
+//
+//        $f = fopen("logFile.txt", "a") or die("Unable to open file!");
 
         $request->validate(
             [
@@ -305,13 +308,14 @@ $search = trim($search, " \t\n\r\0\x0B");
         );
 
         $vehicle = Vehicle::with(['getContVehicle', 'getCompVehicle', 'getVehicleType'])->find($id);
-        $previousVehicleCode = $vehicle->vehicleCode;
+//        $previousVehicleCode = $vehicle->vehicleCode;
 
+        print
         $vehicle->vehicleCode = "";
-        if(strcmp($vehicle->plateNo, $request['plateNo']) != 0){
-            $newLogEntry = " vehicle plateNo varchar(12) " . date_format(date_create(), 'd/m/Y H:i:s') . " " . $vehicle->plateNo . " \n" . ++$lineNumber;
-            fwrite($f, $newLogEntry);
-        }
+//        if(strcmp($vehicle->plateNo, $request['plateNo']) != 0){
+//            $newLogEntry = " vehicle plateNo varchar(12) " . date_format(date_create(), 'd/m/Y H:i:s') . " " . $vehicle->plateNo . " \n" . ++$lineNumber;
+//            fwrite($f, $newLogEntry);
+//        }
         $vehicle->plateNo = $request['plateNo'];
 
 
@@ -323,19 +327,19 @@ $search = trim($search, " \t\n\r\0\x0B");
 
         $vehicle->vehicleType_id = $request['vehicleType'];
 
-        $uniqueVehicleCode = 'VH-';
+        $uniqueVehicleCode = 'VH';
 
         if ($request['ownership'] == 'Company Owned') {
-            $uniqueVehicleCode .= 'P' .$id;
+            $uniqueVehicleCode .= 'P-' .$id;
         } elseif ($request['ownership'] == 'Contractual Vehicle') {
-            $uniqueVehicleCode .= 'R' .$id;
+            $uniqueVehicleCode .= 'R-' .$id;
         }
 
-        if(strcmp($uniqueVehicleCode, $previousVehicleCode) != 0) {
-            $newLogEntry = " vehicle vehicleCode varchar(10) " . date_format(date_create(), 'd/m/Y H:i:s') . " " . $previousVehicleCode . " \n" .++$lineNumber;
-            fwrite($f, $newLogEntry);
-
-        }
+//        if(strcmp($uniqueVehicleCode, $previousVehicleCode) != 0) {
+//            $newLogEntry = " vehicle vehicleCode varchar(10) " . date_format(date_create(), 'd/m/Y H:i:s') . " " . $previousVehicleCode . " \n" .++$lineNumber;
+//            fwrite($f, $newLogEntry);
+//
+//        }
 
         $vehicle->vehicleCode = $uniqueVehicleCode;
 
@@ -369,7 +373,7 @@ $search = trim($search, " \t\n\r\0\x0B");
             $contVehicle->dateOfContract = $request['dop'];
             $contVehicle->save();
         }
-        fclose($f);
+//        fclose($f);
         return redirect('/frontend/view-vehicle')->withSuccessMessage('Successfully updated');
 
     }
@@ -388,6 +392,7 @@ $search = trim($search, " \t\n\r\0\x0B");
     }
 
     public function addVehicleAssignment(Request $request){
+
         $vehicleId = $request['vehicleId'];
         $driverId = $request['driver'];
         $driver = Driver::find($driverId);

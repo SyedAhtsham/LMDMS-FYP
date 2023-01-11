@@ -92,7 +92,7 @@
 
                     <label for="inputGender">Gender <span class="required">*</span></label>
                     <div class="d-flex">
-                        <input type="radio" name="gender" checked id="inputGender" value="Male"
+                        <input type="radio" style="" name="gender" checked id="inputMale" value="Male"
 
                         @if(isset($staff->gender))
                             {{$staff->gender == "Male" ? "checked" : ""}}
@@ -102,22 +102,22 @@
 
                             @endif
                         >
-                        <label style="padding-left: 5px; padding-right: 12px; padding-top: 10px;">Male</label>
-                        <input type="radio" name="gender" id="inputGender" value="Female"
+                        <label id="male" style="padding-left: 5px; padding-right: 12px; padding-top: 10px;">Male</label>
+                        <input type="radio" name="gender" id="inputFemale" value="Female"
                         @if(isset($staff->gender))
                             {{$staff->gender == "Female" ? "checked" : ""}}
                             @else
                             {{old('gender') == "Female" ? "checked" : ""}}
                             @endif
-                        > <label
+                        > <label id="female"
                             style="padding-left: 5px; padding-right: 12px; padding-top: 10px;">Female</label>
-                        <input type="radio" name="gender" id="inputGender" value="Other"
+                        <input type="radio" name="gender" id="inputOther" value="Other"
                         @if(isset($staff->gender))
                             {{$staff->gender == "Other" ? "checked" : ""}}
                             @else
                             {{old('gender') == "Other" ? "checked" : ""}}
                             @endif
-                        > <label
+                        > <label id="other"
                             style="padding-left: 5px; padding-right: 12px; padding-top: 10px;">Other</label>
                     </div>
                     <span class="text-danger">
@@ -193,7 +193,7 @@
 
                  if(old('canDrive[]') !== null)
                     {
-                        echo "Shah";
+//                        echo "Shah";
                         $oldCanDrive[] = old('canDrive[]');
                     }
 
@@ -220,21 +220,21 @@
                     <div class="form-group col-md-4 pr-5">
                         <label for="inputYearsExperience0">Years Experience</label>
 
-                        <input type="number" name="yearsExperience" class="form-control" id="inputYearsExperience0"
+                        <input type="number" name="yearsExperience" min="0" max="40" class="form-control" id="inputYearsExperience0"
                                value="{{$staff->getDriver->yearsExp ?? old('yearsExperience')}}" placeholder="e.g., 1">
                     </div>
                     <div class="form-group col-4 pr-5">
                         <label for="inputCanDrive0">Can Drive <span class="required">*</span></label>
-                        <select id="inputCanDrive0" name="canDrive[]" multiple class="form-control selectpicker">
+                        <select id="inputCanDrive0" name="canDrive[]" required multiple class="form-control selectpicker">
 
                             @foreach($vehicleTypes as $vT)
                                 <option value={{$vT->typeName}}
 
-
                                 @if(isset($staff->getDriver->canDrive))
-                                    {{in_array($vT->typeName, $canDriveArr) ? "selected" : ""}}
+                                    {{in_array($vT->typeName, $canDriveArr) ? "selected" : "" }}
                                     @else
                                     {{--                                            {{$oldCanDrive.contains($vT->vehicleType_id)  ? "selected" : ""}}--}}
+                                        {{ (collect(old('canDrive'))->contains($vT->typeName)) ? 'selected':'' }}
 
                                     @endif
 
@@ -249,6 +249,8 @@
                             @enderror
                 </span>
                     </div>
+
+                    <label id="canDriveError" style="visibility: hidden; color: red;">This field is required</label>
 
                 </div>
 
@@ -272,7 +274,7 @@
                         </div>
                         <div class="form-group col-md-4 pr-5">
                             <label for="inputYearsExperience">Years Experience</label>
-                            <input type="number" name="yearsExperience" class="form-control" id="inputYearsExperience1"
+                            <input type="number" name="yearsExperience" min="0" max="40" class="form-control" id="inputYearsExperience1"
                                    value="{{$staff->getDriver->yearsExp ?? old('yearsExperience')}}"
                                    placeholder="e.g., 1">
                         </div>
@@ -319,7 +321,7 @@
                         </div>
                         <div class="form-group col-md-4 pr-5">
                             <label for="inputYearsExperience2">Years Experience</label>
-                            <input type="number" name="yearsExperience" class="form-control" id="inputYearsExperience2"
+                            <input type="number" name="yearsExperience" min="0" max="40" class="form-control" id="inputYearsExperience2"
                                    value="{{$staff->getDriver->yearsExp ?? old('yearsExperience')}}"
                                    placeholder="e.g., 1">
                         </div>
@@ -367,7 +369,7 @@
                         </div>
                         <div>
 
-                            <button type="submit"
+                            <button id="submitBtn" type="submit"
                                     style="width: 8em; margin-right: 2em;  background-color: rgb(0, 74, 111);"
                                     class="btn btn-primary">Submit
                             </button>
@@ -377,6 +379,45 @@
 
         </form>
     </div>
+
+@endsection
+
+@section('scripts')
+
+    <script>
+
+
+        // document.getElementById('submitBtn').onclick = function()
+        // {
+        //     if(document.getElementById('inputPosition').value == "Driver") {
+        //         if (document.getElementById('inputCanDrive1').value == null) {
+        //             alert("Yes");
+        //             document.getElementById('canDriveError').style.visibility = "visible";
+        //         }
+        //     }
+        //
+        // };
+
+
+
+        document.getElementById('male').onclick = function(){
+           document.getElementById('inputMale').checked = "true";
+        };
+
+        document.getElementById('female').onclick = function(){
+            document.getElementById('inputFemale').checked = "true";
+        };
+
+        document.getElementById('other').onclick = function(){
+            document.getElementById('inputOther').checked = "true";
+        };
+
+
+
+
+    </script>
+
+
 
 @endsection
 

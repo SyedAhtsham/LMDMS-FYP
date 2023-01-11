@@ -15,7 +15,10 @@ use App\Models\VehicleAssignment;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
-
+use Kreait\Laravel\Firebase\Facades\Firebase;
+use Kreait\Firebase\Factory;
+use Kreait\Firebase\ServiceAccount;
+use Kreait\Firebase\Database;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -84,14 +87,17 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 Route::get('/view', function () {
 
-    $cons = Consignment::find(4870);
-    echo "<pre>";
-    print_r($cons->toArray());
 
-    die;
-    $cons->deliverySheet_id = 864;
+//    $serviceAccount = (new Factory)->withServiceAccount(__DIR__.'/firebase_credential.json');
+//    dd($serviceAccount);
 
-    $cons->save();
+//    $stRef = app('firebase.firestore')->database()->collection('Consignments')->newDocument();
+//    $stRef->set([
+//       'consCode' => 'CN-2414',
+//       'toAddress' => '54-B QAU Colony Islamabad',
+//       'type' => 'Overnight',
+//        'weight' => 4.5
+//    ]);
 
 
     die;

@@ -670,7 +670,6 @@
             allCheckboxes[i].addEventListener('change', function () {
 
 
-
                 if (allCheckboxes[i].checked == true) {
 
 
@@ -683,7 +682,28 @@
                             weight -= parseInt(document.getElementById(allCheckboxes[i].value).children[4].children[0].innerText);
                             volume -= parseInt(document.getElementById(allCheckboxes[i].value).children[5].children[0].innerText);
 
-                            alert("Weight or Volume can not Exceed the Vehicle Capacity!");
+                            // alert("Weight or Volume can not Exceed the Vehicle Capacity!");
+
+                            swal({
+                                title: 'Error!',
+                                icon: 'error',
+                                text: 'Weight or Volume can not Exceed the Vehicle Capacity!',
+
+                                timer: 2000,
+                                buttons: false,
+                            }).then(
+                                function () {
+                                    location.reload();
+                                },
+                                // handling the promise rejection
+                                function (dismiss) {
+                                    if (dismiss === 'timer') {
+
+                                        //console.log('I was closed by the timer')
+                                    }
+                                }
+                            )
+
                             allCheckboxes[i].checked = false;
                         }
                     }else{
@@ -693,8 +713,31 @@
                             weight -= parseInt(document.getElementById(allCheckboxes[i].value).children[4].children[0].innerText);
                             volume -= parseInt(document.getElementById(allCheckboxes[i].value).children[5].children[0].innerText);
 tempCons--;
-                            alert("Number of consignments can't exceed 40 for a Bike!");
+                            // alert("Number of consignments can't exceed 40 for a Bike!");
+
+                            swal({
+                                title: 'Error!',
+                                icon: 'error',
+                                text: "Number of consignments can't exceed 40 for a Bike!",
+
+                                timer: 2000,
+                                buttons: false,
+                            }).then(
+                                function () {
+                                    location.reload();
+                                },
+                                // handling the promise rejection
+                                function (dismiss) {
+                                    if (dismiss === 'timer') {
+
+                                        //console.log('I was closed by the timer')
+                                    }
+                                }
+                            )
+
+
                             allCheckboxes[i].checked = false;
+
                         }
 
                     }

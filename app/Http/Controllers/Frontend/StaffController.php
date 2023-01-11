@@ -28,7 +28,7 @@ class StaffController extends Controller
     }
 
 
-    function randomPassword()
+    public function randomPassword()
     {
         $alphabet = 'abcdefghijklmnopqrstuvwxyz1234567890';
         $pass = array(); //remember to declare $pass as an array
@@ -53,7 +53,15 @@ class StaffController extends Controller
         if ($request['position'] == 'Driver') {
             $request->validate(
                 [
-                    'licenseNo' => 'required'
+                    'licenseNo' => 'required|unique:driver',
+                    'email' => 'required|string|email|max:255|unique:users',
+                    'name' => 'required',
+                    'contact' => 'required',
+                    'cnic' => 'required|unique:staff',
+                    'gender' => 'required',
+                    'position' => 'required',
+                    'address' => 'required',
+
                 ]
             );
         }
@@ -63,7 +71,7 @@ class StaffController extends Controller
                 'email' => 'required|string|email|max:255|unique:users',
                 'name' => 'required',
                 'contact' => 'required',
-                'cnic' => 'required',
+                'cnic' => 'required|unique:staff',
                 'gender' => 'required',
                 'position' => 'required',
                 'address' => 'required',
@@ -93,7 +101,7 @@ class StaffController extends Controller
 
         $staff1 = Staff::all();
 
-        $uniqueStaffCode = 'ST-';
+        $uniqueStaffCode = 'ST';
 
         if (sizeof($staff1) > 0) {
             $lastIndex = $staff1[sizeof($staff1) - 1]['staff_id'];
@@ -104,11 +112,11 @@ class StaffController extends Controller
 
 
         if ($request['position'] == 'Driver') {
-            $uniqueStaffCode .= 'D' . $lastIndex;
+            $uniqueStaffCode .= 'D-' . $lastIndex;
         } elseif ($request['position'] == 'Supervisor') {
-            $uniqueStaffCode .= 'S' . $lastIndex;
+            $uniqueStaffCode .= 'S-' . $lastIndex;
         } else {
-            $uniqueStaffCode .= 'M' . $lastIndex;
+            $uniqueStaffCode .= 'M-' . $lastIndex;
         }
 
 
@@ -210,7 +218,7 @@ class StaffController extends Controller
             $url = url('/frontend/update-staff') . '/' . $id;
             $title = "Update Staff";
             $data = compact('staff', 'url', 'title', 'vehicleTypes');
-            return view('frontend.addstaff')->with($data)->withSuccessMessage('Successfully deleted');
+            return view('frontend.addstaff')->with($data);
         }
 
     }

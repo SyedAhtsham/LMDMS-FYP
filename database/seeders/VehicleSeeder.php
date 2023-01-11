@@ -29,7 +29,7 @@ class VehicleSeeder extends Seeder
             $vehicle->vehicleModel = $faker->year;
             $vehicle->condition = "Normal";
             $vehicle->status = "Idle";
-            $vehicle->make = "Toyota";
+            $vehicle->make = "Honda";
             $vehicle->mileage = 15;
             $vehicle->vehicleType_id = 4;
 

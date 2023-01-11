@@ -110,11 +110,11 @@
                         {{--                        <button class="btn btn-success btn-sm rounded-0" style="background-color: rgb(11, 77, 114);" type="button" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-edit"></i></button>--}}
                         {{--                       </a>--}}
                         {{--                    </li>--}}
-                        <li class="list-inline-item">
-                            <a href="{{route('vehicle.edit', ['id'=>$member->vhID])}}">
-                                <button class="btn btn-success btn-sm rounded-0" style="background-color: rgb(11, 77, 114);" type="button" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-edit"></i></button>
-                            </a>
-                        </li>
+{{--                        <li class="list-inline-item">--}}
+{{--                            <a href="{{route('vehicle.edit', ['id'=>$member->vhID])}}">--}}
+{{--                                <button class="btn btn-success btn-sm rounded-0" style="background-color: rgb(11, 77, 114);" type="button" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-edit"></i></button>--}}
+{{--                            </a>--}}
+{{--                        </li>--}}
                         {{--                    <li class="list-inline-item">--}}
                         {{--                        <a href="{{url('/frontend/delete-staff/'.$member->staff_id)}}">--}}
                         {{--                        <button class="btn btn-danger btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash"></i></button>--}}

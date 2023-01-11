@@ -534,9 +534,11 @@ else{
 
         $deliverySheet = $deliverySheets[0];
 
-        foreach ($consignments as $cons){
-//            echo $cons->consWeight;
+        $consignments1 = Consignment::select('consignment.*')
+                ->where('deliverySheet_id', '=', "$id")->get();
 
+        foreach ($consignments1 as $cons){
+//            echo $cons->consWeight;
             $totalWeight += $cons->getWeight();
             $totalVolume += $cons->getVolume();
         }
@@ -657,6 +659,7 @@ $drivers->prepend($driver[0]);
             $consignment->save();
 
         }
+
         return redirect('/frontend/view-deliverysheet/'.$deliverySheet_id)->withSuccessMessage('Successfully removed');
     }
 

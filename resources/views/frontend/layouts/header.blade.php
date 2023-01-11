@@ -27,8 +27,8 @@
 
         body {
             font-family: "Lato", sans-serif;
-background-color: rgba(53, 54, 58, 1);
-            color: white;
+/*background-color: rgba(53, 54, 58, 1);*/
+/*            color: white;*/
         }
 
         .required{
@@ -54,8 +54,8 @@ background-color: rgba(53, 54, 58, 1);
             z-index: 1;
             top: 0;
             left: 0;
-            /*background-color: rgb(0, 73, 114);*/
-            background-color: #1e2125;
+            background-color: rgb(0, 73, 114);
+            /*background-color: #1e2125;*/
             overflow-x: hidden;
             padding-top: 20px;
             padding-left: 10px;
@@ -148,6 +148,12 @@ background-color: rgba(53, 54, 58, 1);
         #checkoutShort{
             display: none;
         }
+
+        #checkedOutShort{
+            display: none;
+
+        }
+
         /*.nav-link{*/
         /*    font-weight: bold;*/
         /*}*/
@@ -175,6 +181,21 @@ background-color: rgba(53, 54, 58, 1);
             #checkoutShort{
                 display: block;
                 margin-left: 0;
+            }
+
+
+
+        }
+
+        @media (max-width: 1400px){
+            #checkedOutLong{
+                display: none;
+
+            }
+            #checkedOutShort{
+                display: block;
+                margin-left: 0;
+
             }
         }
 

@@ -39,7 +39,9 @@
                     </div>
                     <div class="modal-body">
                         <input type="hidden" name="deliverySheet_id" id="deliverySheet_id" />
-                        <h5>Are you sure you want to Check-out this <b><i>Delivery Sheet</i></b>?</h5>
+                        <h5>This action is Undo-able! <br>
+                            Are you sure you want to Check-out this <b><i>Delivery Sheet</i></b>?</h5>
+
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-light" style="" data-dismiss="modal">Close</button>
@@ -95,16 +97,15 @@
 
 
             <tr>
-                <td ><b>Vehicle ID: </b></td>
+                <td ><b>Vehicle: </b></td>
 
 
 
                 <td class="p-lg-2"><div class="form-group mt-2 d-flex">
 
                         <div>
-                        <select id="inputVehicle"  name="vehicle" disabled class="form-control"
+                        <select id="inputVehicle"  name="vehicle" disabled  class="form-control"
                                  required>
-
 
 
                             <?php
@@ -263,7 +264,7 @@
                 <div id="addConsignmentLong" class="col-2">
                     <a href="{{url('/frontend/add-consignments/'.$deliverySheet->deliverySheet_id)}}">
                 <button type="button" style=""
-                        class="btn btn-secondary" id="" value=""> <i class="fa fa-add"></i> Add Consignments
+                        class="btn btn-secondary" id="addConsLongBtn" value=""> <i class="fa fa-add"></i> Add Consignments
                 </button>
 
                     </a>
@@ -272,7 +273,7 @@
                 <div id="addConsignmentShort" class="col-2" style="">
                     <a href="{{url('/frontend/add-consignments/'.$deliverySheet->deliverySheet_id)}}">
                         <button type="button" style="" title="Add Consignments"
-                                class="btn btn-secondary" id="" value=""> <i class="fa fa-add"></i>
+                                class="btn btn-secondary" id="addConsShortBtn" value=""> <i class="fa fa-add"></i>
                         </button>
                     </a>
                 </div>
@@ -297,24 +298,11 @@
                             else{
                         @endphp
 
-                                @php
-                                    $createdAt = strtotime(\Carbon\Carbon::parse($deliverySheet->checkOutTime));
-                                    $currentDate = time();
-
-                                    $diff = ($currentDate-$createdAt)/3600;
-
-                                    if($diff <= 1){
-
-                             echo '<button type="submit" style=""
-                                class="btn btn-danger btnUnCheckout"  value='.$deliverySheet->deliverySheet_id.'><i class="fa fa-remove"></i> Un-check-out
-                        </button>';
-                                 }
-                                    else{
-                                        echo '<button type="submit" style=""
-                                class="btn btn-danger btnUnCheckout" disabled value='.$deliverySheet->deliverySheet_id.'><i class="fa fa-remove"></i> Un-check-out
-                        </button>';
-                                    }
-                                @endphp
+                        <button id="checkedOutShort" type="" class="btn btn-success" disabled> <i class="fa fa-check-double"></i>
+                        </button>
+                       <button id="checkedOutLong" type="" style=""
+                                class="btn btn-success" disabled  ><i class="fa fa-check-double"></i> Checked-out
+                        </button>
 
 
                         @php
@@ -336,7 +324,7 @@
 
 
 
-            <table  class="table table-sm table-striped table-dark" >
+            <table  class="table table-sm table-striped" >
                 <thead class="p-5" style="color:white; background-color: rgb(0, 73, 114);">
                 <tr>
 
@@ -472,7 +460,15 @@
                             <li class="list-inline-item">
                                 {{--                            <a href="{{route('vehicle.delete', ['id'=>$member->vehicle_id])}}">--}}
                                 {{--                                <button class="btn btn-danger btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash"></i></button>--}}
-                                <button class="btn btn-sm rounded-0 deleteConsignmentBtn change-color1" type="button" data-toggle="tooltip" data-placement="top" title="Remove" value="{{$member->cons_id}}"><i class="fa fa-trash"></i></button>
+                                <?php if($deliverySheet->status == 'un-checked-out') {
+                                    echo '<button class="btn btn-sm rounded-0 deleteConsignmentBtn change-color1" type="button" data-toggle="tooltip" data-placement="top" title="Remove" value='.$member->cons_id.'><i class="fa fa-trash"></i></button>';
+                                }
+                                else{
+                                    echo '<button class="btn btn-sm" style="border: none;" type="button" disabled data-toggle="tooltip" data-placement="top" title="Remove" value='.$member->cons_id.'><i class="fa fa-trash"></i></button>';
+                                }
+
+                                ?>
+
                                 {{--                            </a>--}}
                             </li>
                         </ul>
@@ -501,14 +497,50 @@
 
 
     <script>
+
+
+
+        if(document.getElementById('inputVehicle').value == ""){
+            addConsDiv = document.getElementById('addConsignmentLong');
+
+
+
+            addConsDiv.innerHTML = '<button type="button" style="" class="btn btn-secondary" id="addConsLongBtn" disabled value=""> <i class="fa fa-add"></i> Add Consignments</button>';
+            addConsDiv1 = document.getElementById('addConsignmentShort');
+
+
+            addConsDiv1.innerHTML = '  <button type="button" style="" title="Add Consignments" disabled class="btn btn-secondary" id="addConsShortBtn" value=""> <i class="fa fa-add"></i></button>';
+            // addConsDiv.children[0].children[0].disabled = true;
+            //
+            // addConsDiv.children[0].href = "";
+            //
+            // addConsDiv = document.getElementById('addConsignmentLong');
+            //
+            // addConsDiv.children[0].children[0].disabled = true;
+            //
+            // addConsDiv.children[0].href = "";
+
+
+        }
+
+
+
+        if(document.getElementById('checkedOutShort') != null) {
+            document.getElementById('checkedOutShort').disabled = true;
+        }
+
         let editBtn = document.getElementById('editBtn001');
         const select = document.getElementById('inputVehicle');
+
+        console.log(select);
 
 let editDiv = document.getElementById('editBtn001Div');
 
         function edit(){
+
             // editBtn.style.visibility = 'hidden';
-select.disabled = '';
+
+select.disabled = "";
             editDiv.innerHTML = '';
         editDiv.innerHTML = '<button class="btn btn-sm rounded-0 change-color2 rounded-2" onclick="save()" id="editBtn002" type="button" data-toggle="" data-placement="top" title="Save"><i class="fa fa-save"></i></button>';
 
@@ -560,6 +592,38 @@ select.disabled = '';
 
 
     $(document).ready(function () {
+
+
+        const status = <?php echo json_encode($deliverySheet->status); ?>;
+        if(status  !== 'un-checked-out' ){
+            addConsDiv = document.getElementById('addConsignmentLong');
+
+            let editBtn = document.getElementById('editBtn001');
+            editBtn.disabled = "true";
+            editBtn.style.border = "none";
+
+            let editBtnID = document.getElementById('editBtnID');
+            editBtnID.disabled = "true";
+            editBtnID.style.border = "none";
+
+                addConsDiv.innerHTML = '<button type="button" style="" class="btn btn-secondary" id="addConsLongBtn" disabled value=""> <i class="fa fa-add"></i> Add Consignments</button>';
+            addConsDiv1 = document.getElementById('addConsignmentShort');
+
+
+addConsDiv1.innerHTML = '  <button type="button" style="" title="Add Consignments" disabled class="btn btn-secondary" id="addConsShortBtn" value=""> <i class="fa fa-add"></i></button>';
+                // addConsDiv.children[0].children[0].disabled = true;
+            //
+            // addConsDiv.children[0].href = "";
+            //
+            // addConsDiv = document.getElementById('addConsignmentLong');
+            //
+            // addConsDiv.children[0].children[0].disabled = true;
+            //
+            // addConsDiv.children[0].href = "";
+
+
+        }
+
 
         $(document).on('change', '#inputVehicle', function () {
             let vehicleID = $(this).val();
@@ -672,6 +736,7 @@ if(vehicleID !== "" && alreadySelected !== vehicleID) {
                     buttons: false,
                 }).then(
                     function () {
+                        location.reload();
                     },
                     // handling the promise rejection
                     function (dismiss) {
@@ -730,6 +795,7 @@ if(vehicleID !== "" && alreadySelected !== vehicleID) {
                                 buttons: false,
                             }).then(
                                 function () {
+                                    location.reload();
                                 },
                                 // handling the promise rejection
                                 function (dismiss) {
