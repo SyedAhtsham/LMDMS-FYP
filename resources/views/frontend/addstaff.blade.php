@@ -75,6 +75,7 @@
                         {{$message}}
                         @enderror
                 </span>
+                    <label class="text-danger" style="display: none;">The email has already been taken.</label>
                 </div>
 
                 <div class="form-group col-md-4 pr-5">
@@ -411,6 +412,40 @@
         document.getElementById('other').onclick = function(){
             document.getElementById('inputOther').checked = "true";
         };
+
+
+
+
+        //
+        // $(document).ready(function () {
+        //
+        //     //editBtn002 is save button of driverField
+        //     $(document).on('change', '#inputEmail4', function () {
+        //
+        //         let email = document.getElementById("inputEmail4").value;
+        //
+        //
+        //             let str = email;
+        //             $.ajax(
+        //                 {
+        //
+        //                     type: "GET",
+        //                     url: "/frontend/emailValidation/" + str,
+        //
+        //                     success: function (response) {
+        //
+        //
+        //                     }
+        //
+        //                 });
+        //
+        //             // alert(vehicleID);
+        //             // alert(driverID);
+        //
+        //
+        //     });
+        //
+        // });
 
 
 

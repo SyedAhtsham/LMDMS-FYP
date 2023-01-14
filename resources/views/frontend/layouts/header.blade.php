@@ -16,6 +16,8 @@
     <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
 
 
+
+
 {{--    <link rel="stylesheet" type="text/css" href="/css/m.css">--}}
 
 {{--    --}}
@@ -154,6 +156,13 @@
 
         }
 
+        .inf-content{
+            border:1px solid #DDDDDD;
+            -webkit-border-radius:10px;
+            -moz-border-radius:10px;
+            border-radius:10px;
+            box-shadow: 7px 7px 7px rgba(0, 0, 0, 0.3);
+        }
         /*.nav-link{*/
         /*    font-weight: bold;*/
         /*}*/

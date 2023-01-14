@@ -147,8 +147,14 @@
 {{--                       </a>--}}
 {{--                    </li>--}}
                     <li class="list-inline-item">
+                        <a href="{{route('view.singlestaff', ['id'=>$member->staff_id])}}">
+                            <button class="btn btn-sm rounded-2 change-color0" type="button"  data-placement="top" title="View"><i class="fa-solid fa-eye"></i></button>
+                        </a>
+                    </li>
+
+                    <li class="list-inline-item">
                         <a href="{{route('staff.edit', ['id'=>$member->staff_id])}}">
-                            <button class="btn btn-success btn-sm rounded-0" style="background-color: rgb(11, 77, 114);" type="button" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-edit"></i></button>
+                            <button class="btn btn-sm rounded-2 change-color"  type="button" data-toggle="" data-placement="top" title="Edit"><i class="fa fa-edit"></i></button>
                         </a>
                     </li>
 {{--                    <li class="list-inline-item">--}}
@@ -159,7 +165,7 @@
                     <li class="list-inline-item">
 {{--                        <a href="{{route('staff.delete', ['id'=>$member->staff_id])}}">--}}
 {{--                            <button class="btn btn-danger btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash"></i></button>--}}
-                            <button class="btn btn-danger btn-sm rounded-0 deleteStaffBtn" type="button" data-toggle="tooltip" data-placement="top" title="Delete" value="{{$member->staff_id}}"><i class="fa fa-trash"></i></button>
+                        <button class="btn btn-sm rounded-2 change-color1 deleteStaffBtn" type="button" data-toggle="" data-placement="top" title="Delete" value="{{$member->staff_id}}"><i class="fa fa-trash"></i></button>
 {{--                        </a>--}}
                     </li>
                 </ul>

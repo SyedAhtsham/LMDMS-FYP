@@ -35,10 +35,14 @@ Route::get('/frontend/add-staff', [StaffController::class, 'create']);
 Route::post('/frontend/add-staff', [StaffController::class, 'insert']);
 Route::get('/frontend/view-staff', [StaffController::class, 'view']);
 Route::post('/frontend/view-staff', [StaffController::class, 'view']);
+Route::get('/frontend/staff/{id}', [StaffController::class, 'viewSingle'])->name('view.singlestaff');
 //Route::get('/frontend/delete-staff/{id}', [StaffController::class, 'delete'])->name('staff.delete');
 Route::post('/frontend/delete-staff', [StaffController::class, 'delete'])->name('staff.delete');
 Route::get('/frontend/edit-staff/{id}', [StaffController::class, 'edit'])->name('staff.edit');
 Route::post('/frontend/update-staff/{id}', [StaffController::class, 'update'])->name('staff.update');
+Route::get('/frontend/changePassword/{str}', [StaffController::class, 'changePassword']);
+Route::get('/frontend/emailValidation/{str}', [VehicleController::class, 'validateEmail']);
+
 
 
 Route::get('/frontend/add-vehicle', [VehicleController::class, 'create']);
@@ -70,11 +74,13 @@ Route::post('/frontend/checkout-deliverySheet', [DeliverySheetController::class,
 Route::get('/frontend/generateDSheet', [DeliverySheetController::class, 'generate']);
 Route::get('/frontend/add-consignments/{id}', [DeliverySheetController::class, 'addConsignments']);
 Route::get('/frontend/add-consignments-toDS/{str}', [DeliverySheetController::class, 'addConsignmentsToDeliverySheet']);
+Route::post('/frontend/delete-deliverySheet', [DeliverySheetController::class, 'delete'])->name('deliverySheet.delete');
 
 
 
 Route::get('/frontend/view-vehicleAssignments', [VehicleAssignmentController::class, 'view']);
 Route::post('/frontend/view-vehicleAssignments', [VehicleAssignmentController::class, 'view']);
+Route::post('/frontend/vehicleAssignment-delete', [VehicleAssignmentController::class, 'delete'])->name('vehicleAssignment.delete');
 
 Auth::routes();
 

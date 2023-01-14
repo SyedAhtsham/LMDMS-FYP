@@ -8,11 +8,13 @@ use App\Models\CompVehicle;
 use App\Models\Consignment;
 use App\Models\ContVehicle;
 use App\Models\DeliverySheet;
+use App\Models\Driver;
 use App\Models\Staff;
 use App\Models\Vehicle;
 use App\Models\VehicleAssignment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use mysql_xdevapi\Table;
 use Nette\Utils\ArrayList;
 use function Sodium\add;
 
@@ -175,7 +177,7 @@ $isGenerated = false;
                 $m = 0;
                 $n = 0;
 
-
+                $flag = true;
 
                 while($n < $lenBikeCons) {
 
@@ -185,11 +187,15 @@ $isGenerated = false;
 
                         $deliverySheet->deliverySheetCode = "DSB-";
 
+
+
                         $isGenerated = true;
                         $deliverySheet->area_id = $area->area_id;
                         $deliverySheet->driver_id = $bikesArr[$b]->assignedTo ?? null;
                         $deliverySheet->vehicle_id = $bikesArr[$b]->vehicle_id ?? null; // if null, then display a message about the need of hiring of vehicles of type
 
+                        $deliverySheet->save();
+                        $deliverySheet->deliverySheetCode = $deliverySheet->deliverySheetCode . $deliverySheet->deliverySheet_id;
                         $deliverySheet->save();
     if(isset($deliverySheet->vehicle_id)){
         $bike = Vehicle::find($deliverySheet->vehicle_id);
@@ -207,7 +213,6 @@ $isGenerated = false;
 
                         $tempCons->save();
 
-
                         $m++;
 
                     }else{
@@ -217,8 +222,8 @@ $isGenerated = false;
                         $deliverySheet->fuelAssigned = ceil((70/($bikesArr[$b]->mileage ?? 30)) + $area->extraFuel);
 
                         $deliverySheet->save();
-                        $deliverySheet->deliverySheetCode = $deliverySheet->deliverySheetCode . "" . $deliverySheet->deliverySheet_id;
-                        $deliverySheet->save();
+//                        $deliverySheet->deliverySheetCode = $deliverySheet->deliverySheetCode . "" . $deliverySheet->deliverySheet_id;
+//                        $deliverySheet->save();
 
 
 
@@ -226,8 +231,8 @@ $isGenerated = false;
                         // Update the status of a vehicle that the delivery sheet is assgned to this vehicle
                         $tempVehicle = Vehicle::find($bikesArr[$b]->vehicle_id ?? null) ?? null;
                         if($tempVehicle != null) {
-                            echo "<pre>";
-                            print($tempVehicle);
+//                            echo "<pre>";
+//                            print($tempVehicle);
                             $tempVehicle->dsAssigned = 1;
                             $tempVehicle->save();
                         }
@@ -259,8 +264,8 @@ $isGenerated = false;
                         $deliverySheet->fuelAssigned = ceil((70/($bikesArr[$b]->mileage ?? 30)) + $area->extraFuel);
 
                         $deliverySheet->save();
-                        $deliverySheet->deliverySheetCode = $deliverySheet->deliverySheetCode . "" . $deliverySheet->deliverySheet_id;
-                        $deliverySheet->save();
+//                        $deliverySheet->deliverySheetCode = $deliverySheet->deliverySheetCode . "" . $deliverySheet->deliverySheet_id;
+//                        $deliverySheet->save();
 
 
                         // Update the status of a vehicle that the delivery sheet is assgned to this vehicle
@@ -273,7 +278,28 @@ $isGenerated = false;
                         $m = 0;
                     }
                     else{
-                        $n++;
+
+$n++;
+                        if($m == 0){
+                            $n--;
+                        }
+
+//if($flag) {
+//    $n++;
+//    $flag = true;
+//}
+//
+//                        if(((($n-1) % 40)==0) && ($n!=0)){
+//                            $n--;
+//                            $flag = false;
+//                        }
+//                        else if(!$flag) {
+//                            $n++;
+//                            $flag = true;
+//
+//                        }
+
+
                     }
 
                 }
@@ -331,8 +357,8 @@ $isGenerated = false;
 //                        echo $tempWeight;
 //
 //                        die;
-                        $volumeLimit = ($vehiclesArr[$j]->volumeCap ?? 500) - 200;
-                        $weightLimit = ($vehiclesArr[$j]->weightCap ?? 800) - 100;
+                        $volumeLimit = ($vehiclesArr[$j]->volumeCap ?? 500) - 0;
+                        $weightLimit = ($vehiclesArr[$j]->weightCap ?? 800) - 0;
 
 //                        echo "<br>";
 //                        echo $vehiclesArr[$j]->volumeCap;
@@ -419,7 +445,12 @@ $isGenerated = false;
                         $flag = true;
                         $k = 0;
                     }else{
+
                         $i++;
+
+                        if($k==0){
+                            $i--;
+                        }
                     }
 
 
@@ -460,6 +491,7 @@ else{
 
         if ($search != "") {
 
+
             $deliverySheets = DB::table('delivery_sheet')->select('delivery_sheet.*', 'spv.name AS spvName', 'drv.name AS drvName', 'vehicle.vehicleCode AS vhCode', 'vehicle.make AS make', 'vehicle_type.typeName AS tpName', 'area.areaCode AS arCD', 'area.areaName AS arNM', 'area.city AS arCT')
                 ->leftJoin('staff AS drv', 'delivery_sheet.driver_id', '=', 'drv.staff_id')
                 ->leftJoin('staff AS spv', 'delivery_sheet.supervisor_id', '=', 'spv.staff_id')
@@ -467,7 +499,7 @@ else{
                 ->leftJoin('vehicle_type', 'vehicle.vehicleType_id', '=', 'vehicle_type.vehicleType_id')
                 ->join('area', 'delivery_sheet.area_id', '=', 'area.area_id')
                 ->where('delivery_sheet.status', '=', "$search")->orwhere('drv.name', 'LIKE', "%$search%")->orwhere('spv.name', 'LIKE', "%$search%")->orwhere('vehicle.vehicleCode', 'LIKE', "%$search%")->orwhere('vehicle_type.typeName', 'LIKE', "%$search%")->orwhere('area.areaName', 'LIKE', "%$search%")->orwhere('area.areaCode', 'LIKE', "%$search%")
-                ->orderBy('delivery_sheet.deliverySheet_id')->paginate(20);
+                ->orderByDesc('delivery_sheet.created_at')->paginate(20);
 
 
         } else {
@@ -478,7 +510,7 @@ else{
                 ->leftJoin('vehicle', 'delivery_sheet.vehicle_id', '=', 'vehicle.vehicle_id')
                 ->leftJoin('vehicle_type', 'vehicle.vehicleType_id', '=', 'vehicle_type.vehicleType_id')
                 ->join('area', 'delivery_sheet.area_id', '=', 'area.area_id')
-                ->orderBy('delivery_sheet.deliverySheet_id')->paginate(20);
+                ->orderByDesc('delivery_sheet.created_at')->paginate(20);
 
         }
 
@@ -655,9 +687,13 @@ $drivers->prepend($driver[0]);
         $consignment = Consignment::find($id);
         if (!is_null($consignment)) {
             $deliverySheet_id = $consignment->deliverySheet_id;
+
+            $dSheet = DeliverySheet::find($deliverySheet_id);
+            $dSheet->noOfCons = $dSheet->noOfCons-1;
+            $dSheet->save();
+
             $consignment->deliverySheet_id = null;
             $consignment->save();
-
         }
 
         return redirect('/frontend/view-deliverysheet/'.$deliverySheet_id)->withSuccessMessage('Successfully removed');
@@ -903,6 +939,36 @@ $ds->save();
             'status' => 200,
 'str' => count($arr),
         ]);
+    }
+
+
+    public function delete(Request $request){
+
+        $id = $request->vehicle_delete_id;
+
+        $dSheet = DeliverySheet::find($id);
+        if(!is_null($dSheet)) {
+
+            if($dSheet->driver_id != null){
+                $driver = Driver::find($dSheet->driver_id);
+                $driver->status = "Unassigned";
+                $driver->save();
+            }
+
+            if($dSheet->vehicle_id != null){
+                $vehicle = Vehicle::find($dSheet->vehicle_id);
+                $vehicle->dsAssigned = 0;
+                $vehicle->save();
+            }
+
+            $consignments = Consignment::where('deliverySheet_id', '=', "$id")->update(['deliverySheet_id' => null]);
+
+            $dSheet->delete();
+
+        }
+
+
+        return redirect('/frontend/view-deliverysheets')->withSuccessMessage('Successfully Deleted!');
     }
 
 

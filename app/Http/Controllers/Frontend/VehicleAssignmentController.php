@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Models\CompVehicle;
+use App\Models\ContVehicle;
+use App\Models\Driver;
 use App\Models\Vehicle;
 use App\Models\VehicleAssignment;
 use App\Models\VehicleType;
@@ -51,5 +54,36 @@ class VehicleAssignmentController extends Controller
 
         return view('frontend.viewVehicleAssignments')->with($data);
     }
+
+
+    public function delete(Request $request){
+
+        $id = $request->vehicle_delete_id;
+
+        $vehicleAssignment = VehicleAssignment::find($id);
+
+        if(!is_null($vehicleAssignment)) {
+
+            $driver = Driver::find($vehicleAssignment->assignedTo);
+
+$driver->status = "Unassigned";
+$driver->save();
+
+$vehicle = Vehicle::find($vehicleAssignment->vehicle_id);
+
+$vehicle->assignStatus = "Unassigned";
+
+$vehicle->save();
+
+            $vehicleAssignment->delete();
+
+            return redirect('/frontend/view-vehicleAssignments')->withSuccessMessage('Successfully Deleted!');
+        }
+
+        return redirect('/frontend/view-vehicleAssignments')->withErrorMessage('Operation Unsuccessful!');
+    }
+
+
+
 
 }

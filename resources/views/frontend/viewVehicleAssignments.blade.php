@@ -6,7 +6,7 @@
     <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form action="{{route('vehicle.delete')}}" method="POST">
+                <form action="{{route('vehicleAssignment.delete')}}" method="POST">
                     @csrf
                     <div class="modal-header">
                         <h3 class="modal-title fs-5" id="exampleModalLabel">Delete Vehicle</h3>
@@ -14,7 +14,7 @@
                     </div>
                     <div class="modal-body">
                         <input type="hidden" name="vehicle_delete_id" id="vehicle_id" />
-                        <h5>Are you sure you want to delete this Vehicle record?</h5>
+                        <h5>Are you sure you want to delete this <b>Vehicle Assignment?</b></h5>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" style="background-color: rgb(0, 74, 111);" data-dismiss="modal">Close</button>

@@ -22,7 +22,7 @@ class VehicleSeeder extends Seeder
 
         $faker = Faker::create();
 
-        for ($i = 1; $i <= 2; $i++) {
+        for ($i = 1; $i <= 1; $i++) {
             $vehicle = new Vehicle;
             $vehicle->vehicleCode = "";
             $vehicle->plateNo = $faker->randomNumber();
@@ -31,7 +31,7 @@ class VehicleSeeder extends Seeder
             $vehicle->status = "Idle";
             $vehicle->make = "Honda";
             $vehicle->mileage = 15;
-            $vehicle->vehicleType_id = 4;
+            $vehicle->vehicleType_id = 5;
 
 
             $vehicle->save();

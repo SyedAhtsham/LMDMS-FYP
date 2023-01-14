@@ -6,15 +6,15 @@
     <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form action="{{route('vehicle.delete')}}" method="POST">
+                <form action="{{route('deliverySheet.delete')}}" method="POST">
                     @csrf
                     <div class="modal-header">
-                        <h3 class="modal-title fs-5" id="exampleModalLabel">Delete Vehicle</h3>
+                        <h3 class="modal-title fs-5" id="exampleModalLabel">Delete Delivery Sheet</h3>
                         {{--                        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>--}}
                     </div>
                     <div class="modal-body">
                         <input type="hidden" name="vehicle_delete_id" id="vehicle_id" />
-                        <h5>Are you sure you want to delete this <b><i>Vehicle record</i></b> and any related <b><i>Vehicle Assignments</i></b>?</h5>
+                        <h5>Are you sure you want to delete this <b>Delivery Sheet</b>?</h5>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" style="background-color: rgb(0, 74, 111);" data-dismiss="modal">Close</button>
@@ -70,6 +70,7 @@
                 <div class="ml-5">
                     <form action="" class="col-15 d-flex">
                         <div class="form-group col-8">
+                            <input type="hidden" name="previousSearch" value={{$search ?? ""}}>
                             <input type="search" name="search" id="" class="form-control" value="{{($search=="checked-out" || $search=="un-checked-out") ? "" : $search}}" placeholder="Search by sheet id, driver id, vehicle id, area code..">
                         </div>
                         <div class="">
@@ -111,12 +112,13 @@
                 <thead class="p-5" style="color:white; background-color: rgb(0, 73, 114);">
                 <tr>
                     <th>Sr #</th>
-                    <th>DS #</th>
+                    <th>DS Code</th>
                     <th>Area</th>
                     {{--            <th>Email</th>--}}
                     <th>Driver</th>
 
                     <th>Supervisor</th>
+                    <th>Vehicle</th>
                     <th>Quantity</th>
                     <th>Fuel</th>
                     <th>Check-out time</th>
@@ -184,6 +186,24 @@
 
                     @endif
 
+                    <td>
+                        @if($member->tpName == 'Bike')
+
+                            <i class="fa fa-motorcycle fa-lg"></i>
+                        @elseif($member->tpName == 'Shahzore')
+                            <i class="fa fa-truck-moving fa-lg"></i>
+                        @elseif($member->tpName == 'Carry')
+                            <i class="fas fa-shuttle-van fa-lg"></i>
+                        @elseif($member->tpName == 'Hilux')
+                            <i class="fas fa-truck fa-lg"></i>
+                        @else
+                            ---
+                        @endif
+
+
+
+                    </td>
+
                     <td>{{$member->noOfCons}}</td>
                     <td>{{$member->fuelAssigned}}</td>
 
@@ -213,33 +233,25 @@
 {{--                            @if((isset($search) && $search=="checked-out") || $member->status == "un-checked-out")--}}
                                 <li class="list-inline-item">
                                     <a href="{{route('view.deliverysheet', ['id'=>$member->deliverySheet_id])}}">
-                                        <button class="btn btn-sm rounded-0 change-color0" type="button" data-toggle="tooltip" data-placement="top" title="View"><i class="fa-solid fa-eye"></i></button>
+                                        <button class="btn btn-sm rounded-2 change-color0" type="button"  data-placement="top" title="View"><i class="fa-solid fa-eye"></i></button>
                                     </a>
                                 </li>
-{{--                            @else--}}
-{{--                                <li class="list-inline-item">--}}
-
-{{--                                    <button class="btn btn-sm rounded-0" type="button" data-toggle="tooltip" disabled data-placement="top" title="Assign"><i class="fa fa-add"></i></button>--}}
-
-{{--                                </li>--}}
-{{--                            @endif--}}
-
-                            <li class="list-inline-item">
-                                <a href="{{route('vehicle.edit', ['id'=>$member->deliverySheet_id])}}">
-                                    <button class="btn btn-sm rounded-0 change-color"  id="editBtn" type="button" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-edit"></i></button>
-                                </a>
-                            </li>
-                            {{--                    <li class="list-inline-item">--}}
-                            {{--                        <a href="{{url('/frontend/delete-staff/'.$member->staff_id)}}">--}}
-                            {{--                        <button class="btn btn-danger btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash"></i></button>--}}
-                            {{--                        </a>--}}
-                            {{--                    </li>--}}
+                            @if($member->status == 'checked-out')
                             <li class="list-inline-item">
                                 {{--                            <a href="{{route('vehicle.delete', ['id'=>$member->vehicle_id])}}">--}}
                                 {{--                                <button class="btn btn-danger btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash"></i></button>--}}
-                                <button class="btn btn-sm rounded-0 deleteVehicleBtn change-color1" type="button" data-toggle="tooltip" data-placement="top" title="Delete" value="{{$member->deliverySheet_id}}"><i class="fa fa-trash"></i></button>
+                                <button class="btn btn-sm rounded-2 border-0 deleteVehicleBtn change-color1" disabled type="button"  data-placement="top" title="Delete" value="{{$member->deliverySheet_id}}"><i class="fa fa-trash"></i></button>
                                 {{--                            </a>--}}
                             </li>
+                            @else
+                                <li class="list-inline-item">
+                                    {{--                            <a href="{{route('vehicle.delete', ['id'=>$member->vehicle_id])}}">--}}
+                                    {{--                                <button class="btn btn-danger btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash"></i></button>--}}
+                                    <button class="btn btn-sm rounded-2 deleteVehicleBtn change-color1" type="button"  data-placement="top" title="Delete" value="{{$member->deliverySheet_id}}"><i class="fa fa-trash"></i></button>
+                                    {{--                            </a>--}}
+                                </li>
+
+                            @endif
                         </ul>
                     </td>
                     </tr>
@@ -263,6 +275,9 @@
 
         @section('scripts')
             <script>
+
+
+
                 $(document).ready(function(){
                     $('.deleteVehicleBtn').click(function(e){
                         e.preventDefault();

@@ -262,20 +262,20 @@
                 </div>
 
                 <div id="addConsignmentLong" class="col-2">
-                    <a href="{{url('/frontend/add-consignments/'.$deliverySheet->deliverySheet_id)}}">
+{{--                    <a href="{{url('/frontend/add-consignments/'.$deliverySheet->deliverySheet_id)}}">--}}
                 <button type="button" style=""
-                        class="btn btn-secondary" id="addConsLongBtn" value=""> <i class="fa fa-add"></i> Add Consignments
+                        class="btn btn-secondary" onclick="addConsURL()" id="addConsLongBtn" value=""> <i class="fa fa-add"></i> Add Consignments
                 </button>
 
-                    </a>
+{{--                    </a>--}}
                 </div>
 
                 <div id="addConsignmentShort" class="col-2" style="">
-                    <a href="{{url('/frontend/add-consignments/'.$deliverySheet->deliverySheet_id)}}">
+{{--                    <a href="{{url('/frontend/add-consignments/'.$deliverySheet->deliverySheet_id)}}">--}}
                         <button type="button" style="" title="Add Consignments"
-                                class="btn btn-secondary" id="addConsShortBtn" value=""> <i class="fa fa-add"></i>
+                                class="btn btn-secondary" onclick="addConsURL()" id="addConsShortBtn" value=""> <i class="fa fa-add"></i>
                         </button>
-                    </a>
+{{--                    </a>--}}
                 </div>
 
 
@@ -500,28 +500,28 @@
 
 
 
-        if(document.getElementById('inputVehicle').value == ""){
-            addConsDiv = document.getElementById('addConsignmentLong');
-
-
-
-            addConsDiv.innerHTML = '<button type="button" style="" class="btn btn-secondary" id="addConsLongBtn" disabled value=""> <i class="fa fa-add"></i> Add Consignments</button>';
-            addConsDiv1 = document.getElementById('addConsignmentShort');
-
-
-            addConsDiv1.innerHTML = '  <button type="button" style="" title="Add Consignments" disabled class="btn btn-secondary" id="addConsShortBtn" value=""> <i class="fa fa-add"></i></button>';
-            // addConsDiv.children[0].children[0].disabled = true;
-            //
-            // addConsDiv.children[0].href = "";
-            //
-            // addConsDiv = document.getElementById('addConsignmentLong');
-            //
-            // addConsDiv.children[0].children[0].disabled = true;
-            //
-            // addConsDiv.children[0].href = "";
-
-
-        }
+        // if(document.getElementById('inputVehicle').value == ""){
+        //     addConsDiv = document.getElementById('addConsignmentLong');
+        //
+        //
+        //
+        //     addConsDiv.innerHTML = '<button type="button" style="" class="btn btn-secondary" id="addConsLongBtn" disabled value=""> <i class="fa fa-add"></i> Add Consignments</button>';
+        //     addConsDiv1 = document.getElementById('addConsignmentShort');
+        //
+        //
+        //     addConsDiv1.innerHTML = '  <button type="button" style="" title="Add Consignments" disabled class="btn btn-secondary" id="addConsShortBtn" value=""> <i class="fa fa-add"></i></button>';
+        //     // addConsDiv.children[0].children[0].disabled = true;
+        //     //
+        //     // addConsDiv.children[0].href = "";
+        //     //
+        //     // addConsDiv = document.getElementById('addConsignmentLong');
+        //     //
+        //     // addConsDiv.children[0].children[0].disabled = true;
+        //     //
+        //     // addConsDiv.children[0].href = "";
+        //
+        //
+        // }
 
 
 
@@ -542,7 +542,7 @@ let editDiv = document.getElementById('editBtn001Div');
 
 select.disabled = "";
             editDiv.innerHTML = '';
-        editDiv.innerHTML = '<button class="btn btn-sm rounded-0 change-color2 rounded-2" onclick="save()" id="editBtn002" type="button" data-toggle="" data-placement="top" title="Save"><i class="fa fa-save"></i></button>';
+        editDiv.innerHTML = '<button class="btn btn-sm change-color2 rounded-2" onclick="save()" id="editBtn002" type="button" data-toggle="" data-placement="top" title="Save"><i class="fa fa-save"></i></button>';
 
         }
 
@@ -591,6 +591,35 @@ select.disabled = "";
 
 
 
+
+    function addConsURL(){
+
+        if(document.getElementById('inputVehicle').value == "") {
+
+            swal({
+                title: 'Error!',
+                icon: 'error',
+                text: 'Please select a Vehicle first!',
+
+                timer: 2000,
+                buttons: false,
+            }).then(
+                function () {
+                    location.reload();
+                },
+                // handling the promise rejection
+                function (dismiss) {
+                    if (dismiss === 'timer') {
+
+                        //console.log('I was closed by the timer')
+                    }
+                }
+            )
+        }else{
+        window.location.href = <?php echo json_encode("/frontend/add-consignments/".$deliverySheet->deliverySheet_id); ?>;
+        }
+    }
+
     $(document).ready(function () {
 
 
@@ -610,7 +639,7 @@ select.disabled = "";
             addConsDiv1 = document.getElementById('addConsignmentShort');
 
 
-addConsDiv1.innerHTML = '  <button type="button" style="" title="Add Consignments" disabled class="btn btn-secondary" id="addConsShortBtn" value=""> <i class="fa fa-add"></i></button>';
+        addConsDiv1.innerHTML = '  <button type="button" style="" title="Add Consignments" disabled class="btn btn-secondary" id="addConsShortBtn" value=""> <i class="fa fa-add"></i></button>';
                 // addConsDiv.children[0].children[0].disabled = true;
             //
             // addConsDiv.children[0].href = "";
@@ -682,20 +711,20 @@ addConsDiv1.innerHTML = '  <button type="button" style="" title="Add Consignment
 
     });
 
-    let inputVehicle1 = document.getElementById("inputVehicle");
-    let inputDriver1 = document.getElementById("inputDriver");
-    let vehicleID1 = inputVehicle1.value;
-    let driverID1 = inputDriver1.value;
+    {{--let inputVehicle1 = document.getElementById("inputVehicle");--}}
+    {{--let inputDriver1 = document.getElementById("inputDriver");--}}
+    {{--let vehicleID1 = inputVehicle1.value;--}}
+    {{--let driverID1 = inputDriver1.value;--}}
 
-    let size = <?php echo $size; ?>;
+    {{--let size = <?php echo $size; ?>;--}}
 
-    if(vehicleID1 == "" || driverID1 == "" || size === 0){
-        document.getElementsByClassName('btnCheckout')[0].disabled = "true";
-        document.getElementsByClassName('btnCheckout')[1].disabled = "true";
-    }else{
-        document.getElementsByClassName('btnCheckout')[0].disabled = "";
-        document.getElementsByClassName('btnCheckout')[1].disabled = "";
-    }
+    // if(vehicleID1 == "" || driverID1 == "" || size === 0){
+    //     document.getElementsByClassName('btnCheckout')[0].disabled = "true";
+    //     document.getElementsByClassName('btnCheckout')[1].disabled = "true";
+    // }else{
+    //     document.getElementsByClassName('btnCheckout')[0].disabled = "";
+    //     document.getElementsByClassName('btnCheckout')[1].disabled = "";
+    // }
 
     let inputVehicle = document.getElementById("inputVehicle");
     let alreadySelected = inputVehicle.value;
@@ -830,9 +859,65 @@ if(vehicleID !== "" && alreadySelected !== vehicleID) {
         $(document).ready(function(){
             $('.btnCheckout').click(function(e){
                 e.preventDefault();
-                let deliverySheet_id = $(this).val();
-                $('#deliverySheet_id').val(deliverySheet_id);
-                $('#checkoutModal').modal('show');
+
+                let inputVehicle1 = document.getElementById("inputVehicle");
+                let inputDriver1 = document.getElementById("inputDriver");
+                let vehicleID1 = inputVehicle1.value;
+                let driverID1 = inputDriver1.value;
+
+                let size = <?php echo $size; ?>;
+
+
+                if(size == 0){
+                    swal({
+                        title: 'Error!',
+                        icon: 'error',
+                        text: 'Please add some consignments!',
+
+                        timer: 2000,
+                        buttons: false,
+                    }).then(
+                        function () {
+                            location.reload();
+                        },
+                        // handling the promise rejection
+                        function (dismiss) {
+                            if (dismiss === 'timer') {
+
+                                //console.log('I was closed by the timer')
+                            }
+                        }
+                    )
+                }else if(vehicleID1 == "" || driverID1 == ""){
+                    swal({
+                        title: 'Error!',
+                        icon: 'error',
+                        text: 'Either Vehicle or Driver is not Assigned!',
+
+                        timer: 2000,
+                        buttons: false,
+                    }).then(
+                        function () {
+                            location.reload();
+                        },
+                        // handling the promise rejection
+                        function (dismiss) {
+                            if (dismiss === 'timer') {
+
+                                //console.log('I was closed by the timer')
+                            }
+                        }
+                    )
+
+
+                }else {
+
+
+                    let deliverySheet_id = $(this).val();
+                    $('#deliverySheet_id').val(deliverySheet_id);
+                    $('#checkoutModal').modal('show');
+
+                }
 
             });
 
@@ -865,7 +950,14 @@ if(vehicleID !== "" && alreadySelected !== vehicleID) {
                     });
 
                 });
-            </script>
+
+
+                if (performance.getEntriesByType("navigation")[0].type === "back_forward") {
+                        window.history.back();
+                }
+
+
+    </script>
 
 @endsection
 

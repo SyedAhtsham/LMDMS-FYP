@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Fuel;
 use App\Models\Vehicle;
 use App\Models\VehicleAssignment;
 use App\Models\VehicleType;
@@ -61,6 +62,7 @@ class StaffController extends Controller
                     'gender' => 'required',
                     'position' => 'required',
                     'address' => 'required',
+                    'canDrive' => 'required',
 
                 ]
             );
@@ -147,8 +149,8 @@ class StaffController extends Controller
 
         $user->save();
 
-        echo "Your username is " . $request['email'] . " and your password is " . $myPassword;
-        return redirect('/frontend/view-staff')->withSuccessMessage('Successfully added');
+//        echo "Your username is " . $request['email'] . " and your password is " . $myPassword;
+        return redirect('/frontend/staff/'.$staffId)->withSuccessMessage('Successfully Added!');
 
     }
 
@@ -203,7 +205,7 @@ class StaffController extends Controller
 
             $staff->delete();
         }
-        return redirect('/frontend/view-staff')->withSuccessMessage('Successfully deleted');;
+        return redirect('/frontend/view-staff')->withSuccessMessage('Successfully Deleted!');
 
     }
 
@@ -228,6 +230,12 @@ class StaffController extends Controller
 
         $staff = Staff::find($id);
         $userEmail = $staff->email ?? '';
+        $cnic = $staff->cnic ?? '';
+
+        $driver = Driver::find($id);
+        $licenseNo = $driver->licenseNo ?? '';
+
+
 
         if ($userEmail != $request['email']) {
             $request->validate([
@@ -236,20 +244,43 @@ class StaffController extends Controller
 
         }
 
+        if ($cnic != $request['cnic']) {
+            $request->validate([
+                'cnic' => 'required|unique:staff',
+            ]);
+
+        }
+
+        if ($licenseNo != $request['licenseNo']) {
+            $request->validate([
+                'licenseNo' => 'required|unique:driver',
+            ]);
+
+        }
+
         if ($request['position'] == 'Driver') {
             $request->validate(
                 [
-                    'licenseNo' => 'required'
+
+
+                    'name' => 'required',
+                    'contact' => 'required',
+
+                    'gender' => 'required',
+                    'position' => 'required',
+                    'address' => 'required',
+                    'canDrive' => 'required',
+
                 ]
             );
         }
 
         $request->validate(
             [
+
                 'name' => 'required',
                 'contact' => 'required',
-                'cnic' => 'required',
-                'email' => 'required|string|email|max:255',
+
                 'gender' => 'required',
                 'position' => 'required',
                 'address' => 'required',
@@ -276,17 +307,17 @@ class StaffController extends Controller
 
         $staff->save();
 
-        $uniqueStaffCode = 'ST-';
+        $uniqueStaffCode = 'ST';
 
         $staffId = $id;
 
 
         if ($request['position'] == 'Driver') {
-            $uniqueStaffCode .= 'D' . $staffId;
+            $uniqueStaffCode .= 'D-' . $staffId;
         } elseif ($request['position'] == 'Supervisor') {
-            $uniqueStaffCode .= 'S' . $staffId;
+            $uniqueStaffCode .= 'S-' . $staffId;
         } else {
-            $uniqueStaffCode .= 'M' . $staffId;
+            $uniqueStaffCode .= 'M-' . $staffId;
         }
 
         $staff->staffCode = $uniqueStaffCode;
@@ -329,9 +360,55 @@ class StaffController extends Controller
         }
         $user->save();
 
-        return redirect('/frontend/view-staff')->withSuccessMessage('Successfully updated');
+//        return redirect('/frontend/view-staff')->withSuccessMessage('Successfully updated');
+
+        return redirect('/frontend/staff/'.$staffId)->withSuccessMessage('Successfully Updated!');
+    }
+
+    public function viewSingle($id){
+
+
+
+
+        $staff = Staff::find($id);
+
+        $driver = Driver::find($id);
+
+        $account = User::find($id);
+
+if(!isset($staff)){
+    return redirect('/frontend/view-staff')->withErrorMessage('Sorry no record found!');
+}
+
+        $data = compact( 'staff', 'driver', 'account');
+//        $data = compact('url', 'title');
+
+            return view('frontend.viewsinglestaff')->with($data);
+
+
 
     }
 
+
+    public function changePassword($str){
+        $arr = explode(",", $str);
+
+        $userID = $arr[0];
+        $password = $arr[1];
+
+        $user = User::find($userID);
+
+        if(isset($user)){
+            $user->password = $password;
+$user->save();
+
+
+        }
+        return response()->json([
+            'status' => 200,
+        ]);
+
+
+    }
 
 }

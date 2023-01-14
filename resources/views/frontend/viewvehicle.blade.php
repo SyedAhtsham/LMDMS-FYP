@@ -119,7 +119,7 @@
 
 
                         <div class="mt-4">
-                            <label for="sel1" class="form-label">Select Driver <span class="required">*</span></label>
+                            <label for="sel1" class="form-label">Select Driver <span class="required">*</span> <label class=" small"> (the following drivers can drive this vehicle)</label></label>
                             <select class="form-select" id="driver" name="driver">
 
                             </select>
@@ -350,6 +350,8 @@
                                 <i class="fas fa-shuttle-van fa-lg"></i>
                             @elseif($member->getVehicleType->typeName == 'Hilux')
                                 <i class="fas fa-truck fa-lg"></i>
+                            @elseif($member->getVehicleType->typeName == 'Mini Van')
+                                <i class="fas fa-truck-field fa-lg"></i>
                             @endif
 
 

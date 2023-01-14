@@ -186,12 +186,12 @@ $search = trim($search, " \t\n\r\0\x0B");
 
 
         $id = $vehicle->vehicle_id;
-        $uniqueVehicleCode = 'VH-';
+        $uniqueVehicleCode = 'VH';
 
         if ($request['ownership'] == 'Company Owned') {
-            $uniqueVehicleCode .= 'P' .$id;
+            $uniqueVehicleCode .= 'P-' .$id;
         } elseif ($request['ownership'] == 'Contractual Vehicle') {
-            $uniqueVehicleCode .= 'R' .$id;
+            $uniqueVehicleCode .= 'R-' .$id;
         }
 
         $vehicle->vehicleCode = $uniqueVehicleCode;
@@ -506,6 +506,16 @@ $flag = false;
 
 
     }
+
+//
+//    public function validateEmail($str){
+//
+//        $email = $str;
+//
+//        if(User::find($email))
+//
+//
+//    }
 
 
 }

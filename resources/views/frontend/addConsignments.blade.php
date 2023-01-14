@@ -34,7 +34,7 @@
 {{--                <form action="{{route('checkout.deliverySheet')}}" method="POST">--}}
 {{--                    @csrf--}}
                     <div class="modal-header">
-                        <h3 class="modal-title fs-5" style="color: black;" id="exampleModalLabel">Add Consignments to Delivery Sheets</h3>
+                        <h3 class="modal-title fs-5" style="color: black;" id="exampleModalLabel">Add Consignments to Delivery Sheet</h3>
                         {{--                        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>--}}
                     </div>
                     <div class="modal-body">
@@ -43,7 +43,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-light" style="" data-dismiss="modal">Close</button>
-                        <button type="submit" onclick="addConsignments()" class="btn btn-success">Yes</button>
+                        <button type="submit" onclick="addConsignments()" class="btn btn-success">Yes Add</button>
                     </div>
 {{--                </form>--}}
             </div>
@@ -98,7 +98,7 @@
 
 
             <tr>
-                <td><b>Vehicle ID: </b></td>
+                <td><b>Vehicle: </b></td>
 
 
                 <td class="p-lg-2">
@@ -233,14 +233,14 @@
                            placeholder="Search by consignment id, to-Address, ...">
                 </div>
                 <div class="">
-                    <button type="submit" style="width: 8em;  background-color: rgb(0, 74, 111);"
+                    <button id="searchBtn" onclick="updateSessionStorage()" type="submit" style="width: 8em;  background-color: rgb(0, 74, 111);"
                             class="btn btn-primary">Search
                     </button>
                 </div>
 
                 <div class="col-2">
                     <a href="{{url('/frontend/add-consignments/'.$deliverySheet->deliverySheet_id)}}">
-                        <button type="button" style="width: 8em;"
+                        <button id="resetBtn" onclick="updateSessionStorage()" type="button" style="width: 8em;"
                                 class="btn btn-light">Reset
                         </button>
                     </a>
@@ -443,13 +443,85 @@
     <script>
 
 
+        if (performance.getEntriesByType("navigation")[0].type === "reload") {
+            console.info( "This page is reloaded" );
+            let checkValues = [];
+            sessionStorage.setItem('selectedCons', JSON.stringify(checkValues))
+
+        } else {
+            console.info( "This page is not reloaded");
+            // let temp = JSON.parse(sessionStorage.getItem('selectedCons'));
+            // if(temp.length !== 0){
+            //     document.getElementById('addToDS').disabled = "";
+            // }
+        }
+
+        function updateSessionStorage(){
+
+
+            // alert("ues");
+            let checkValues = JSON.parse(sessionStorage.getItem('selectedCons'));
+
+            if(checkValues === null){
+                checkValues = [];
+            }
+            const elements = document.querySelectorAll('input[type=checkbox]:checked');
+
+            if(elements.length === 0){
+                checkValues.length = 0;
+                }
+
+
+
+            // const weight = parseInt(document.getElementById('weight').innerHTML);
+            // const volume = parseInt(document.getElementById('volume').innerHTML);
+
+
+
+            for(let i=0; i<elements.length; i++){
+                if(checkValues.indexOf("cons" + elements[i].value) === -1) {
+                    console.log(checkValues.indexOf("cons"+elements[i].value));
+                    checkValues.push("cons" + elements[i].value);
+
+                }
+
+            }
+
+            // console.log(checkValues);
+            // sessionStorage.setItem('weight', JSON.stringify(weight));
+            // sessionStorage.setItem('volume', JSON.stringify(volume));
+            sessionStorage.setItem('selectedCons', JSON.stringify(checkValues))
+
+            // alert("yes");
+        }
+
+
+        const checkValues = JSON.parse(sessionStorage.getItem('selectedCons'));
+
+        if(checkValues !== null){
+            // alert("esss");
+            console.log(checkValues);
+            const allCheckBoxes = document.querySelectorAll("input[type=checkbox]");
+            for(let i=0; i<allCheckBoxes.length; i++){
+                if(checkValues.includes("cons"+allCheckBoxes[i].value)){
+                    allCheckBoxes[i].checked = true;
+                }
+            }
+
+        }
+
+        // if (document.querySelectorAll('input[type=checkbox]:checked').length < 1) {
+        //     document.getElementById('addToDS').disabled = "true";
+        // } else {
+        //     document.getElementById('addToDS').disabled = "";
+        // }
+        //
+        //
+
         $(document).ready(function () {
 
-            if (document.querySelectorAll('input[type=checkbox]:checked').length < 1) {
-                document.getElementById('addToDS').disabled = "true";
-            } else {
-                document.getElementById('addToDS').disabled = "";
-            }
+
+
 
 
             $(document).on('change', '#inputVehicle', function () {
@@ -645,10 +717,11 @@
         console.log(allCheckboxes.length);
 
 
-        const existingIDs = JSON.parse(sessionStorage.getItem("selectedCons")) || [];
-
-        let selectedConsignments = [-1];
-        sessionStorage.setItem('selectedCons', JSON.stringify(selectedConsignments));
+        // const existingIDs = JSON.parse(sessionStorage.getItem("selectedCons")) || [];
+        const existingIDs = [];
+        // console.log(existingIDs);
+        // let selectedConsignments;
+        // sessionStorage.setItem('selectedCons', JSON.stringify(selectedConsignments));
 
         let consWeight =<?php echo $totalWeight; ?>;
         let consVolume = <?php echo $totalVolume; ?>;
@@ -664,7 +737,7 @@
         let tempCons = noOfCons;
 
 
-        let selectAll = document.getElementById('selectAll');
+        // let selectAll = document.getElementById('selectAll');
 
         for (let i = 0; i < allCheckboxes.length; i++) {
             allCheckboxes[i].addEventListener('change', function () {
@@ -678,7 +751,7 @@
 
 
                     if(vehicleType != "Bike") {
-                        if (weight > weightCap - 360 || volume > volumeCap - 200) {
+                        if (weight > weightCap || volume > volumeCap) {
                             weight -= parseInt(document.getElementById(allCheckboxes[i].value).children[4].children[0].innerText);
                             volume -= parseInt(document.getElementById(allCheckboxes[i].value).children[5].children[0].innerText);
 
@@ -693,7 +766,7 @@
                                 buttons: false,
                             }).then(
                                 function () {
-                                    location.reload();
+
                                 },
                                 // handling the promise rejection
                                 function (dismiss) {
@@ -705,6 +778,9 @@
                             )
 
                             allCheckboxes[i].checked = false;
+                        }
+                        else{
+                            // selectedConsignments.push(allCheckboxes[i].value);
                         }
                     }else{
 
@@ -738,201 +814,222 @@ tempCons--;
 
                             allCheckboxes[i].checked = false;
 
+                        }else{
+                            // selectedConsignments.push(allCheckboxes[i].value);
                         }
 
                     }
 
 
-                    if (document.querySelectorAll('input[type=checkbox]:checked').length < 1) {
-                        document.getElementById('addToDS').disabled = "true";
-                    } else {
-                        document.getElementById('addToDS').disabled = "";
-                    }
+                    // if (document.querySelectorAll('input[type=checkbox]:checked').length < 1) {
+                    //     document.getElementById('addToDS').disabled = "true";
+                    // } else {
+                    //     document.getElementById('addToDS').disabled = "";
+                    // }
 
-                    selectedConsignments.push(allCheckboxes[i].value);
+
                     // weight +=;
-                document.getElementById('weight').innerHTML = weight;
-                    document.getElementById('volume').innerHTML = volume;
+                // document.getElementById('weight').innerHTML = weight;
+                //     document.getElementById('volume').innerHTML = volume;
 
 // console.log(allCheckboxes[i].value);
                 } else {
 
 
-                    if (document.querySelectorAll('input[type=checkbox]:checked').length < 1) {
-                        document.getElementById('addToDS').disabled = "true";
-                    } else {
-                        document.getElementById('addToDS').disabled = "";
-                    }
+                    // if (document.querySelectorAll('input[type=checkbox]:checked').length < 1) {
+                    //     document.getElementById('addToDS').disabled = "true";
+                    // } else {
+                    //     document.getElementById('addToDS').disabled = "";
+                    // }
 
 
                     weight -= parseInt(document.getElementById(allCheckboxes[i].value).children[4].children[0].innerText);
                     volume -= parseInt(document.getElementById(allCheckboxes[i].value).children[5].children[0].innerText);
                     // weight +=;
-                    document.getElementById('weight').innerHTML = weight;
-                    document.getElementById('volume').innerHTML = volume;
+                    // document.getElementById('weight').innerHTML = weight;
+                    // document.getElementById('volume').innerHTML = volume;
 
                     tempCons--;
-                    const index = selectedConsignments.indexOf(allCheckboxes[i].value);
-                    selectAll.checked = false;
-                    sessionStorage.setItem('selectAllFlag', "false");
-                    if (index != -1) {
-                        selectedConsignments.splice(index, 1);
-                    }
+                    // const index = selectedConsignments.indexOf(allCheckboxes[i].value);
+                    // selectAll.checked = false;
+                    // sessionStorage.setItem('selectAllFlag', "false");
+                    // if (index != -1) {
+                    //     selectedConsignments.splice(index, 1);
+                    // }
 
 
 
                 }
 
                 let checkedItems = document.querySelectorAll('input[type=checkbox]:checked');
-                selectedConsignments = [];
-                for (let i = 0; i < checkedItems.length; i++) {
-                    selectedConsignments.push(checkedItems[i].value);
-                    // console.log(checkedItems[i].value);
-                }
-
-                if (checkedItems.length == 20) {
-                    selectAll.checked = true;
-                    sessionStorage.setItem('selectAllFlag', "true");
-                } else {
-                    selectAll.checked = false;
-                    sessionStorage.setItem('selectAllFlag', "false");
-                }
+                // selectedConsignments = [];
+                // for (let i = 0; i < checkedItems.length; i++) {
+                //     selectedConsignments.push(checkedItems[i].value);
+                //     // console.log(checkedItems[i].value);
+                // }
+                //
+                // if (checkedItems.length == 20) {
+                //     // selectAll.checked = true;
+                //     sessionStorage.setItem('selectAllFlag', "true");
+                // } else {
+                //     selectAll.checked = false;
+                //     sessionStorage.setItem('selectAllFlag', "false");
+                // }
                 // console.log(selectedConsignments);
-                for (let k = 0; k < selectedConsignments.length; k++) {
-                    existingIDs.push(selectedConsignments[k]);
-                }
+                // for (let k = 0; k < selectedConsignments.length; k++) {
+                //     existingIDs.push(selectedConsignments[k]);
+                // }
 
 
-                sessionStorage.setItem('selectedCons', JSON.stringify(existingIDs));
+                // sessionStorage.setItem('selectedCons', JSON.stringify(existingIDs));
             });
         }
 
 
         allCheckboxes = document.getElementsByClassName('selectSingle');
-        selectAll.addEventListener('click', function () {
-            // alert("yess");
-
-            if (selectAll.checked === true) {
-                sessionStorage.setItem('selectAllFlag', "true");
-
-weight = consWeight;
-volume = consVolume;
-                for (let i = 0; i < allCheckboxes.length; i++) {
-                    allCheckboxes[i].checked = true;
-                    weight += parseInt(document.getElementById(allCheckboxes[i].value).children[4].children[0].innerText);
-                    volume += parseInt(document.getElementById(allCheckboxes[i].value).children[5].children[0].innerText);
-                    // weight +=;
-
-                    if(vehicleType != "Bike"){
-                    if(weight > weightCap-360 || volume > volumeCap-200){
-                        weight -= parseInt(document.getElementById(allCheckboxes[i].value).children[4].children[0].innerText);
-                        volume -= parseInt(document.getElementById(allCheckboxes[i].value).children[5].children[0].innerText);
-
-
-                        allCheckboxes[i].checked = false;
-                        break;
-                    }
-                }else{
-                    tempCons++;
-                    if(tempCons > 40){
-                        weight -= parseInt(document.getElementById(allCheckboxes[i].value).children[4].children[0].innerText);
-                        volume -= parseInt(document.getElementById(allCheckboxes[i].value).children[5].children[0].innerText);
-                        tempCons--;
-                        // alert("Number of consignments can't exceed 40 for a Bike!");
-                        allCheckboxes[i].checked = false;
-                    }
-
-                }
-
-                    document.getElementById('weight').innerHTML = weight;
-                    document.getElementById('volume').innerHTML = volume;
-
-                }
-
-                let checkedItems = document.querySelectorAll('input[type=checkbox]:checked');
-                selectedConsignments = [];
-                for (let i = 0; i < checkedItems.length; i++) {
-                    selectedConsignments.push(checkedItems[i].value);
-
-                }
-
-            } else {
-                sessionStorage.setItem('selectAllFlag', "false");
-                //value is set to null back if the checkbox is unchecked
-                for (let i = 0; i < allCheckboxes.length; i++) {
-                    allCheckboxes[i].checked = false;
-                   // weight +=;
-
-                }
-
-                weight = consWeight;
-                volume = consVolume;
-                document.getElementById('weight').innerHTML = weight;
-                document.getElementById('volume').innerHTML = volume;
-tempCons = noOfCons;
-
-                let checkedItems = document.querySelectorAll('input[type=checkbox]:checked');
-                selectedConsignments = [];
-                for (let i = 0; i < checkedItems.length; i++) {
-                    selectedConsignments.push(checkedItems[i].value);
-
-                }
-                console.log(selectedConsignments);
-            }
-
-
-            for (let k = 0; k < selectedConsignments.length; k++) {
-                existingIDs.push(selectedConsignments[k]);
-            }
-
-
-            if (document.querySelectorAll('input[type=checkbox]:checked').length < 1) {
-                document.getElementById('addToDS').disabled = "true";
-            } else {
-                document.getElementById('addToDS').disabled = "";
-            }
-
-
-            sessionStorage.setItem('selectedCons', JSON.stringify(existingIDs));
-
-            // console.log(selectedConsignments);
-        });
-
-
-        $(document).ready(function () {
-
-            const mySelections = JSON.parse(sessionStorage.getItem('selectedCons'));
-
-            if (typeof (mySelections) != "undefined") {
-                if (sessionStorage.getItem('selectAllFlag') === "true") {
-
-                    selectAll.checked = true;
-                }
-
-                for (let i = 2; i < mySelections.length; i++) {
-                    // console.log(mySelections[i]);
-                    // console.log(mySelections[i]);
-                    if (document.getElementById("cons" + mySelections[i]) != null) {
-                        document.getElementById("cons" + mySelections[i]).checked = true;
-                    }
-                }
-
-            }
-
-        });
+//         selectAll.addEventListener('click', function () {
+//             // alert("yess");
+//
+//             if (selectAll.checked === true) {
+//                 sessionStorage.setItem('selectAllFlag', "true");
+//
+// weight = consWeight;
+// volume = consVolume;
+//                 for (let i = 0; i < allCheckboxes.length; i++) {
+//                     allCheckboxes[i].checked = true;
+//                     weight += parseInt(document.getElementById(allCheckboxes[i].value).children[4].children[0].innerText);
+//                     volume += parseInt(document.getElementById(allCheckboxes[i].value).children[5].children[0].innerText);
+//                     // weight +=;
+//
+//                     if(vehicleType != "Bike"){
+//                     if(weight > weightCap-360 || volume > volumeCap-200){
+//                         weight -= parseInt(document.getElementById(allCheckboxes[i].value).children[4].children[0].innerText);
+//                         volume -= parseInt(document.getElementById(allCheckboxes[i].value).children[5].children[0].innerText);
+//
+//
+//                         allCheckboxes[i].checked = false;
+//                         break;
+//                     }
+//                 }else{
+//                     tempCons++;
+//                     if(tempCons > 40){
+//                         weight -= parseInt(document.getElementById(allCheckboxes[i].value).children[4].children[0].innerText);
+//                         volume -= parseInt(document.getElementById(allCheckboxes[i].value).children[5].children[0].innerText);
+//                         tempCons--;
+//                         // alert("Number of consignments can't exceed 40 for a Bike!");
+//                         allCheckboxes[i].checked = false;
+//                     }
+//
+//                 }
+//
+//                     document.getElementById('weight').innerHTML = weight;
+//                     document.getElementById('volume').innerHTML = volume;
+//
+//                 }
+//
+//                 let checkedItems = document.querySelectorAll('input[type=checkbox]:checked');
+//                 selectedConsignments = [];
+//                 for (let i = 0; i < checkedItems.length; i++) {
+//                     selectedConsignments.push(checkedItems[i].value);
+//
+//                 }
+//
+//             } else {
+//                 sessionStorage.setItem('selectAllFlag', "false");
+//                 //value is set to null back if the checkbox is unchecked
+//                 for (let i = 0; i < allCheckboxes.length; i++) {
+//                     allCheckboxes[i].checked = false;
+//                    // weight +=;
+//
+//                 }
+//
+//                 weight = consWeight;
+//                 volume = consVolume;
+//                 document.getElementById('weight').innerHTML = weight;
+//                 document.getElementById('volume').innerHTML = volume;
+// tempCons = noOfCons;
+//
+//                 let checkedItems = document.querySelectorAll('input[type=checkbox]:checked');
+//                 selectedConsignments = [];
+//                 for (let i = 0; i < checkedItems.length; i++) {
+//                     selectedConsignments.push(checkedItems[i].value);
+//
+//                 }
+//                 console.log(selectedConsignments);
+//             }
+//
+//
+//             for (let k = 0; k < selectedConsignments.length; k++) {
+//                 existingIDs.push(selectedConsignments[k]);
+//             }
+//
+//
+//             if (document.querySelectorAll('input[type=checkbox]:checked').length < 1) {
+//                 document.getElementById('addToDS').disabled = "true";
+//             } else {
+//                 document.getElementById('addToDS').disabled = "";
+//             }
+//
+//
+//             sessionStorage.setItem('selectedCons', JSON.stringify(existingIDs));
+//
+//             // console.log(selectedConsignments);
+//         });
+//
+//
+//         $(document).ready(function () {
+//
+//             const mySelections = JSON.parse(sessionStorage.getItem('selectedCons'));
+//
+//             if (typeof (mySelections) != "undefined") {
+//                 // if (sessionStorage.getItem('selectAllFlag') === "true") {
+//                 //
+//                 //     selectAll.checked = true;
+//                 // }
+//
+//                 for (let i = 2; i < mySelections.length; i++) {
+//                     // console.log(mySelections[i]);
+//                     // console.log(mySelections[i]);
+//                     if (document.getElementById("cons" + mySelections[i]) != null) {
+//                         document.getElementById("cons" + mySelections[i]).checked = true;
+//                     }
+//                 }
+//
+//             }
+//
+//         });
 
 
 
         function addConsignments(){
 
             //This needs to be changed to the sessionstprage consignments to work for the consignments that are selected before search
-            let temp = document.querySelectorAll('input[type=checkbox]:checked');
+
+            let temp = JSON.parse(sessionStorage.getItem('selectedCons'));
+
+if(temp.length !== 0) {
+    for (let i = 0; i < temp.length; i++) {
+        temp[i] = temp[i].replace('cons', '');
+        console.log(temp[i].length);
+    }
+}else{
+    const checked = document.querySelectorAll('input[type=checkbox]:checked');
+
+    for (let i = 0; i < checked.length; i++) {
+        temp[i] = checked[i].value;
+
+    }
+    // console.log(temp);
+}
+
+// console.log(temp);
+// alert("asdgasgdss");
 
             let consignments = [];
             let dsID = <?php echo $deliverySheet->deliverySheet_id; ?>;
 consignments.push(dsID.toString());
             for(let i=0; i<temp.length; i++){
-                consignments.push(temp[i].value);
+                consignments.push(temp[i]);
             }
 
             const str = JSON.stringify(consignments);
@@ -982,23 +1079,36 @@ consignments.push(dsID.toString());
         $(document).ready(function () {
             $('.btnCheckout').click(function (e) {
                 e.preventDefault();
-                let deliverySheet_id = $(this).val();
-                $('#deliverySheet_id').val(deliverySheet_id);
-                $('#checkoutModal').modal('show');
 
-            });
+                let temp = JSON.parse(sessionStorage.getItem('selectedCons')) ?? [];
+                const checked = document.querySelectorAll('input[type=checkbox]:checked');
 
-        });
-    </script>
+                if(temp.length === 0 && checked.length === 0){
+                    swal({
+                        title: 'Error!',
+                        icon: 'error',
+                        text: 'Please select at least one Consignment!',
 
-    <script>
-        $(document).ready(function () {
-            $('.btnUnCheckout').click(function (e) {
-                e.preventDefault();
-                let deliverySheet_id = $(this).val();
-                $('#deliverySheet_idU').val(deliverySheet_id);
-                $('#unCheckoutModal').modal('show');
+                        timer: 2000,
+                        buttons: false,
+                    }).then(
+                        function () {
 
+                        },
+                        // handling the promise rejection
+                        function (dismiss) {
+                            if (dismiss === 'timer') {
+
+                                //console.log('I was closed by the timer')
+                            }
+                        }
+                    )
+                }else {
+
+                    let deliverySheet_id = $(this).val();
+                    $('#deliverySheet_id').val(deliverySheet_id);
+                    $('#checkoutModal').modal('show');
+                }
             });
 
         });
@@ -1017,7 +1127,38 @@ consignments.push(dsID.toString());
             });
 
         });
+
+
+        if (performance.getEntriesByType("navigation")[0].type === "reload") {
+
+        } else {
+            console.info( "This page is not reloaded");
+            // let temp = JSON.parse(sessionStorage.getItem('selectedCons'));
+            //
+            // if(temp.length !== 0){
+            //     document.getElementById('addToDS').disabled = "";
+            // }
+
+            {{--let consWeight =<?php echo $totalWeight; ?>;--}}
+            {{--let consVolume = <?php echo $totalVolume; ?>;--}}
+            {{--let weight = <?php echo $totalWeight; ?>;--}}
+            {{--let volume = <?php echo $totalVolume; ?>;--}}
+
+
+
+
+
+        }
+
+        if (performance.getEntriesByType("navigation")[0].type === "back_forward") {
+            window.history.back();
+        }
+
+
     </script>
+
+
+
 
 @endsection
 

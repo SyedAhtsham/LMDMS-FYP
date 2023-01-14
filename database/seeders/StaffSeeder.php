@@ -28,12 +28,12 @@ class StaffSeeder extends Seeder
             $staff->contact = $faker->phoneNumber;
             $staff->address = $faker->address;
             $staff->cnic = $faker->randomNumber();
-            $staff->position = 'Driver';
+            $staff->position = 'Manager';
             $staff->dob = $faker->date;
             $staff->gender = 'Male';
             $staff->save();
             $staff1 = Staff::all();
-            $uniqueStaffCode = 'ST-';
+            $uniqueStaffCode = 'ST';
             $temp = 1000;
             if (sizeof($staff1) > 0) {
                 $lastIndex = $staff1[sizeof($staff1) - 1]['staff_id'];
@@ -44,11 +44,11 @@ class StaffSeeder extends Seeder
             $lastIndex += $temp;
 
             if ($staff1[sizeof($staff1) - 1]['position'] == 'Driver') {
-                $uniqueStaffCode .= 'D' . $lastIndex;
+                $uniqueStaffCode .= 'D-' . $lastIndex;
             }elseif($staff1[sizeof($staff1) - 1]['position'] == 'Supervisor'){
-                $uniqueStaffCode .= 'S' . $lastIndex;
+                $uniqueStaffCode .= 'S-' . $lastIndex;
             }else{
-                $uniqueStaffCode .= 'M' . $lastIndex;
+                $uniqueStaffCode .= 'M-' . $lastIndex;
             }
 
 
@@ -62,7 +62,7 @@ class StaffSeeder extends Seeder
             $driver->licenseNo = $faker->randomNumber(4);
 
             $driver->yearsExp = $faker->randomNumber(1);
-            $driver->canDrive = 'Bike, Hilux';
+            $driver->canDrive = 'Shahzore';
 
             $driver->save();
             }
