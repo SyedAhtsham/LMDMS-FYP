@@ -22,14 +22,14 @@ class VehicleSeeder extends Seeder
 
         $faker = Faker::create();
 
-        for ($i = 1; $i <= 1; $i++) {
+        for ($i = 1; $i <= 3; $i++) {
             $vehicle = new Vehicle;
             $vehicle->vehicleCode = "";
             $vehicle->plateNo = $faker->randomNumber();
             $vehicle->vehicleModel = $faker->year;
             $vehicle->condition = "Normal";
             $vehicle->status = "Idle";
-            $vehicle->make = "Honda";
+            $vehicle->make = "Suzuki";
             $vehicle->mileage = 15;
             $vehicle->vehicleType_id = 5;
 
@@ -38,10 +38,10 @@ class VehicleSeeder extends Seeder
 
 
             $id = $vehicle->vehicle_id;
-            $uniqueVehicleCode = 'VH-';
+            $uniqueVehicleCode = 'VH';
 
 //        if ($request['ownership'] == 'Company Owned') {
-            $uniqueVehicleCode .= 'P' . $id;
+            $uniqueVehicleCode .= 'P-' . $id;
 //        } elseif ($request['ownership'] == 'Contractual Vehicle') {
 //            $uniqueVehicleCode .= 'R' .$id;
 //        }

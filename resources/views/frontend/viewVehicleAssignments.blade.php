@@ -17,7 +17,7 @@
                         <h5>Are you sure you want to delete this <b>Vehicle Assignment?</b></h5>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" style="background-color: rgb(0, 74, 111);" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-light" data-dismiss="modal">Close</button>
                         <button type="submit" class="btn btn-danger">Yes Delete</button>
                     </div>
                 </form>
@@ -27,7 +27,7 @@
 
     <div class="main pt-5" style="margin-right: 2em;" >
 
-        <h4>Vehicles Assignments</h4>
+        <h4>Vehicle Assignments</h4>
         <hr>
         <div class="row mt-2 mb-2 d-flex">
             <form action="" class="col-10 d-flex">
@@ -42,8 +42,8 @@
 
                 <div class="col-2">
                     <a href="{{url('/frontend/view-vehicleAssignments')}}">
-                        <button type="button" style="width: 8em;  background-color: rgb(0, 74, 111);"
-                                class="btn btn-primary">Reset
+                        <button type="button" style="width: 8em;"
+                                class="btn btn-light">Reset
                         </button>
                     </a>
                 </div>
@@ -53,8 +53,8 @@
         <table  class="table table-sm table-striped" >
             <thead class="p-5" style="color:white; background-color: rgb(0, 73, 114);">
             <tr>
+<th class="col-1">Sr #</th>
 
-                <th>VH ID</th>
                 <th>Vehicle</th>
                 {{--            <th>Email</th>--}}
                 <th>Driver</th>
@@ -68,14 +68,14 @@
 {{--                --}}{{--            <th>DOB</th>--}}
 {{--                <th>Status</th>--}}
 
-                <th>Action</th>
+                <th class="text-center">Action</th>
             </tr>
             </thead>
 
             <tbody>
             <tr>
                 @php
-                    $i = 0;
+                    $i = 1;
                     $size = sizeof($vehicleAssignments);
 
                 @endphp
@@ -87,20 +87,90 @@
         @else
             @foreach($vehicleAssignments as $member)
 
-                <td>{{$member->vhCode}}</td>
-                <td>{{$member->make." ".$member->tpName}}</td>
+                <td>
+                    <div class="d-inline-flex">
+                        <div>
+                            @php
+                                $total = (($vehicleAssignments->currentPage()-1) * 20) + $i;
+                                echo $total;
+
+                                $i++;
+                            @endphp
+                        </div>
+                        @php
+                            $createdAt = strtotime(\Carbon\Carbon::parse($member->dtAss));
+                            $currentDate = time();
+
+                            $diff = ($currentDate-$createdAt)/3600;
+
+                            if($diff <= 1){
+
+                     echo '<div class="bg-warning rounded ml-1 newMessage" style="width: 2.5em; text-align: center;">
+                          New
+                     </div>';
+                         }
+                        @endphp
+                    </div>
+                </td>
+                <td>
+                    @if(isset($member->vhCode))
+                        <a href="{{route('view.singlevehicle', ['id'=>$member->vhID])}}">
+                            {{$member->vhCode}}
+                        </a>
+                    @else
+                        ---
+                    @endif
+
+
+
+                </td>
+
+
+
                 {{--            <td>{{$member->email}}</td>--}}
-                <td>{{$member->drvName}}</td>
+
+                @if(isset($member->drvID))
+
+                    <td>
+                        @if(isset($member->drvID))
+                            <a href="{{route('view.singlestaff', ['id'=>$member->drvID])}}">
+                                {{$member->drvName}}
+                            </a>
+                        @endif
+                    </td>
+
+                @else
+
+                    <td>---</td>
+
+
+                @endif
+
 
                 <td>{{date("d-M-Y", strtotime($member->dtAss))}}</td>
 
-                <td>{{$member->spvName}}</td>
+                @if(isset($member->spvID))
+
+                    <td>
+                        @if(isset($member->spvID))
+                            <a href="{{route('view.singlestaff', ['id'=>$member->spvID])}}">
+                                {{$member->spvName}}
+                            </a>
+                        @endif
+                    </td>
+
+                @else
+
+                    <td>---</td>
+
+
+                @endif
 
 
 
 
 
-                <td>
+                <td class="text-center">
                     <!-- Call to action buttons -->
 
                     <ul class="list-inline m-0">
@@ -123,7 +193,7 @@
                         <li class="list-inline-item">
                             {{--                            <a href="{{route('vehicle.delete', ['id'=>$member->vehicle_id])}}">--}}
                             {{--                                <button class="btn btn-danger btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash"></i></button>--}}
-                            <button class="btn btn-danger btn-sm rounded-0 deleteVehicleBtn" type="button" data-toggle="tooltip" data-placement="top" title="Delete" value="{{$member->vhID}}"><i class="fa fa-trash"></i></button>
+                            <button class="btn btn-sm rounded-2 deleteVehicleBtn change-color1" type="button" data-toggle="" data-placement="top" title="Delete" value="{{$member->vhID}}"><i class="fa fa-trash"></i></button>
                             {{--                            </a>--}}
                         </li>
                     </ul>
@@ -159,6 +229,15 @@
             });
 
         });
+
+        const allNewDivs = document.getElementsByClassName("newMessage");
+
+        setTimeout(function(){
+            for(let k=0; k<allNewDivs.length; k++) {
+                $(".newMessage").fadeOut();
+            }
+        }, 2000);
+
     </script>
 
 @endsection

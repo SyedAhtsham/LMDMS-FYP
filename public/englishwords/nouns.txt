@@ -19,4 +19,19 @@ active
 in-workshop
 male
 female
+barakahu
+banigala
+g-5 sector
+f-8 sector
+sector
+van
+Ahtsham
+Faizan
+Jameel
+Muntazir
+Adeel
+Muhammad
+Mehdi
+Bilal
+
 

@@ -21,7 +21,16 @@
     <div class="main">
 
 
-        <h4>{{$title}}</h4>
+        <h4>{{$title}}
+
+            @if(isset($staff->staff_id))
+            :
+
+            <a style="font-size: 21px;" href="{{route('view.singlestaff', ['id'=>$staff->staff_id])}}">
+                {{$staff->name}}
+            </a>
+@endif
+        </h4>
 
         <hr>
         <br>
@@ -31,7 +40,7 @@
             <div class="form-row pr-5">
                 <div class="form-group col-md-4 pr-5">
                     <label for="inputName4">Name <span class="required">*</span></label>
-                    <input type="text" name="name" value="{{$staff->name ?? old('name')}}" class="form-control"
+                    <input type="text" name="name"  pattern="^([A-Za-z ]{4,30})$" title="e.g., Muhammad Ali" value="{{$staff->name ?? old('name')}}" class="form-control"
                            id="inputName4" placeholder="e.g., Muhammad Ali"
                            value="{{old('name')}}" required>
                     <span class="text-danger">
@@ -42,29 +51,32 @@
                 </div>
                 <div class="form-group col-md-4 pr-5">
                     <label for="input">Contact <span class="required">*</span></label>
-                    <input type="text" max="14" name="contact" value="{{$staff->contact ?? old('contact')}}"
+                    <input type="text" max="14" pattern="^(03[0-9]{2}|04[0-9]{2}|05[0-9]{2}|09[0-9]{2})-[0-9]{7}$" name="contact" value="{{$staff->contact ?? old('contact')}}"
                            class="form-control" id="inputContact"
-                           placeholder="e.g., 0315-52432142" value="{{old('contact')}}" required>
+                           placeholder="e.g., 0315-52432142" title="e.g., 0315-52432142" value="{{old('contact')}}" required>
                     <span class="text-danger">
                     @error('contact')
                         {{$message}}
                         @enderror
                 </span>
                 </div>
-                <div class="form-group col-md-4 pr-5">
-                    <label for="input">CNIC <span class="required">*</span></label>
-                    <input type="text" max="14" name="cnic" value="{{$staff->cnic ?? old('cnic')}}" class="form-control"
-                           id="inputCNIC"
-                           placeholder="e.g., 6110123234565" value="{{old('cnic')}}" required>
-                    <span class="text-danger">
-                    @error('cnic')
-                        {{$message}}
-                        @enderror
-                </span>
-                </div>
+
 
             </div>
-            <div class="form-row pr-5 pt-3">
+
+            <div class="form-row pr-5 mt-4">
+            <div class="form-group col-md-4 pr-5">
+                <label for="input">CNIC <span class="required">*</span></label>
+                <input type="text" pattern="^[0-9+]{5}-[0-9+]{7}-[0-9]{1}$" max="14" name="cnic" value="{{$staff->cnic ?? old('cnic')}}" class="form-control"
+                       id="inputCNIC"
+                       placeholder="e.g., 61101-2323456-5" title="e.g., 61101-2323456-5" value="{{old('cnic')}}" required>
+                <span class="text-danger">
+                    @error('cnic')
+                    {{$message}}
+                    @enderror
+                </span>
+            </div>
+
                 <div class="form-group col-md-4 pr-5">
                     <label for="inputEmail4">Email <span class="required">*</span></label>
                     <input type="email" name="email" value="{{$staff->email ?? old('email')}}" class="form-control"
@@ -78,9 +90,15 @@
                     <label class="text-danger" style="display: none;">The email has already been taken.</label>
                 </div>
 
+            </div>
+
+
+            <div class="form-row pr-5 mt-4">
+
+
                 <div class="form-group col-md-4 pr-5">
                     <label for="inputDOB">Date of Birth</label>
-                    <input type="date" name="dob" max="2022-09-28" class="form-control" id="inputDOB"
+                    <input type="date" name="dob" class="form-control" id="inputDOB"
                            value="{{$staff->dob ?? old('dob')}}"
                            placeholder="">
                     <span class="text-danger">
@@ -129,11 +147,26 @@
                 </div>
             </div>
 
-            <div class="form-row pr-5 pt-3">
+
+
+            @if(isset($staff->staff_id) && Session::get('staff_id')==$staff->staff_id)
+                <input type="hidden" name="position" value="{{$staff->position}}">
+            @endif
+
+            <div class="form-row pr-5 mt-4">
                 <div class="form-group col-4 pr-5">
                     <label for="inputPosition">Position <span class="required">*</span></label>
-                    <select id="inputPosition" onchange="showForDriver(this)" name="position" class="form-control"
-                            required>
+                    <select id="inputPosition" onchange="showForDriver(this)"
+
+                            @if(isset($staff->staff_id) && Session::get('staff_id')==$staff->staff_id)
+                                disabled
+                            @else
+                                required
+                                @endif
+                            name="position" class="form-control"
+
+
+                    >
                         @php
                             $pos = old('position') ?? null;
                         @endphp
@@ -171,11 +204,14 @@
                         @enderror
                 </span>
                 </div>
+
+
+
                 <div class="form-group col-8 pr-5">
                     <label for="inputAddress">Address <span class="required">*</span></label>
-                    <input type="text" name="address" class="form-control" id="inputAddress"
+                    <input type="text" pattern="^([A-Za-z0-9#., ]{6,200})$" name="address" class="form-control" id="inputAddress"
                            value="{{$staff->address ?? old('address')}}"
-                           placeholder="e.g., 84 Hostel 6 QAU" required>
+                           placeholder="e.g., 84 Hostel 6 QAU" title="e.g., 84 Hostel 6 QAU" required>
                     <span class="text-danger">
                     @error('address')
                         {{$message}}
@@ -209,9 +245,9 @@
                 <div id="ifYes1" class="form-row pr-5 pt-3">
                     <div class="form-group col-md-4 pr-5">
                         <label for="inputLicenseNo0">License No. <span class="required">*</span></label>
-                        <input id="inputLicenseNo0" type="text" name="licenseNo" class="form-control"
+                        <input id="inputLicenseNo0" pattern="^[A-Z]{2}[0-9]{6}$" title="e.g., LE165487" type="text" name="licenseNo" class="form-control"
                                value="{{$staff->getDriver->licenseNo ?? old('licenseNo')}}"
-                               placeholder="e.g., LE165487" required>
+                               placeholder="e.g., LE165487" >
                         <span class="text-danger">
                     @error('licenseNo')
                             {{$message}}
@@ -226,7 +262,7 @@
                     </div>
                     <div class="form-group col-4 pr-5">
                         <label for="inputCanDrive0">Can Drive <span class="required">*</span></label>
-                        <select id="inputCanDrive0" name="canDrive[]" required multiple class="form-control selectpicker">
+                        <select id="inputCanDrive0" name="canDrive[]"  multiple class="form-control selectpicker">
 
                             @foreach($vehicleTypes as $vT)
                                 <option value={{$vT->typeName}}
@@ -264,9 +300,9 @@
                     <div id="ifYes" class="form-row pr-5 pt-3">
                         <div class="form-group col-md-4 pr-5">
                             <label for="inputLicenseNo">License No. <span class="required">*</span></label>
-                            <input id="licenseNo1" type="text" name="licenseNo" class="form-control"
+                            <input id="licenseNo1" type="text" pattern="^[A-Z]{2}[0-9]{6}$" title="e.g., LE165487" name="licenseNo" class="form-control"
                                    value="{{$staff->getDriver->licenseNo ?? old('licenseNo')}}"
-                                   placeholder="e.g., LE165487" required>
+                                   placeholder="e.g., LE165487" >
                             <span class="text-danger">
                     @error('licenseNo')
                                 {{$message}}
@@ -286,11 +322,11 @@
                                 @foreach($vehicleTypes as $vT)
                                     <option value={{$vT->typeName}}
 
-
                                     @if(isset($staff->getDriver->canDrive))
-                                        {{$staff->getDriver->canDrive == $vT->typeName ? "selected" : ""}}
+                                        {{in_array($vT->typeName, $canDriveArr) ? "selected" : "" }}
                                         @else
                                         {{--                                            {{$oldCanDrive.contains($vT->vehicleType_id)  ? "selected" : ""}}--}}
+                                            {{ (collect(old('canDrive'))->contains($vT->typeName)) ? 'selected':'' }}
 
                                         @endif
 
@@ -311,9 +347,9 @@
                     <div id="ifYes2" class="form-row pr-5 pt-3">
                         <div class="form-group col-md-4 pr-5">
                             <label for="licenseNo">License No. <span class="required">*</span></label>
-                            <input id="licenseNo" type="text" name="licenseNo" class="form-control"
+                            <input id="licenseNo" type="text" name="licenseNo" pattern="^[A-Z]{2}[0-9]{6}$" title="e.g., LE165487" class="form-control"
                                    value="{{$staff->getDriver->licenseNo ?? old('licenseNo')}}"
-                                   placeholder="e.g., LE165487" required>
+                                   placeholder="e.g., LE165487" >
                             <span class="text-danger">
                     @error('licenseNo')
                                 {{$message}}
@@ -336,11 +372,11 @@
                                 @foreach($vehicleTypes as $vT)
                                     <option value={{$vT->typeName}}
 
-
-                                        @if(isset($staff->getDriver->canDrive))
-                                            {{$staff->getDriver->canDrive == $vT->typeName ? "selected" : ""}}
+                                    @if(isset($staff->getDriver->canDrive))
+                                        {{in_array($vT->typeName, $canDriveArr) ? "selected" : "" }}
                                         @else
-{{--                                            {{$oldCanDrive.contains($vT->vehicleType_id)  ? "selected" : ""}}--}}
+                                        {{--                                            {{$oldCanDrive.contains($vT->vehicleType_id)  ? "selected" : ""}}--}}
+                                            {{ (collect(old('canDrive'))->contains($vT->typeName)) ? 'selected':'' }}
 
                                         @endif
 
@@ -452,6 +488,10 @@
 
     </script>
 
+    <script>
+        document.getElementById('inputDOB').max = new Date().toISOString().split("T")[0];
+
+    </script>
 
 
 @endsection

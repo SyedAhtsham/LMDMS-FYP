@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Frontend;
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Controller;
+use App\Models\DeliverySheet;
 use App\Models\Fuel;
 use App\Models\Vehicle;
 use App\Models\VehicleAssignment;
@@ -133,6 +135,8 @@ class StaffController extends Controller
             if ($request['yearsExperience'] != "")
                 $driver->yearsExp = $request['yearsExperience'];
             $canDrive = $request['canDrive'];
+            $canDrive = array_unique($canDrive);
+
             $canDriveStr = implode(', ', $canDrive);
             $driver->canDrive = $canDriveStr;
 
@@ -150,7 +154,7 @@ class StaffController extends Controller
         $user->save();
 
 //        echo "Your username is " . $request['email'] . " and your password is " . $myPassword;
-        return redirect('/frontend/staff/'.$staffId)->withSuccessMessage('Successfully Added!');
+        return redirect('/frontend/staff/'.$staffId)->withSuccessMessage('Successfully added and User Account has been created!');
 
     }
 
@@ -161,13 +165,21 @@ class StaffController extends Controller
 
         if ($search != "") {
 
+
             $staff = Staff::with('getDriver')
-                ->where('name', 'LIKE', "%$search%")->orwhere('staffCode', 'LIKE', "%$search%")->orwhere('position', 'LIKE', "%$search%")->orwhere('address', 'LIKE', "%$search%")->orwhere('gender', 'LIKE', "%$search%")->paginate(20);
+                ->where('deleted_at', '=', null)
+                ->where(function ($query) use($search) {
+                    $query->where('name', 'LIKE', "%$search%")->orwhere('staffCode', 'LIKE', "%$search%")->orwhere('position', 'LIKE', "%$search%")->orwhere('address', 'LIKE', "%$search%")->orwhere('gender', 'LIKE', "%$search%");
+})
+                ->orderByDesc('staff.created_at')
+                ->paginate(20);
             //->orwhere('canDrive','LIKE', "%$search%")
 
         } else {
 //          $staff = Staff::with('getDriver')->get();
             $staff = Staff::with('getDriver')
+                ->where('deleted_at', '=', null)
+                ->orderByDesc('staff.created_at')
                 ->paginate(20);
         }
         $data = compact('staff', 'search');
@@ -178,32 +190,54 @@ class StaffController extends Controller
     {
 
         $id = $request->staff_delete_id;
-        $vehicleAssignment = VehicleAssignment::where('assignedTo','=', $id)->first();
+
+        $timestamp = date("Y-m-d H:i:s");
+
+        $vehicleAssignment = VehicleAssignment::where('assignedTo','=', "$id")->first();
 
         if(!is_null($vehicleAssignment)){
             $veh = Vehicle::find($vehicleAssignment->vehicle_id);
+
             $veh->assignStatus = "Unassigned";
             $veh->save();
             $vehicleAssignment->delete();
         }
+
         $staff = Staff::find($id);
         if (!is_null($staff)) {
             if ($staff->position == "Driver") {
 
                 $driver = Driver::find($id);
                 if (!is_null($driver)) {
-                    $driver->delete();
+
+                    $dSheet = DeliverySheet::where('driver_id', '=', "$id")->where('status', '=', 'un-checked-out')->orderByDesc('created_at')->first();
+                    if(isset($dSheet->driver_id)){
+                    $dSheet->driver_id = null;
+                    $dSheet->save();
+                    }
+
+                    $driver->vhAssigned = 0;
+                 $driver->status = "Unassigned";
+                    $driver->deleted_at = $timestamp;
+                    $driver->save();
                 }
 //            echo "<pre>";
 //            print_r($driver->toArray());
 
             }
+
             $user = User::find($id);
             if (!is_null($user)) {
                 $user->delete();
             }
 
-            $staff->delete();
+
+
+$staff->deleted_at = $timestamp;
+
+
+
+            $staff->save();
         }
         return redirect('/frontend/view-staff')->withSuccessMessage('Successfully Deleted!');
 
@@ -213,12 +247,13 @@ class StaffController extends Controller
     {
 //        $staff = Staff::find($id);
         $vehicleTypes = VehicleType::all();
-        $staff = Staff::with('getDriver')->find($id);
+        $staff = Staff::with('getDriver')->where('deleted_at', '=', null)->find($id);
+
         if (is_null($staff)) {
             return redirect('/frontend/view-staff');
         } else {
             $url = url('/frontend/update-staff') . '/' . $id;
-            $title = "Update Staff";
+            $title = "Edit Staff";
             $data = compact('staff', 'url', 'title', 'vehicleTypes');
             return view('frontend.addstaff')->with($data);
         }
@@ -229,6 +264,7 @@ class StaffController extends Controller
     {
 
         $staff = Staff::find($id);
+
         $userEmail = $staff->email ?? '';
         $cnic = $staff->cnic ?? '';
 
@@ -299,7 +335,10 @@ class StaffController extends Controller
             $staff->address = $request['address'];
         }
         $staff->cnic = $request['cnic'];
+
+
         $staff->position = $request['position'];
+
         if (!($request['dob'] == "")) {
             $staff->dob = $request['dob'];
         }
@@ -332,6 +371,7 @@ class StaffController extends Controller
                 $driver1->licenseNo = $request['licenseNo'];
                 $driver1->yearsExp = $request['yearsExperience'];
                 $canDrive = $request['canDrive'];
+                $canDrive = array_unique($canDrive);
                 $canDriveStr = implode(', ', $canDrive);
                 echo $canDriveStr;
                 $driver1->canDrive = $canDriveStr;
@@ -341,6 +381,7 @@ class StaffController extends Controller
                 $driver->licenseNo = $request['licenseNo'];
                 $driver->yearsExp = $request['yearsExperience'];
                 $canDrive = $request['canDrive'];
+                $canDrive = array_unique($canDrive);
                 $canDriveStr = implode(', ', $canDrive);
                 echo $canDriveStr;
                 $driver->canDrive = $canDriveStr;
@@ -362,25 +403,39 @@ class StaffController extends Controller
 
 //        return redirect('/frontend/view-staff')->withSuccessMessage('Successfully updated');
 
+
         return redirect('/frontend/staff/'.$staffId)->withSuccessMessage('Successfully Updated!');
     }
 
     public function viewSingle($id){
 
-
-
-
         $staff = Staff::find($id);
+$vehicleAssignment = DB::table('vehicle_assignment')->where('assignedTo','=', "$id")->first();
+
+
+if(isset($vehicleAssignment->vehicle_id)) {
+    $vehicle = Vehicle::find($vehicleAssignment->vehicle_id);
+}else{
+    $vehicle = null;
+}
+
+$dSheet = DB::table('delivery_sheet')->where('driver_id','=', "$id")->orderByDesc('created_at')->first();
+
 
         $driver = Driver::find($id);
 
-        $account = User::find($id);
+        $accounts = User::where('staff_id', '=', $id)->get();
+        if(isset($accounts[0])) {
+            $account = $accounts[0];
+        }else{
+            $account = null;
+        }
 
 if(!isset($staff)){
     return redirect('/frontend/view-staff')->withErrorMessage('Sorry no record found!');
 }
 
-        $data = compact( 'staff', 'driver', 'account');
+        $data = compact( 'staff', 'driver', 'account','dSheet', 'vehicleAssignment', 'vehicle');
 //        $data = compact('url', 'title');
 
             return view('frontend.viewsinglestaff')->with($data);

@@ -31,15 +31,28 @@
 
         <div>
             <div class="float-left">
-                <h4 class=" float-left"> {{$staff->name}}</label></h4>
+                <h4 class=" float-left"> <i class="fa-solid fa-user-circle-o mr-1"></i>  {{$staff->name}}
+                    @if(isset($staff->deleted_at))
+
+                        <label class="small text-danger"> (ex-staff member) </label>
+
+                        @endif
+                    </label></h4>
             </div>
+            @if(!isset($staff->deleted_at))
         <div class="form-group float-right mr-5 mb-3 d-flex">
 
+            @if(Session::get('position') != "Driver")
             <a href="{{route('staff.edit', ['id'=>$staff->staff_id])}}">
+
             <button type="button" class="btn text-white mr-3" style="background-color:rgb(11, 77, 114);"><i class="fa-solid fa-user-edit mr-1"></i> Edit</button>
             </a>
-                <button type="button" class="btn btn-danger text-white deleteStaffBtn" value="{{$staff->staff_id}}"><i class="fa-solid fa-trash mr-1"></i> Delete</button>
+            @endif
+            @if(Session::get('staff_id') != $staff->staff_id)
+                <button type="button" class="btn btn-danger text-white deleteStaffBtn" value="{{$staff->staff_id}}"><i class="fa fa-trash mr-1"></i> Delete</button>
+        @endif
         </div>
+                @endif
         </div>
         <br>
 <hr>
@@ -120,6 +133,23 @@
                                         {{$staff->address}}
                                     </td>
                                 </tr>
+
+                                <tr>
+                                    <td>
+                                        <strong>
+                                            <span class="glyphicon glyphicon-calendar text-primary"></span>
+                                            <i class="fa-regular fa-calendar  mr-1"></i> Date of Birth
+                                        </strong>
+                                    </td>
+                                    <td class="text-primary">
+                                        <?php
+                                        $date = date("d-m-Y",strtotime($staff->dob));
+                                        ?>
+                                        {{$date}}
+                                    </td>
+                                </tr>
+
+
                                 <tr>
                                     <td>
                                         <strong>
@@ -131,6 +161,8 @@
                                         {{$staff->cnic}}
                                     </td>
                                 </tr>
+
+
                                 <tr>
                                     <td>
                                         <strong>
@@ -153,18 +185,41 @@
                                         {{$staff->gender}}
                                     </td>
                                 </tr>
+
                                 <tr>
                                     <td>
                                         <strong>
                                             <span class="glyphicon glyphicon-calendar text-primary"></span>
-                                            <i class="fa-regular fa-calendar  mr-1"></i> Date of Birth
+                                            <i class="fa-solid fa-file-contract  mr-1"></i> Joined
                                         </strong>
                                     </td>
                                     <td class="text-primary">
-                                        {{$staff->dob}}
+                                        <?php
+                                        $date = date("d-m-Y",strtotime($staff->created_at));
+                                        ?>
+                                        {{$date}}
                                     </td>
                                 </tr>
 
+                                @if(isset($staff->deleted_at))
+                                <?php
+                                        $date = date("d-m-Y",strtotime($staff->created_at));
+                                        ?>
+                                <tr>
+                                    <td>
+                                        <strong>
+                                            <span class="glyphicon glyphicon-calendar text-primary"></span>
+                                            <i class="fa-solid fa-remove  mr-1"></i> Left
+                                        </strong>
+                                    </td>
+                                    <td class="text-primary">
+                                        {{$date}}
+                                    </td>
+                                </tr>
+
+
+
+                                    @endif
 
                 @if(isset($driver))
 
@@ -193,7 +248,12 @@
                                             </strong>
                                         </td>
                                         <td class="text-primary">
+                                            @if(isset($driver->yearsExp))
                                             {{$driver->yearsExp}} years
+                                            @else
+
+                                                ---
+                                            @endif
                                         </td>
                                     </tr>
                                     <tr>
@@ -212,14 +272,126 @@
                                         <td>
                                             <strong>
                                                 <span class="glyphicon glyphicon-bookmark text-primary"></span>
-                                                <i class="fa-solid fa-check  mr-1"></i> Status
+                                                <i class="fa-solid fa-check  mr-1"></i> Vehicle Assigned
                                             </strong>
                                         </td>
                                         <td class="text-primary">
-                                            {{$driver->status}}
+@if(isset($vehicle))
+                                                <a href="{{route('view.singlevehicle', ['id'=>$vehicle->vehicle_id])}}">
+                                            {{$vehicle->vehicleCode}}
+                                                </a>
+                                            @else
+                                            ---
+    @endif
+
                                         </td>
                                     </tr>
+
+                    @if(!isset($staff->deleted_at))
+                        @if((Session::get('position') == "Driver"))
+
+                        @if(isset($dSheet->status) && ($dSheet->status == "checked-out") && ($dSheet->finished == 0))
+                            <tr>
+                                <td>
+                                    <strong>
+                                        <span class="glyphicon glyphicon-bookmark text-primary"></span>
+                                        <i class="fa-solid fa-file  mr-1"></i> DeliverySheet Assigned
+                                    </strong>
+                                </td>
+
+
+
+                                <td class="text-primary">
+
+
+                                    <div class="d-inline-flex">
+                                        <div>
+                                            @if(isset($dSheet))
+                                                <a href="{{route('view.deliverysheet', ['id'=>$dSheet->deliverySheet_id])}}">
+                                                    {{$dSheet->deliverySheetCode}}
+                                                </a>
+                                        </div>
+                                                @php
+                                                    $createdAt = strtotime(\Carbon\Carbon::parse($dSheet->created_at));
+                                                    $currentDate = time();
+
+                                                    $diff = ($currentDate-$createdAt)/3600;
+
+                                                    if($diff <= 1000){
+
+                                             echo '<div class="bg-warning text-black rounded ml-1 newMessage" style="width: 2.5em; text-align: center;">
+                                                  New
+                                             </div>';
+                                                 }
+                                                @endphp
+                                            @else
+                                        </div>
+
+                                        ---
+                                        @endif
+
+
+                                </td>
+                            </tr>
+                        @else
+                            <tr>
+                            <td>
+                                <strong>
+                                    <span class="glyphicon glyphicon-bookmark text-primary"></span>
+                                    <i class="fa-solid fa-file  mr-1"></i> DeliverySheet Assigned
+                                </strong>
+                            </td>
+                            <td class="text-primary">
+                                ---
+
+                            </td>
+                            </tr>
+
+                            @endif
+
+                            @else
+                    <tr>
+                        <td>
+                            <strong>
+                                <span class="glyphicon glyphicon-bookmark text-primary"></span>
+                                <i class="fa-solid fa-file  mr-1"></i> DeliverySheet Assigned
+                            </strong>
+                        </td>
+                        <td class="text-primary">
+                            @if(isset($dSheet) && $dSheet->finished == 0)
+
+                                <div class="d-inline-flex">
+                                    <div>
+                                        <a href="{{route('view.deliverysheet', ['id'=>$dSheet->deliverySheet_id])}}">
+                                            {{$dSheet->deliverySheetCode}}
+                                        </a>
+                                    </div>
+                                    @php
+                                        $createdAt = strtotime(\Carbon\Carbon::parse($dSheet->created_at));
+                                        $currentDate = time();
+
+                                        $diff = ($currentDate-$createdAt)/3600;
+
+                                        if($diff <= 1){
+
+                                 echo '<div class="bg-warning rounded ml-1 newMessage" style="width: 2.5em; text-align: center;">
+                                      New
+                                 </div>';
+                                     }
+                                    @endphp
+                                </div>
+                            @else
+                                ---
+                            @endif
+
+                        </td>
+                    </tr>
+                            @endif
                 @endif
+                    @endif
+
+
+                                @if(isset($account->email))
 
                     <tr><td><br></td></tr>
                     <tr>
@@ -268,6 +440,8 @@
                         </td>
                     </tr>
 
+                                    @endif
+
                                 </tbody>
                                 </table>
                             </div>
@@ -305,6 +479,7 @@ let password = document.getElementById('myInput');
 
             // editBtn.style.visibility = 'hidden';
 
+
             password.disabled = "";
 
             editDiv.innerHTML = '';
@@ -315,10 +490,36 @@ let password = document.getElementById('myInput');
         let editBtn2 = document.getElementById('editBtn002');
         function save(){
             // editBtn.style.visibility = 'hidden';
-            password.disabled = 'disabled';
-            editDiv.innerHTML = '';
-            editDiv.innerHTML = '<button class="btn btn-sm rounded-0 change-color rounded-2" onclick="edit()" id="editBtn001" type="button" data-toggle="" data-placement="top" title="Edit"><i class="fa fa-edit"></i></button>';
 
+            let password = document.getElementById("myInput").value;
+
+
+            if(password.length < 4){
+                swal({
+                    title: 'Error!',
+                    icon: 'error',
+                    text: 'Password must have at least 4 characters!',
+
+                    timer: 2000,
+                    buttons: false,
+                }).then(
+                    function () {
+
+                    },
+                    // handling the promise rejection
+                    function (dismiss) {
+                        if (dismiss === 'timer') {
+                            //console.log('I was closed by the timer')
+                        }
+                    }
+                )
+            }else {
+
+
+                password.disabled = 'disabled';
+                editDiv.innerHTML = '';
+                editDiv.innerHTML = '<button class="btn btn-sm rounded-0 change-color rounded-2" onclick="edit()" id="editBtn001" type="button" data-toggle="" data-placement="top" title="Edit"><i class="fa fa-edit"></i></button>';
+            }
         }
 
         $(document).ready(function () {
@@ -332,11 +533,11 @@ let password = document.getElementById('myInput');
                 let password = document.getElementById("myInput").value;
 
 
-                if(password.length < 4){
+                if(password.length < 4 || password.length > 30){
                     swal({
                         title: 'Error!',
                         icon: 'error',
-                        text: 'Password must have at least 4 characters!',
+                        text: 'Password must have 4-20 characters!!',
 
                         timer: 2000,
                         buttons: false,
@@ -395,6 +596,7 @@ let password = document.getElementById('myInput');
         });
 
 
+
         $(document).ready(function(){
             $('.deleteStaffBtn').click(function(e){
                 e.preventDefault();
@@ -405,6 +607,12 @@ let password = document.getElementById('myInput');
             });
 
         });
+
+
+        setTimeout(function(){
+                $(".newMessage").fadeOut();
+        }, 3000);
+
 
     </script>
 

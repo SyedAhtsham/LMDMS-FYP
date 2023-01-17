@@ -32,7 +32,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $hidden = [
-        'password',
+
         'remember_token',
     ];
 
@@ -46,7 +46,8 @@ class User extends Authenticatable
     ];
 
 
-    public function staff(){
+    public function staff(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
         return $this->belongsTo(Staff::class);
     }
 

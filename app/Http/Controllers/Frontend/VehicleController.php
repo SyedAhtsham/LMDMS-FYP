@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Frontend;
-
+use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\Controller;
 use App\Models\CompVehicle;
 use App\Models\ContVehicle;
@@ -11,11 +11,15 @@ use App\Models\Staff;
 use App\Models\User;
 use App\Models\Vehicle;
 use App\Models\VehicleAssignment;
+use App\Models\VehicleType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use MongoDB\Driver\Session as ses;
 use RealRashid\SweetAlert\Facades\Alert;
 use RealRashid\SweetAlert\SweetAlertServiceProvider;
+use function JmesPath\search;
 use function Sodium\compare;
+
 
 
 class VehicleController extends Controller
@@ -39,11 +43,12 @@ class VehicleController extends Controller
     public function create()
     {
 
+        $vehicleTypes = VehicleType::all();
         $vehicle = Vehicle::with('getCompVehicle')->find(134);
         $vehicle = Vehicle::with(['getContVehicle', 'getCompVehicle', 'getVehicleType'])->find(0);
         $url = url('/frontend/add-vehicle');
         $title = "Add Vehicle";
-        $data = compact('url', 'title', 'vehicle');
+        $data = compact('url', 'title', 'vehicle','vehicleTypes');
 //        $data = compact('url', 'title');
         return view('frontend.addvehicle')->with($data);
     }
@@ -52,6 +57,21 @@ class VehicleController extends Controller
     public function view(Request $request){
 
         $this->search = $request['search'] ?? "";
+$actual = $this->search;
+        $statusView = "";
+        $initialvalue = "";
+        $status = "";
+
+        if($this->search == "in:assigned " || $this->search == "in:unassigned " ){
+
+            $status = trim( explode(":", $this->search)[1]);
+            $statusView = ucfirst($status);
+
+
+            $status = ucfirst($status);
+            $search = $statusView;
+        }
+
 
 
 //    $vehicleObject = new VehicleController();
@@ -59,8 +79,39 @@ class VehicleController extends Controller
 //        echo $word;
 //        echo "<br>";
 //    }
+        $arr = [];
+        if($request['search']) {
+            $arr = explode(" ", $request['search']);
+        }
 
+
+if($this->search == "Assigned" || $this->search == "Unassigned"){
+    $statusView = $this->search;
+
+}
+
+if(count($arr)>1){
+    if($arr[0] == "in:unassigned" || $arr[0] == "in:assigned"){
+        $status = explode(":", $arr[0])[1];
+        $statusView = ucfirst($status);
+
+        for($i = 1; $i<count($arr); $i++){
+            $initialvalue = $initialvalue .' '. $arr[$i];
+        }
+
+
+    }
+    else{
         $initialvalue = $this->search;
+    }
+}else{
+    $initialvalue = $this->search;
+}
+
+
+$this->search = $initialvalue;
+
+
 
 if($this->search != "") {
 
@@ -117,22 +168,61 @@ $resultantLev = 0;
 
 $search =  $this->search;
 
+
+
 $search = trim($search, " \t\n\r\0\x0B");
 //type of the vehicle should also be included in the query
-        if($search != ""){
 
-            $vehicle = Vehicle::with(['getContVehicle', 'getCompVehicle', 'getVehicleType'])
-            ->where('assignStatus','=', "$search")->orwhere('vehicleCode', "LIKE", "%$search%")->orwhere('plateNo', "LIKE", "%$search%")->orwhere('vehicleModel', "LIKE", "%$search%")->orwhere('condition', "LIKE", "%$search%")->orwhere('status', "LIKE", "%$search%")
-                ->orwhere('make', "LIKE", "%$search%")->paginate(20);
+        if($status != ""){
 
+            if($search != ""){
+
+
+                $vehicle = Vehicle::with(['getContVehicle', 'getCompVehicle', 'getVehicleType'])
+                    ->where('deleted_at', '=', null)->where('assignStatus', '=', "$status")
+                    ->where(function ($query) use($search) {
+                        $query->orwhere('vehicleCode', "LIKE", "%$search%")->orwhere('plateNo', "LIKE", "%$search%")->orwhere('vehicleModel', "LIKE", "%$search%")->orwhere('condition', "LIKE", "%$search%")->orwhere('status', "LIKE", "%$search%")
+                            ->orwhere('make', "LIKE", "%$search%");
+                    })->orderByDesc('vehicle.created_at')
+                    ->paginate(20);
+
+                $search = $actual;
+            }
+            else{
+
+                $vehicle = Vehicle::with(['getContVehicle', 'getCompVehicle', 'getVehicleType'])
+                    ->where('deleted_at', '=', null)->where('assignStatus', '=', "$status")
+                    ->orderByDesc('vehicle.created_at')
+                    ->paginate(20);
+                $search = $actual;
+            }
+
+        }else {
+
+            if ($search != "") {
+
+                $vehicle = Vehicle::with(['getContVehicle', 'getCompVehicle', 'getVehicleType'])
+                    ->where('deleted_at', '=', null)
+                    ->where(function ($query) use ($search) {
+                        $query->where('assignStatus', '=', "$search")->orwhere('vehicleCode', "LIKE", "%$search%")->orwhere('plateNo', "LIKE", "%$search%")->orwhere('vehicleModel', "LIKE", "%$search%")->orwhere('condition', "LIKE", "%$search%")->orwhere('status', "LIKE", "%$search%")
+                            ->orwhere('make', "LIKE", "%$search%");
+                    })->orderByDesc('vehicle.created_at')
+                    ->paginate(20);
+
+            } else {
+                $search = "";
+                $vehicle = Vehicle::with(['getContVehicle', 'getCompVehicle', 'getVehicleType'])
+                    ->where('deleted_at', '=', null)
+                    ->orderByDesc('vehicle.created_at')
+                    ->paginate(20);
+            }
         }
-        else{
-            $search = "";
-            $vehicle = Vehicle::with(['getContVehicle', 'getCompVehicle', 'getVehicleType'])->paginate(20);
-        }
+
+        $search = $actual;
 
 
-        $data = compact('vehicle', 'search');
+
+        $data = compact('vehicle', 'search', 'statusView');
 
 
         return view('frontend.viewvehicle')->with($data);
@@ -158,7 +248,7 @@ $search = trim($search, " \t\n\r\0\x0B");
                 'model' => 'required',
                 'make' => 'required',
                 'vehicleType' => 'required',
-                'status' => 'required',
+
                 'condition' => 'required',
                 'ownership' => 'required',
                 'price' => 'required',
@@ -172,10 +262,11 @@ $search = trim($search, " \t\n\r\0\x0B");
 
         $vehicle = new Vehicle;
         $vehicle->vehicleCode = "";
-        $vehicle->plateNo = $request['plateNo'];
+        $vehicle->plateNo = strtoupper($request['plateNo']);
+
         $vehicle->vehicleModel = $request['model'];
         $vehicle->condition = $request['condition'];
-        $vehicle->status = $request['status'];
+
         $vehicle->make = $request['make'];
 
         $vehicle->vehicleType_id = $request['vehicleType'];
@@ -215,46 +306,71 @@ $search = trim($search, " \t\n\r\0\x0B");
 
 
 
-        return redirect('/frontend/view-vehicle')->withSuccessMessage('Successfully added');
+        return redirect('/frontend/vehicle/'.$vehicle->vehicle_id)->withSuccessMessage('Successfully Added!');
 
     }
 
     public function delete(Request $request){
 
         $id = $request->vehicle_delete_id;
+        $timestamp = date("Y-m-d H:i:s");
 
         $vehicle = Vehicle::find($id);
         if(!is_null($vehicle)) {
 
+//            $dSheet = DeliverySheet::where('')
             $vehicleAssignment = VehicleAssignment::find($id);
             if(!is_null($vehicleAssignment)){
+
+                $vehicle = Vehicle::find($vehicleAssignment->vehicle_id);
+                $driver = Driver::find($vehicleAssignment->driver_id);
+                $driver->vhAssigned = 0;
+                $driver->save();
+
+                $vehicle->assignStatus = "Unassigned";
+                $vehicle->save();
                 $vehicleAssignment->delete();
             }
+
 
             $temp1 = CompVehicle::find($id);
             $temp2 = ContVehicle::find($id);
             if (!is_null($temp1)) {
-                $temp1->delete();
+                $temp1->deleted_at = $timestamp;
+                $temp1->save();
             }
             elseif (!is_null($temp2)){
-                $temp2->delete();
+                $temp2->deleted_at = $timestamp;
+                $temp2->save();
             }
-        $vehicle->delete();
+
+
+
+            $dSheet = DeliverySheet::where('vehicle_id', '=', "$id")->where('status', '=', 'un-checked-out')->orderByDesc('created_at')->first();
+            if(isset($dSheet->vehicle_id)){
+                $dSheet->vehicle_id = null;
+                $dSheet->save();
+            }
+
+            $vehicle->deleted_at = $timestamp;
+            $vehicle->save();
+
         }
 
 
-        return redirect('/frontend/view-vehicle')->withSuccessMessage('Successfully deleted');
+        return redirect('/frontend/view-vehicle')->withSuccessMessage('Successfully Deleted!');
     }
 
     public function edit($id){
 //        $staff = Staff::find($id);
-        $vehicle = Vehicle::with(['getContVehicle', 'getCompVehicle', 'getVehicleType'])->find($id);
+        $vehicleTypes = VehicleType::all();
+        $vehicle = Vehicle::where('deleted_at','=',null)->with(['getContVehicle', 'getCompVehicle', 'getVehicleType'])->find($id);
         if(is_null($vehicle)) {
             return redirect('/frontend/view-vehicle');
         }else{
             $url = url('/frontend/update-vehicle').'/'.$id;
-            $title = "Update Vehicle";
-            $data = compact('vehicle', 'url', 'title');
+            $title = "Edit Vehicle";
+            $data = compact('vehicle', 'url', 'title', 'vehicleTypes');
             return view('frontend.addvehicle')->with($data);
         }
 
@@ -292,13 +408,16 @@ $search = trim($search, " \t\n\r\0\x0B");
 //
 //        $f = fopen("logFile.txt", "a") or die("Unable to open file!");
 
+
+
+
         $request->validate(
             [
                 'plateNo' => 'required',
                 'model' => 'required',
                 'make' => 'required',
                 'vehicleType' => 'required',
-                'status' => 'required',
+
                 'condition' => 'required',
                 'ownership' => 'required',
                 'price' => 'required',
@@ -310,7 +429,6 @@ $search = trim($search, " \t\n\r\0\x0B");
         $vehicle = Vehicle::with(['getContVehicle', 'getCompVehicle', 'getVehicleType'])->find($id);
 //        $previousVehicleCode = $vehicle->vehicleCode;
 
-        print
         $vehicle->vehicleCode = "";
 //        if(strcmp($vehicle->plateNo, $request['plateNo']) != 0){
 //            $newLogEntry = " vehicle plateNo varchar(12) " . date_format(date_create(), 'd/m/Y H:i:s') . " " . $vehicle->plateNo . " \n" . ++$lineNumber;
@@ -322,7 +440,7 @@ $search = trim($search, " \t\n\r\0\x0B");
 
         $vehicle->vehicleModel = $request['model'];
         $vehicle->condition = $request['condition'];
-        $vehicle->status = $request['status'];
+
         $vehicle->make = $request['make'];
 
         $vehicle->vehicleType_id = $request['vehicleType'];
@@ -374,16 +492,16 @@ $search = trim($search, " \t\n\r\0\x0B");
             $contVehicle->save();
         }
 //        fclose($f);
-        return redirect('/frontend/view-vehicle')->withSuccessMessage('Successfully updated');
 
+        return redirect('/frontend/vehicle/'.$vehicle->vehicle_id)->withSuccessMessage('Successfully Updated!');
     }
 
 
     public function assignDriver($vehicleType): \Illuminate\Http\JsonResponse
     {
 
-        $drivers = DB::table('staff')->select('staff.name AS stName','driver.staff_id AS staffId', 'driver.canDrive AS canDrive')
-            ->join('driver', 'staff.staff_id', '=', 'driver.staff_id')->where('canDrive', 'LIKE', "%$vehicleType%")->where('driver.status', 'Unassigned')
+        $drivers = DB::table('staff')->select('staff.name AS stName','driver.staff_id AS staffId', 'driver.canDrive AS canDrive')->where('staff.deleted_at','=',null)
+            ->join('driver', 'staff.staff_id', '=', 'driver.staff_id')->where('driver.vhAssigned','=',0)->where('canDrive', 'LIKE', "%$vehicleType%")
             ->get();
         return response()->json([
             'status' => 200,
@@ -396,13 +514,14 @@ $search = trim($search, " \t\n\r\0\x0B");
         $vehicleId = $request['vehicleId'];
         $driverId = $request['driver'];
         $driver = Driver::find($driverId);
-        $driver->status = "Assigned";
+        $driver->vhAssigned = 1;
         $driver->save();
 
         //a supervisor or a manager can assign a vehicle,
         // therefore when he will be logged on to our system,
         // we can get his id and insert it in this place
-        $assignedById = null;
+
+        $assignedById = Session::get('staff_id');
 
         $vehicle = Vehicle::find($vehicleId);
         $vehicle->assignStatus = 'Assigned';
@@ -414,33 +533,77 @@ $search = trim($search, " \t\n\r\0\x0B");
         $vehicleAssignment->assignedBy = $assignedById;
 
         $vehicleAssignment->save();
-        return redirect('/frontend/view-vehicle')->withSuccessMessage('Successfully Assigned!');
+        return back()->withSuccessMessage('Successfully Assigned!');
 
     }
 
-    public function fetchDrivers($id): \Illuminate\Http\JsonResponse{
+    public function fetchDrivers($str): \Illuminate\Http\JsonResponse{
+
+        $arr = explode(",", $str);
+
+        $vehicleID = $arr[0];
+        $dsID = $arr[1];
 
 
-        $vehicleID = $id;
+        if($vehicleID != '-1') {
 
-        $vehicleType = DB::table('vehicle')->select('vehicle.vehicleType_id','vehicle_type.typeName')->where('vehicle.vehicle_id', '=', $vehicleID)
-            ->leftJoin('vehicle_type', 'vehicle.vehicleType_id', '=', 'vehicle_type.vehicleType_id')->get();
 
-        $typeName = $vehicleType[0]->typeName;
+            $vehicleType = DB::table('vehicle')->select('vehicle.vehicleType_id', 'vehicle_type.typeName')->where('vehicle.vehicle_id', '=', $vehicleID)
+                ->leftJoin('vehicle_type', 'vehicle.vehicleType_id', '=', 'vehicle_type.vehicleType_id')->get();
 
-$flag = false;
+            $typeName = $vehicleType[0]->typeName;
 
-        $drivers1 = DB::table('staff')->select('staff.staffCode','staff.name', 'staff.staff_id')
-            ->leftJoin('vehicle_assignment', 'staff.staff_id', '=', 'vehicle_assignment.assignedTo')->where('vehicle_assignment.vehicle_id', '=' , $vehicleID)->get();
+            $flag = false;
 
-            $drivers = DB::table('staff')->select('staff.staffCode', 'staff.name', 'staff.staff_id')
-                ->leftJoin('driver', 'staff.staff_id', '=', 'driver.staff_id')->where('driver.canDrive', 'LIKE', "%$typeName%")->where('driver.status', 'Unassigned')->get();
+            $dSheet = DeliverySheet::find($dsID);
 
-        if(count($drivers1)>0){
-            $flag = true;
-            $drivers->prepend($drivers1[0]);
+            if (isset($dSheet->driver_id)) {
+                $driver = Driver::find($dSheet->driver_id);
+
+                if (isset($driver)) {
+                    $canDriveArr = explode(', ', $driver->canDrive);
+                    if (in_array($typeName, $canDriveArr)) {
+                        $flag = true;
+                    }
+
+
+                }
+
+            }
+
+
+            if ($flag) {
+                $drivers1 = DB::table('staff')->select('staff.staffCode', 'staff.name', 'staff.staff_id')
+                    ->where('staff.deleted_at', '=', null)->where('staff.staff_id', '=', $dSheet->driver_id)
+                    ->get();
+
+            }else {
+                $drivers1 = DB::table('staff')->select('staff.staffCode', 'staff.name', 'staff.staff_id')
+                    ->where('staff.deleted_at', '=', null)
+
+                    ->leftJoin('vehicle_assignment', 'staff.staff_id', '=', 'vehicle_assignment.assignedTo')
+                    ->where('vehicle_assignment.vehicle_id', '=', $vehicleID)->get();
+                if(isset($drivers1[0])){
+                    $driverTemp = Driver::find($drivers1[0]->staff_id);
+                    if($driverTemp->status != "Unassigned"){
+                        $drivers1 = null;
+                    }
+                }
+            }
+
+
+            $drivers = DB::table('staff')->select('staff.staffCode', 'staff.name', 'staff.staff_id')->where('staff.deleted_at', '=', null)
+                ->leftJoin('driver', 'staff.staff_id', '=', 'driver.staff_id')->where('driver.status', 'Unassigned')->where('driver.canDrive', 'LIKE', "%$typeName%")->get();
+
+
+
+            if (isset($drivers1[0])) {
+                $flag = true;
+                $drivers->prepend($drivers1[0]);
+            }
+        }else{
+            $drivers = null;
         }
-
 
 //WHICH ARE UNASSIGNED, should be displayed, not the one which are assigned
 //        echo "<pre>";
@@ -448,15 +611,18 @@ $flag = false;
 //
 //        print_r($drivers);
 
+
         return response()->json([
             'status' => 200,
             'drivers' => $drivers,
-            'flag' => $flag,
+
         ]);
 
 
     }
 
+
+    //uPDATE THE DELIVERY SHEET ASSIGNMENT
     public function updateAssignment($str): \Illuminate\Http\JsonResponse
     {
         $arr = explode(",", $str);
@@ -466,39 +632,134 @@ $flag = false;
         $dsID = $arr[2];
 
 
+
         $dSheet = DeliverySheet::find($dsID);
 
+        if($vehicleID == "-1"){
 
-        if(isset($dSheet->vehicle_id)) {
-            $vehicle = Vehicle::find($dSheet->vehicle_id);
-            $vehicle->dsAssigned = 0;
-            $vehicle->status = 'Idle';
-            $vehicle->save();
+            if(isset($dSheet->vehicle_id)) {
+                $vehicle = Vehicle::find($dSheet->vehicle_id);
+
+                $vehicle->dsAssigned = 0;
+                $vehicle->status = "Idle";
+
+                $vehicle->save();
+            }
+
+            $dSheet->vehicle_id = null;
+
+            $dSheet->save();
+
+            if($driverID == "-1"){
+
+                if(isset($dSheet->driver_id)) {
+                    $driver = Driver::find($dSheet->driver_id);
+
+                    $driver->status = "Unassigned";
+
+                    $driver->save();
+
+                }
+
+                $dSheet->driver_id = null;
+
+                $dSheet->save();
+
+            }
+
+
+
         }
+        elseif($driverID == "-1"){
 
-        if(isset($dSheet->driver_id)) {
+            if(isset($dSheet->driver_id)) {
+                $driver = Driver::find($dSheet->driver_id);
+
+                $driver->status = "Unassigned";
+
+                $driver->save();
+            }
+
+            $dSheet->driver_id = null;
+
+            $dSheet->save();
+
+
+            if($vehicleID == "-1") {
+
+                if(isset($dSheet->vehicle_id)) {
+                    $vehicle = Vehicle::find($dSheet->vehicle_id);
+
+                    $vehicle->dsAssigned = 0;
+                    $vehicle->status = "Idle";
+
+                    $vehicle->save();
+
+                }
+                $dSheet->vehicle_id = null;
+
+                $dSheet->save();
+            }
+
+
+        }
+        else {
+
+
+            $dSheetTemp = DeliverySheet::where('vehicle_id', '=', "$vehicleID")->where('deliverySheet_id', '!=', "$dsID")->where('status', '=', 'un-checked-out')->get();
+
+            $dSheetTemp2 = DeliverySheet::where('driver_id', '=', "$driverID")->where('deliverySheet_id', '!=', "$dsID")->where('status', '=', 'un-checked-out')->get();
+
+            if (count($dSheetTemp) > 0) {
+                foreach ($dSheetTemp as $deliverySheet) {
+
+                    $deliverySheet->vehicle_id = null;
+                    $deliverySheet->save();
+                }
+            }
+
+            if (count($dSheetTemp2) > 0) {
+                foreach ($dSheetTemp2 as $deliverySheet2) {
+                    $deliverySheet2->driver_id = null;
+                    $deliverySheet2->save();
+                }
+            }
+
+            if (isset($dSheet->vehicle_id)) {
+
+                $vehicle = Vehicle::find($dSheet->vehicle_id);
+                $vehicle->dsAssigned = 0;
+                $vehicle->status = 'Idle';
+                $vehicle->save();
+            }
+
+            if (isset($dSheet->driver_id)) {
+
+                $driver = Driver::find($dSheet->driver_id);
+                $driver->status = 'Unassigned';
+                $driver->save();
+            }
+
+
+            $dSheet->driver_id = $driverID;
+            $dSheet->vehicle_id = $vehicleID;
+            $dSheet->save();
+
+            $vehicleNew = Vehicle::find($dSheet->vehicle_id);
+            $vehicleNew->dsAssigned = 1;
+
+            $vehicleNew->save();
+
+
             $driver = Driver::find($dSheet->driver_id);
-            $driver->status = 'Unassigned';
+            $driver->status = 'Assigned';
             $driver->save();
-        }
-
-
-        $dSheet->driver_id = $driverID;
-        $dSheet->vehicle_id = $vehicleID;
-        $dSheet->save();
-
-        $vehicleNew = Vehicle::find($dSheet->vehicle_id);
-        $vehicleNew->dsAssigned = 1;
-
-        $vehicleNew->save();
-
-
-        $driver = Driver::find($dSheet->driver_id);
-        $driver->status = 'Assigned';
-        $driver->save();
 
 
 //        return redirect('/frontend/view-deliverysheet/'.$dsID)->withSuccessMessage('Successfully Updated!');
+
+        }
+
 
         return response()->json([
                 'status' => 200,
@@ -506,6 +767,54 @@ $flag = false;
 
 
     }
+
+
+    public function viewSingle($id){
+
+
+
+        $vehicle = Vehicle::find($id);
+
+
+        $vehicleData = Vehicle::with(['getContVehicle', 'getCompVehicle', 'getVehicleType'])->where('vehicle.vehicle_id',"$id")->first();
+
+
+
+        if(isset($vehicle->vehicleType_id)){
+            $vehicleType  = VehicleType::find($vehicle->vehicleType_id);
+        }else{
+            $vehicleType = null;
+        }
+
+        $vehicleAssignment = DB::table('vehicle_assignment')->where('vehicle_id','=', "$id")->first();
+
+
+
+
+if(isset($vehicleAssignment->assignedTo)) {
+    $driver = Staff::find($vehicleAssignment->assignedTo);
+    $supervisor = Staff::find($vehicleAssignment->assignedBy);
+}else{
+    $driver = null;
+    $supervisor = null;
+}
+
+        $dSheet = DB::table('delivery_sheet')->where('vehicle_id','=', "$id")->orderByDesc('created_at')->first();
+
+
+        if(!isset($vehicle)){
+            return redirect('/frontend/view-vehicle')->withErrorMessage('Sorry no record found!');
+        }
+
+        $data = compact( 'vehicle', 'driver','dSheet','vehicleData', 'vehicleType','supervisor', 'vehicleAssignment');
+//        $data = compact('url', 'title');
+
+        return view('frontend.viewsinglevehicle')->with($data);
+
+
+
+    }
+
 
 //
 //    public function validateEmail($str){

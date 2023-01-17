@@ -67,8 +67,9 @@
 
 
                         <div class="modal-footer">
-                            <button type="submit" class="btn btn-danger">Yes Delete</button>
+
                             <button type="button" class="btn btn-light" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-danger">Yes Delete</button>
                         </div>
                     </form>
                 </div>
@@ -154,7 +155,7 @@
 
                         <form id="myForm0" action="">
                             <input type="hidden" name="search" value="">
-                            @if(isset($search) && $search!="Unassigned" && $search!="Assigned" || $search=="")
+                            @if(isset($statusView) && $statusView!="Unassigned" && $statusView!="Assigned" || $statusView=="")
                                 <a class="nav-link active" id="alink0" data-toggle="tab" href=""
                                    onclick="submitFormFun0()" role="tab" aria-controls="profile" aria-selected="false">All</a>
                             @else
@@ -166,7 +167,7 @@
                     <li class="nav-item">
                         <form id="myForm1" action="">
                             <input type="hidden" name="search" value="Assigned">
-                            @if(isset($search) && $search=="Assigned")
+                            @if(isset($statusView) && $statusView=="Assigned")
                                 <a class="nav-link active" id="alink2" data-toggle="tab" href=""
                                    onclick="submitFormFun1()" role="tab" aria-controls="profile" aria-selected="false">Assigned</a>
                             @else
@@ -178,7 +179,7 @@
                     <li class="nav-item">
                         <form id="myForm2" action="">
                             <input type="hidden" name="search" value="Unassigned">
-                            @if(isset($search) && $search=="Unassigned")
+                            @if(isset($statusView) && $statusView=="Unassigned")
                                 <a class="nav-link active" id="alink3" data-toggle="tab" href=""
                                    onclick="submitFormFun2()" role="tab" aria-controls="contact" aria-selected="false">Un-assigned</a>
                             @else
@@ -193,7 +194,7 @@
                         <form action="" class="col-15 d-flex">
                             <div class="form-group col-10">
                                 <input type="search" name="search" id="" class="form-control"
-                                       value="{{($search=="Assigned" || $search=="Unassigned") ? "" : $search}}"
+                                       value="{{($search=="Assigned" || $search=="Unassigned") ? ('in:'. strtolower($search) . ' ') : $search}}"
                                        placeholder="Search by name, vehicle id, condition, status..">
                             </div>
                             <div class="">
@@ -276,22 +277,24 @@
                     <thead class="p-5" style="color:white; background-color: rgb(0, 73, 114);">
                     <tr>
 
-                        <th>Sr #</th>
-                        <th>Veh #</th>
+                        <th class="" style="width: 60px;">Sr #</th>
+                        <th>Veh Code</th>
+                        <th>Plate No.</th>
                         <th>Make</th>
                         {{--            <th>Email</th>--}}
-                        <th>Plate No.</th>
+
 
                         <th>Type</th>
+
                         <th>Ownership</th>
-                        <th>Purchase/Contract Date</th>
-                        <th>Cost in PKR</th>
+{{--                        <th>Purchase/Contract Date</th>--}}
+{{--                        <th>Cost in PKR</th>--}}
                         {{--            <th>CNIC</th>--}}
                         <th>Condition</th>
                         {{--            <th>DOB</th>--}}
                         <th>Status</th>
 
-                        <th>Action</th>
+                        <th class="text-center">Action</th>
                     </tr>
                     </thead>
 
@@ -326,19 +329,27 @@
 
                                     $diff = ($currentDate-$createdAt)/3600;
 
-                                    if($diff <= 24){
+                                    if($diff <= 1){
 
-                             echo '<div class="bg-warning rounded ml-1" style="width: 2.5em; text-align: center;">
-                                  New
-                             </div>';
+                            echo '<div class="bg-warning rounded ml-1 newMessage" style="width: 2.5em; text-align: center;">
+                          New
+                     </div>';
                                  }
                                 @endphp
                             </div>
                         </td>
-                        <td>{{$member->vehicleCode}}</td>
+
+                        <td>
+                            <a href="{{route('view.singlevehicle', ['id'=>$member->vehicle_id])}}">
+                            {{$member->vehicleCode}}
+                            </a>
+                        </td>
+
+                        <td>{{$member->plateNo}}</td>
+
                         <td>{{$member->make}}</td>
                         {{--            <td>{{$member->email}}</td>--}}
-                        <td>{{$member->plateNo}}</td>
+
 
                         <td>
                             @if($member->getVehicleType->typeName == 'Bike')
@@ -350,7 +361,7 @@
                                 <i class="fas fa-shuttle-van fa-lg"></i>
                             @elseif($member->getVehicleType->typeName == 'Hilux')
                                 <i class="fas fa-truck fa-lg"></i>
-                            @elseif($member->getVehicleType->typeName == 'Mini Van')
+                            @elseif($member->getVehicleType->typeName == 'Van')
                                 <i class="fas fa-truck-field fa-lg"></i>
                             @endif
 
@@ -360,24 +371,25 @@
 
 
 
+
                         @if(isset($member->getCompVehicle))
 
                             <td>Company</td>
-                            <td>
-                                {{$member->getCompVehicle->getPurchasedDate($member->getCompVehicle->purchasedDate)}}
-                            </td>
-                            <td>
-                                {{$member->getCompVehicle->price}}
-                            </td>
+{{--                            <td>--}}
+{{--                                {{$member->getCompVehicle->getPurchasedDate($member->getCompVehicle->purchasedDate)}}--}}
+{{--                            </td>--}}
+{{--                            <td>--}}
+{{--                                {{$member->getCompVehicle->price}}--}}
+{{--                            </td>--}}
 
                         @elseif(isset($member->getContVehicle))
                             <td>Contractual</td>
-                            <td>
-                                {{$member->getContVehicle->getDateOfContract($member->getContVehicle->dateOfContract)}}
-                            </td>
-                            <td>
-                                {{$member->getContVehicle->rentPerDay}}
-                            </td>
+{{--                            <td>--}}
+{{--                                {{$member->getContVehicle->getDateOfContract($member->getContVehicle->dateOfContract)}}--}}
+{{--                            </td>--}}
+{{--                            <td>--}}
+{{--                                {{$member->getContVehicle->rentPerDay}}--}}
+{{--                            </td>--}}
                         @else
 
                             <td>---</td>
@@ -406,15 +418,18 @@
                         @endif
                         {{--
                                                 <td>{{$member->getDob($member->dob)}}</td>--}}
-                        @if($member->status == "Active")
-                            <td style="color: forestgreen;">
-                                {{$member->status}}
-                            </td>
-                        @else
-                            <td>
-                                {{$member->status}}
-                            </td>
+
+
+                    <td>
+                        @if($member->status== "Idle")
+                            <i class="fa-solid fa-circle text-warning small mr-1"></i>{{$member->status}}
+                        @elseif($member->status== "Active")
+                            <i class="fa-solid fa-circle  small mr-1" style="color: rgb(28, 198, 88);"></i>{{$member->status}}
+                        @elseif($member->status== "In-Workshop")
+                            <i class="fa-solid fa-circle text-danger small mr-1"></i>{{$member->status}}
                         @endif
+
+                    </td>
 
                         {{--                @if($member->position == "Driver")--}}
 
@@ -432,7 +447,7 @@
 
                         {{--                @endif--}}
 
-                        <td>
+                        <td class="text-center">
                             <!-- Call to action buttons -->
 
                             <ul class="list-inline m-0">
@@ -445,7 +460,7 @@
                                 @if((isset($search) && $search=="Unassigned") || $member->assignStatus == "Unassigned")
                                     <li class="list-inline-item">
                                         {{--                            <a href="{{route('vehicle.assign', ['id'=>$member->vehicle_id])}}">--}}
-                                        <button class="btn btn-sm rounded-0 addBtn change-color0" value="{{$member}}"
+                                        <button class="btn btn-sm rounded-2 addBtn" id="assignVehBtnColor" value="{{$member}}"
                                                 type="button" data-toggle="modal" data-placement="top" title="Assign"
                                                 data-target="#exampleModal"><i class="fa fa-add"></i></button>
                                         {{--                            </a>--}}
@@ -453,7 +468,7 @@
                                 @else
                                     <li class="list-inline-item">
 
-                                        <button class="btn btn-sm rounded-0" style="border: none;" type="button"
+                                        <button class="btn btn-sm rounded-2" style="border: none;" type="button"
                                                 data-toggle="tooltip" disabled data-placement="top" title="Assign"><i
                                                 class="fa fa-add"></i></button>
 
@@ -461,8 +476,15 @@
                                 @endif
 
                                 <li class="list-inline-item">
+                                    <a href="{{route('view.singlevehicle', ['id'=>$member->vehicle_id])}}">
+                                        <button class="btn btn-sm rounded-2 change-color0" type="button"  data-placement="top" title="View"><i class="fa-solid fa-eye"></i></button>
+                                    </a>
+                                </li>
+
+
+                                <li class="list-inline-item">
                                     <a href="{{route('vehicle.edit', ['id'=>$member->vehicle_id])}}">
-                                        <button class="btn btn-sm rounded-0 change-color" id="editBtn" type="button"
+                                        <button class="btn btn-sm rounded-2 change-color" id="editBtn" type="button"
                                                 data-toggle="" data-placement="top" title="Edit"><i
                                                    class="fa fa-edit"></i></button>
                                     </a>
@@ -475,7 +497,7 @@
                                 <li class="list-inline-item">
                                     {{--                            <a href="{{route('vehicle.delete', ['id'=>$member->vehicle_id])}}">--}}
                                     {{--                                <button class="btn btn-danger btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash"></i></button>--}}
-                                    <button class="btn btn-sm rounded-0 deleteVehicleBtn change-color1" type="button"
+                                    <button class="btn btn-sm rounded-2 deleteVehicleBtn change-color1" type="button"
                                             data-toggle="modal" data-placement="top" title="Delete"
                                             data-target="#deleteModal" value="{{$member}}"><i
                                             class="fa fa-trash"></i></button>
@@ -598,5 +620,31 @@
                     });
 
                 </script>
+
+    <script>
+        const allNewDivs = document.getElementsByClassName("newMessage");
+
+        setTimeout(function(){
+            for(let k=0; k<allNewDivs.length; k++) {
+                $(".newMessage").fadeOut();
+            }
+        }, 2000);
+
+
+        // document.getElementById('assignVehBtnColor').onmousemove = function(){
+        //     const element = document.getElementById('assignVehBtnColor');
+        //     element.style.backgroundColor = "#0275d9";
+        //     element.style.color = "white";
+        //
+        // };
+        //
+        // document.getElementById('assignVehBtnColor').onmouseout = function(){
+        //     const element = document.getElementById('assignVehBtnColor');
+        //     element.style.backgroundColor = "";
+        //     element.style.color = "black";
+        //
+        // };
+
+    </script>
 
 @endsection

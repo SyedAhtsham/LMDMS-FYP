@@ -17,7 +17,7 @@
                         <h5>Are you sure you want to delete this <b>Delivery Sheet</b>?</h5>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" style="background-color: rgb(0, 74, 111);" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-light" style="" data-dismiss="modal">Close</button>
                         <button type="submit" class="btn btn-danger">Yes Delete</button>
                     </div>
                 </form>
@@ -38,7 +38,7 @@
 
                     <form id="myForm0" action="">
                         <input type="hidden" name="search" value="">
-                        @if(isset($search) && $search!="checked-out" && $search!="un-checked-out" || $search=="")
+                        @if(isset($statusView) && $statusView!="checked-out" && $statusView!="un-checked-out" || $statusView=="")
                             <a class="nav-link active" id="alink0" data-toggle="tab" href="" onclick="submitFormFun0()" role="tab" aria-controls="profile" aria-selected="false">All</a>
                         @else
                             <a class="nav-link" id="alink0" data-toggle="tab" href="" onclick="submitFormFun0()" role="tab" aria-controls="profile" aria-selected="false">All</a>
@@ -48,7 +48,7 @@
                 <li class="nav-item">
                     <form id="myForm1" action="">
                         <input type="hidden" name="search" value="checked-out">
-                        @if(isset($search) && $search=="checked-out")
+                        @if(isset($statusView) && $statusView=="checked-out")
                             <a class="nav-link active" id="alink2" data-toggle="tab" href="" onclick="submitFormFun1()" role="tab" aria-controls="profile" aria-selected="false">Checked out</a>
                         @else
                             <a class="nav-link" id="alink2" data-toggle="tab" href="" onclick="submitFormFun1()" role="tab" aria-controls="profile" aria-selected="false">Checked out</a>
@@ -58,7 +58,7 @@
                 <li class="nav-item">
                     <form id="myForm2" action="">
                         <input type="hidden" name="search" value="un-checked-out">
-                        @if(isset($search) && $search=="un-checked-out")
+                        @if(isset($statusView) && $statusView=="un-checked-out")
                             <a class="nav-link active" id="alink3" data-toggle="tab" href="" onclick="submitFormFun2()" role="tab" aria-controls="contact" aria-selected="false">Un-checked out</a>
                         @else
                             <a class="nav-link" id="alink3" data-toggle="tab" href="" onclick="submitFormFun2()" role="tab" aria-controls="contact" aria-selected="false">Un-checked out</a>
@@ -70,8 +70,8 @@
                 <div class="ml-5">
                     <form action="" class="col-15 d-flex">
                         <div class="form-group col-8">
-                            <input type="hidden" name="previousSearch" value={{$search ?? ""}}>
-                            <input type="search" name="search" id="" class="form-control" value="{{($search=="checked-out" || $search=="un-checked-out") ? "" : $search}}" placeholder="Search by sheet id, driver id, vehicle id, area code..">
+
+                            <input type="search" name="search" id="" class="form-control" value="{{($search=="checked-out" || $search=="un-checked-out") ? ('in:'. strtolower($search) . ' ') : $search}}" placeholder="Search by sheet id, driver id, vehicle id, area code..">
                         </div>
                         <div class="">
                             <button type="submit" style="width: 8em;  background-color: rgb(0, 74, 111);"
@@ -111,7 +111,7 @@
             <table  class="table table-sm table-striped" >
                 <thead class="p-5" style="color:white; background-color: rgb(0, 73, 114);">
                 <tr>
-                    <th>Sr #</th>
+                    <th class="" style="width: 65px;">Sr #</th>
                     <th>DS Code</th>
                     <th>Area</th>
                     {{--            <th>Email</th>--}}
@@ -119,12 +119,13 @@
 
                     <th>Supervisor</th>
                     <th>Vehicle</th>
+                    <th>Type</th>
                     <th>Quantity</th>
                     <th>Fuel</th>
                     <th>Check-out time</th>
                     {{--            <th>CNIC</th>--}}
 
-                    <th>Action</th>
+                    <th class="text-center">Action</th>
                 </tr>
                 </thead>
 
@@ -132,7 +133,7 @@
 
                 <tr>
                     @php
-                        $i = 0;
+                        $i = 1;
                         $size = sizeof($deliverySheets);
 
                     @endphp
@@ -148,7 +149,12 @@
                     <td>
                         <div class="d-inline-flex">
                             <div>
-                                {{++$i}}
+                                @php
+                                    $total = (($deliverySheets->currentPage()-1) * 20) + $i;
+                                    echo $total;
+
+                                    $i++;
+                                @endphp
                             </div>
                             @php
                                 $createdAt = strtotime(\Carbon\Carbon::parse($member->created_at));
@@ -158,7 +164,7 @@
 
                                 if($diff <= 1){
 
-                         echo '<div class="bg-warning rounded ml-1" style="width: 2.5em; text-align: center;">
+                         echo '<div class="bg-warning rounded ml-1 newMessage" style="width: 2.5em; text-align: center;">
                               New
                          </div>';
                              }
@@ -167,17 +173,24 @@
                     </td>
 
 
-                    <td>{{$member->deliverySheetCode}}</td>
+
+                    <td>
+                        <a href="{{route('view.deliverysheet', ['id'=>$member->deliverySheet_id])}}">
+                        {{$member->deliverySheetCode}}
+                        </a>
+                    </td>
 {{--                    <td>{{$member->arNM.", ".$member->arCT." (".$member->arCD.")"}}</td>--}}
                     <td>{{$member->arNM." (".$member->arCD.")"}}</td>
                     {{--            <td>{{$member->email}}</td>--}}
-                    <td>{{$member->drvName}}</td>
+                    @if(isset($member->drvName))
 
-
-
-                    @if(isset($member->spvName))
-
-                        <td>{{$member->spvName}}</td>
+                        <td>
+                            @if(isset($member->stID))
+                            <a href="{{route('view.singlestaff', ['id'=>$member->stID])}}">
+                            {{$member->drvName}}
+                            </a>
+                            @endif
+                        </td>
 
                     @else
 
@@ -185,6 +198,36 @@
 
 
                     @endif
+
+
+                @if(isset($member->spvName))
+
+
+                        <td>
+                            <a href="{{route('view.singlestaff', ['id'=>$member->stID])}}">{{$member->spvName}}
+                            </a>
+                        </td>
+
+                    @else
+
+                        <td>---</td>
+
+
+                    @endif
+
+
+                    <td>
+                        @if(isset($member->vhCode))
+                            <a href="{{route('view.singlevehicle', ['id'=>$member->vhID])}}">
+                            {{$member->vhCode}}
+                            </a>
+                        @else
+                            ---
+                        @endif
+
+
+
+                    </td>
 
                     <td>
                         @if($member->tpName == 'Bike')
@@ -196,21 +239,24 @@
                             <i class="fas fa-shuttle-van fa-lg"></i>
                         @elseif($member->tpName == 'Hilux')
                             <i class="fas fa-truck fa-lg"></i>
+                        @elseif($member->tpName == 'Van')
+                            <i class="fas fa-truck-field fa-lg"></i>
                         @else
                             ---
                         @endif
 
-
-
                     </td>
 
+
                     <td>{{$member->noOfCons}}</td>
-                    <td>{{$member->fuelAssigned}}</td>
+                    <td>{{$member->fuelAssigned}} ltr</td>
 
 
                     @if(isset($member->checkOutTime))
 
-                        <td>{{$member->checkOutTime}}</td>
+                        <td>{{
+                               date('d-M-Y H:i:s', strtotime($member->checkOutTime))
+                                }}</td>
 
                     @else
 
@@ -220,7 +266,7 @@
                     @endif
 
 
-                    <td>
+                    <td class="text-center">
                         <!-- Call to action buttons -->
 
                         <ul class="list-inline m-0">
@@ -288,6 +334,17 @@
                     });
 
                 });
+
+
+                    const allNewDivs = document.getElementsByClassName("newMessage");
+
+                    setTimeout(function(){
+                    for(let k=0; k<allNewDivs.length; k++) {
+                    $(".newMessage").fadeOut();
+                }
+                }, 2000);
+
+
             </script>
 
 @endsection

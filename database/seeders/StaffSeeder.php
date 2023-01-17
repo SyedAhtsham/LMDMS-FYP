@@ -20,7 +20,7 @@ class StaffSeeder extends Seeder
     {
         $faker = Faker::create();
 
-        for($i=1; $i<=5; $i++) {
+        for($i=1; $i<=4; $i++) {
             $staff = new Staff;
             $staff->staffCode = "";
             $staff->name = $faker->name;
@@ -28,7 +28,7 @@ class StaffSeeder extends Seeder
             $staff->contact = $faker->phoneNumber;
             $staff->address = $faker->address;
             $staff->cnic = $faker->randomNumber();
-            $staff->position = 'Manager';
+            $staff->position = 'Driver';
             $staff->dob = $faker->date;
             $staff->gender = 'Male';
             $staff->save();
@@ -62,7 +62,7 @@ class StaffSeeder extends Seeder
             $driver->licenseNo = $faker->randomNumber(4);
 
             $driver->yearsExp = $faker->randomNumber(1);
-            $driver->canDrive = 'Shahzore';
+            $driver->canDrive = 'Hilux, Bike, Carry';
 
             $driver->save();
             }

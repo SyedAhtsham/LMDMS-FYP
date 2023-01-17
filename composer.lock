@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "129bdd56525b161e48f2366dc5d7ee6a",
+    "content-hash": "4d2e74fe30f8053a279f967de31e9b90",
     "packages": [
         {
             "name": "beste/clock",
@@ -2345,27 +2345,27 @@
         },
         {
             "name": "laravel/ui",
-            "version": "v4.0.2",
+            "version": "v4.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/ui.git",
-                "reference": "9aa6930c8ae98b2465594d7f14f4ac131bfd6a99"
+                "reference": "810adddcf4e2538b0d1ed470c3a5220ffe761370"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/ui/zipball/9aa6930c8ae98b2465594d7f14f4ac131bfd6a99",
-                "reference": "9aa6930c8ae98b2465594d7f14f4ac131bfd6a99",
+                "url": "https://api.github.com/repos/laravel/ui/zipball/810adddcf4e2538b0d1ed470c3a5220ffe761370",
+                "reference": "810adddcf4e2538b0d1ed470c3a5220ffe761370",
                 "shasum": ""
             },
             "require": {
-                "illuminate/console": "^9.21",
-                "illuminate/filesystem": "^9.21",
-                "illuminate/support": "^9.21",
-                "illuminate/validation": "^9.21",
+                "illuminate/console": "^9.21|^10.0",
+                "illuminate/filesystem": "^9.21|^10.0",
+                "illuminate/support": "^9.21|^10.0",
+                "illuminate/validation": "^9.21|^10.0",
                 "php": "^8.0"
             },
             "require-dev": {
-                "orchestra/testbench": "^7.0"
+                "orchestra/testbench": "^7.0|^8.0"
             },
             "type": "library",
             "extra": {
@@ -2400,9 +2400,9 @@
                 "ui"
             ],
             "support": {
-                "source": "https://github.com/laravel/ui/tree/v4.0.2"
+                "source": "https://github.com/laravel/ui/tree/v4.2.0"
             },
-            "time": "2022-09-09T18:20:35+00:00"
+            "time": "2023-01-10T12:13:29+00:00"
         },
         {
             "name": "lcobucci/clock",

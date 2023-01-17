@@ -19,7 +19,7 @@ class Controller extends BaseController
             if(session('success_message')){
                 Alert::success('Success!', session('success_message'))
                     ->focusConfirm(false)
-                    ->autoClose(1800);
+                    ->autoClose(2500);
 
             }
             return $next($request);
@@ -29,7 +29,7 @@ class Controller extends BaseController
             if(session('error_message')){
                 Alert::error('Error!', session('error_message'))
                     ->focusConfirm(false)
-                    ->autoClose(1800);
+                    ->autoClose(2500);
 
             }
             return $next($request);

@@ -59,16 +59,16 @@
                 <form action="{{route('checkout.deliverySheet')}}" method="POST">
                     @csrf
                     <div class="modal-header">
-                        <h3 class="modal-title fs-5" id="exampleModalLabel">Un-Check-out Delivery Sheet</h3>
+                        <h3 class="modal-title fs-5" id="exampleModalLabel">Mark Finish</h3>
                         {{--                        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>--}}
                     </div>
                     <div class="modal-body">
                         <input type="hidden" name="deliverySheet_id" id="deliverySheet_idU" />
-                        <h5>Are you sure you want to Un-Check-out this <b><i>Delivery Sheet</i></b>?</h5>
+                        <h5>Are you sure you want to Finish this <b><i>Delivery Sheet</i></b>?</h5>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-light" style="" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-danger">Yes Un-Check-out</button>
+                        <button type="submit" class="btn btn-success">Mark Finish</button>
                     </div>
                 </form>
             </div>
@@ -79,11 +79,11 @@
     <div class="main pt-5" style="margin-right: 2em;" >
 
 <input id="dsID" value="{{$deliverySheet->deliverySheet_id}}" hidden>
-        <h4>Delivery Sheet: <label style="font-weight: bolder; font-size: 20px;"> {{$deliverySheet->deliverySheetCode}}</label></h4>
+        <h4>Delivery Sheet: <label style="font-weight: bolder; font-size: 20px;"> {{$deliverySheet->deliverySheetCode}}</label> <label class="text-success" style="font-weight: ; font-size: 18px;"> {{$deliverySheet->finished ? "Marked Delivered" :"" }}</label></h4>
         <?php
 
-        if($deliverySheet->vhCode == ""){
-        echo '<label><img src="/images/icons8-error.gif" width="35em"/><u> Since there was no idle vehicle, therefore need to hire contractual vehicles!</u></label>';
+        if($idleVehicles == 0){
+        echo '<label><img src="/images/icons8-error.gif" width="35em"/><u> Since there is no idle vehicle for this Delivery Sheet, therefore need to hire contractual vehicles!</u></label>';
 
         }
         ?>
@@ -103,37 +103,55 @@
 
                 <td class="p-lg-2"><div class="form-group mt-2 d-flex">
 
+                        <?php
+                        if(\Illuminate\Support\Facades\Session::get('position') == "Driver"){
+
+                            ?>
+                        <div class="form-group d-flex" style="margin-top: 45px;">
+
+                        <a href="{{route('view.singlevehicle', ['id'=>$deliverySheet->vehicle_id])}}">
+                            {{$vehicleCode ?? ""}}
+                        </a>
+
+                            <?php
+
+                        }else {
+                            ?>
+
                         <div>
                         <select id="inputVehicle"  name="vehicle" disabled  class="form-control"
                                  required>
 
 
-                            <?php
-                            if(!isset($deliverySheet->vehicle_id)){
 
-    echo "<option value='' selected> None </option>";
+<?php
+                                if (!isset($deliverySheet->vehicle_id)) {
 
-}
+                                    echo "<option value='-1' selected> None </option>";
 
-                            foreach ($vehicles as $vehicle){
+                                } else {
+                                    echo "<option value='-1' > None </option>";
+                                }
+
+                                foreach ($vehicles as $vehicle) {
 
 
-                                if(isset($deliverySheet->vehicle_id)){
+                                    if (isset($deliverySheet->vehicle_id)) {
 
-                                    if($vehicle->vehicle_id === $deliverySheet->vehicle_id){
+                                        if ($vehicle->vehicle_id === $deliverySheet->vehicle_id) {
 
-                                        echo "<option value='$vehicle->vehicle_id' selected>".$vehicle->vehicleCode.", ".$vehicle->make." ".$vehicle->typeName." (".$vehicle->weightCap."kg, ".$vehicle->volumeCap."m3)</option>";
+                                            echo "<option value='$vehicle->vehicle_id' selected>" . $vehicle->vehicleCode . ", " . $vehicle->make . " " . $vehicle->typeName . " (" . $vehicle->weightCap . "kg, " . $vehicle->volumeCap . "m3)</option>";
 
-                                    }else{
+                                        } else {
 
-                                        echo "<option value='$vehicle->vehicle_id'>".$vehicle->vehicleCode.", ".$vehicle->make." ".$vehicle->typeName." (".$vehicle->weightCap."kg, ".$vehicle->volumeCap."m3)</option>";
+                                            echo "<option value='$vehicle->vehicle_id'>" . $vehicle->vehicleCode . ", " . $vehicle->make . " " . $vehicle->typeName . " (" . $vehicle->weightCap . "kg, " . $vehicle->volumeCap . "m3)</option>";
+                                        }
+
+                                    } else {
+                                        echo "<option value='$vehicle->vehicle_id'>" . $vehicle->vehicleCode . ", " . $vehicle->make . " " . $vehicle->typeName . " (" . $vehicle->weightCap . "kg, " . $vehicle->volumeCap . "m3)</option>";
                                     }
 
                                 }
-                                else{
-                                    echo "<option value='$vehicle->vehicle_id'>".$vehicle->vehicleCode.", ".$vehicle->make." ".$vehicle->typeName." (".$vehicle->weightCap."kg, ".$vehicle->volumeCap."m3)</option>";
-                                }
-
                             }
 
                             ?>
@@ -144,12 +162,11 @@
                         </div>
                        &nbsp; <div class="mt-1" id="editBtn001Div">
 
+                            @if(Session::get('position') != "Driver")
                             <button class="btn btn-sm rounded-0 change-color rounded-2" onclick="edit()" id="editBtn001" type="button"
                                     data-toggle="" data-placement="top" title="Edit"><i
                                     class="fa fa-edit"></i></button>
-
-
-
+@endif
 
                         </div>
                     </div>
@@ -171,8 +188,10 @@
                             <?php
                             if(!isset($deliverySheet->driver_id)){
 
-                                echo "<option value='' selected> None </option>";
+                                echo "<option value='-1' selected> None </option>";
 
+                            }else{
+                                echo "<option value='-1' > None </option>";
                             }
 
                             foreach ($drivers as $driver){
@@ -203,13 +222,13 @@
 
                     </div>
                     &nbsp; <div class="mt-1" id="btnDiv">
-
+                            @if(Session::get('position') != "Driver")
                         <button class="btn btn-sm rounded-0 change-color rounded-2" onclick="edit1()" id="editBtnID" type="button"
                                 data-toggle="" data-placement="top" title="Edit"><i
                                 class="fa fa-edit"></i></button>
 
 
-
+@endif
 
                     </div>
                     </div>
@@ -260,7 +279,7 @@
                         </button>
                     </a>
                 </div>
-
+                @if(Session::get('position') != "Driver")
                 <div id="addConsignmentLong" class="col-2">
 {{--                    <a href="{{url('/frontend/add-consignments/'.$deliverySheet->deliverySheet_id)}}">--}}
                 <button type="button" style=""
@@ -314,6 +333,33 @@
                     </form>
 
                 </div>
+                @else
+
+                    @if(isset($deliverySheet->finished) && ($deliverySheet->finished == 0))
+                    <div class="col-2">
+                    <button id="checkoutLong" type="submit" style=""
+                            class="btn btn-success btnUnCheckout float-right" id="checkoutBtn" value={{$deliverySheet->deliverySheet_id}}> <i class="fa fa-flag-checkered"></i>  Finish Delivery
+                    </button>
+
+                    <button id="checkoutShort" type="submit" style=""
+                            class="btn btn-success btnUnCheckout float-right" id="checkoutBtn" title="Finish" value={{$deliverySheet->deliverySheet_id}}> <i class="fa-solid fa-flag-checkered"></i>
+                    </button>
+
+                    </div>
+                    @else
+                        <div class="col-2">
+                            <button id="checkoutLong" type="submit" style=""
+                                    class="btn btn-success btnUnCheckout float-right" disabled id="checkoutBtn" value={{$deliverySheet->deliverySheet_id}}> <i class="fa fa-flag-checkered"></i>  Finish Delivery
+                            </button>
+
+                            <button id="checkoutShort" type="submit" style=""
+                                    class="btn btn-success btnUnCheckout float-right" disabled id="checkoutBtn" title="Finish" value={{$deliverySheet->deliverySheet_id}}> <i class="fa-solid fa-flag-checkered"></i>
+                            </button>
+
+                        </div>
+
+                @endif
+                    @endif
 
 
             </form>
@@ -328,7 +374,7 @@
                 <thead class="p-5" style="color:white; background-color: rgb(0, 73, 114);">
                 <tr>
 
-                    <th>Sr #</th>
+                    <th style="width: 60px;">Sr #</th>
                     <th>CN #</th>
                     <th >To</th>
                     <th>Contact</th>
@@ -378,7 +424,7 @@
 
                             if($diff <= 24){
 
-                     echo '<div class="bg-warning rounded ml-1" style="width: 2.5em; text-align: center;">
+                     echo '<div class="bg-warning rounded ml-1 newMessage" style="width: 2.5em; text-align: center;">
                           New
                      </div>';
                          }
@@ -461,7 +507,7 @@
                                 {{--                            <a href="{{route('vehicle.delete', ['id'=>$member->vehicle_id])}}">--}}
                                 {{--                                <button class="btn btn-danger btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash"></i></button>--}}
                                 <?php if($deliverySheet->status == 'un-checked-out') {
-                                    echo '<button class="btn btn-sm rounded-0 deleteConsignmentBtn change-color1" type="button" data-toggle="tooltip" data-placement="top" title="Remove" value='.$member->cons_id.'><i class="fa fa-trash"></i></button>';
+                                    echo '<button class="btn btn-sm rounded-2 deleteConsignmentBtn change-color1" type="button" data-toggle="tooltip" data-placement="top" title="Remove" value='.$member->cons_id.'><i class="fa fa-trash"></i></button>';
                                 }
                                 else{
                                     echo '<button class="btn btn-sm" style="border: none;" type="button" disabled data-toggle="tooltip" data-placement="top" title="Remove" value='.$member->cons_id.'><i class="fa fa-trash"></i></button>';
@@ -594,7 +640,7 @@ select.disabled = "";
 
     function addConsURL(){
 
-        if(document.getElementById('inputVehicle').value == "") {
+        if(document.getElementById('inputVehicle').value == "-1") {
 
             swal({
                 title: 'Error!',
@@ -656,52 +702,54 @@ select.disabled = "";
 
         $(document).on('change', '#inputVehicle', function () {
             let vehicleID = $(this).val();
+            let dsID = document.getElementById("dsID").value;
 
+            let str = vehicleID + "," + dsID;
 
             $.ajax(
                 {
 
                     type: "GET",
-                    url: "/frontend/vehicleAssignments/" + vehicleID,
+                    url: "/frontend/vehicleAssignments/" + str,
 
                     success: function (response) {
-                        let drivers = response.drivers;
-                        // let flag = response.flag;
+
+                        if(response.drivers != null) {
+                            let drivers = response.drivers;
+                            // let flag = response.flag;
 
 
+                            let driverSelect = document.getElementById('inputDriver');
 
-                        let driverSelect = document.getElementById('inputDriver');
+
+                            // console.log(drivers);
+                            while (driverSelect.children[0]) {
+                                driverSelect.removeChild(driverSelect.lastChild);
+                            }
+
+                            // document.getElementById('assignBtn').disabled = '';
+
+                            if (drivers.length === 0) {
+                                let optionElement = document.createElement('option');
+                                optionElement.innerHTML = '<label style="color:;">None</label>';
+                                driverSelect.appendChild(optionElement);
+                                // document.getElementById('assignBtn').disabled = 'true';
+
+                            }
 
 
-                        // console.log(drivers);
-                        while (driverSelect.children[0]) {
-                            driverSelect.removeChild(driverSelect.lastChild);
+                            for (let i = 0; i < drivers.length; i++) {
+
+
+                                let optionElement = document.createElement('option');
+                                optionElement.innerHTML = drivers[i].staffCode + ", " + drivers[i].name;
+                                // console.log(drivers[i]);
+                                // console.log(drivers[i].staff_id);
+                                optionElement.value = drivers[i].staff_id;
+                                driverSelect.appendChild(optionElement);
+                            }
+
                         }
-
-                        // document.getElementById('assignBtn').disabled = '';
-
-                        if (drivers.length === 0) {
-                            let optionElement = document.createElement('option');
-                            optionElement.innerHTML = '<label style="color:;">None</label>';
-                            driverSelect.appendChild(optionElement);
-                            // document.getElementById('assignBtn').disabled = 'true';
-
-                        }
-
-
-
-                        for (let i = 0; i < drivers.length; i++) {
-
-
-                            let optionElement = document.createElement('option');
-                            optionElement.innerHTML = drivers[i].staffCode + ", " + drivers[i].name;
-                            // console.log(drivers[i]);
-                            // console.log(drivers[i].staff_id);
-                            optionElement.value = drivers[i].staff_id;
-                            driverSelect.appendChild(optionElement);
-                        }
-
-
                     }
                 }
             );
@@ -741,11 +789,12 @@ select.disabled = "";
 
             let inputDriver = document.getElementById("inputDriver");
             let vehicleID = inputVehicle.value;
-if(vehicleID !== "" && alreadySelected !== vehicleID) {
+if( alreadySelected !== vehicleID) {
     alreadySelected = vehicleID;
     let vehicleSelect = document.getElementById('inputVehicle');
     // vehicleSelect[0].remove();
     let driverID = inputDriver.value;
+
 
     let str = vehicleID + "," + driverID + "," + dsID;
     $.ajax(
@@ -802,7 +851,9 @@ if(vehicleID !== "" && alreadySelected !== vehicleID) {
             let inputDriver = document.getElementById("inputDriver");
             let vehicleID = inputVehicle.value;
             let driverID = inputDriver.value;
-            if(driverID != "" && alreadySelectedDriver!== driverID) {
+
+            if(alreadySelectedDriver!== driverID) {
+
                 alreadySelectedDriver = driverID;
                 let driverSelect = document.getElementById('inputDriver');
                 // driverSelect[0].remove();
@@ -888,7 +939,7 @@ if(vehicleID !== "" && alreadySelected !== vehicleID) {
                             }
                         }
                     )
-                }else if(vehicleID1 == "" || driverID1 == ""){
+                }else if(vehicleID1 == "-1" || driverID1 == "-1"){
                     swal({
                         title: 'Error!',
                         icon: 'error',
@@ -939,6 +990,7 @@ if(vehicleID !== "" && alreadySelected !== vehicleID) {
 
 
 
+
     <script>
                 $(document).ready(function(){
                     $('.deleteConsignmentBtn').click(function(e){
@@ -956,6 +1008,18 @@ if(vehicleID !== "" && alreadySelected !== vehicleID) {
                         window.history.back();
                 }
 
+
+    </script>
+
+
+    <script>
+        const allNewDivs = document.getElementsByClassName("newMessage");
+
+        setTimeout(function(){
+            for(let k=0; k<allNewDivs.length; k++) {
+                $(".newMessage").fadeOut();
+            }
+        }, 2000);
 
     </script>
 

@@ -20,7 +20,17 @@
     </div>
     <div class="main">
 
-        <h4>{{$title}}</h4>
+        <h4>{{$title}}
+
+            @if(isset($vehicle->vehicle_id))
+                :
+
+                <a style="font-size: 21px;" href="{{route('view.singlevehicle', ['id'=>$vehicle->vehicle_id])}}">
+                    {{$vehicle->vehicleCode}}
+                </a>
+            @endif
+
+        </h4>
 
         <hr>
         <br>
@@ -30,7 +40,7 @@
             <div class="form-row pr-5">
                 <div class="form-group col-md-4 pr-5">
                     <label for="inputPlateNo">Plate No. <span class="required">*</span></label>
-                    <input type="text" name="plateNo" value="{{$vehicle->plateNo ?? old('plateNo')}}" class="form-control" id="inputPlateNo" placeholder="e.g., LEC-532"
+                    <input type="text" name="plateNo" pattern="[A-Za-z]{1,3}-[0-9]{1,4}" title="e.g., LEC-231" value="{{$vehicle->plateNo ?? old('plateNo')}}" class="form-control" id="inputPlateNo" placeholder="e.g., LEC-532"
                            value="{{old('plateNo')}}" required>
                     <span class="text-danger">
                     @error('plateNo')
@@ -40,7 +50,7 @@
                 </div>
                 <div class="form-group col-md-4 pr-5">
                     <label for="inputModel">Year <span class="required">*</span></label>
-                    <input type="number" class="form-control" id="inputModel" name="model" min="1980" max="2099" step="1" value = "{{$vehicle->vehicleModel ?? old('model')}}" placeholder="YYYY" required/>
+                    <input type="number" pattern="[1-2][0-9]{3}" title="e.g., 2012" class="form-control" id="inputModel" name="model" min="1980" max="2099" step="1" value = "{{$vehicle->vehicleModel ?? old('model')}}" placeholder="YYYY" required/>
 
                     <span class="text-danger">
                     @error('model')
@@ -48,69 +58,6 @@
                         @enderror
                 </span>
                 </div>
-                <div class="form-group col-md-4 pr-5">
-
-                        <label for="inputMake">Make <span class="required">*</span></label>
-                        <select id="inputMake" name="make" class="form-control">
-
-
-                            <option value="Toyota"
-                            @if(isset($vehicle->make))
-                                {{$vehicle->make == "Toyota" ? "selected" : ""}}
-
-                                @else
-                                {{old('make') == "Toyota" ? "selected" : ""}}
-
-                                @endif
-
-                            >Toyota</option>
-                            <option value="Kia"
-                            @if(isset($vehicle->make))
-                                {{$vehicle->make == "Kia" ? "selected" : ""}}
-                                @else
-                                {{old('make') == "Kia" ? "selected" : ""}}
-                                @endif
-                            >Kia</option>
-                            <option value="Suzuki"
-                            @if(isset($vehicle->make))
-                                {{$vehicle->make == "Suzuki" ? "selected" : ""}}
-                                @else
-                                {{old('make') == "Suzuki" ? "selected" : ""}}
-                                @endif
-                            >Suzuki</option>
-
-                            <option value="Honda"
-                            @if(isset($vehicle->make))
-                                {{$vehicle->make == "Honda" ? "selected" : ""}}
-                                @else
-                                {{old('make') == "Honda" ? "selected" : ""}}
-                                @endif
-                            >Honda</option>
-
-                            <option value="Foton"
-                            @if(isset($vehicle->make))
-                                {{$vehicle->make == "Foton" ? "selected" : ""}}
-                                @else
-                                {{old('make') == "Foton" ? "selected" : ""}}
-                                @endif
-                            >Foton</option>
-                            <option value="Hyundai"
-                            @if(isset($vehicle->make))
-                                {{$vehicle->make == "Hyundai" ? "selected" : ""}}
-                                @else
-                                {{old('make') == "Hyundai" ? "selected" : ""}}
-                                @endif
-                            >Hyundai</option>
-
-
-                        </select>
-                        <span class="text-danger">
-                    @error('make')
-                            {{$message}}
-                            @enderror
-                </span>
-                    </div>
-
 
 
 
@@ -133,7 +80,7 @@
 
             @endphp
 
-            <div class="form-row pr-5 pt-3">
+            <div class="form-row pr-5 mt-4">
 
                 <div class="form-group col-md-4 pr-5">
 
@@ -141,93 +88,219 @@
                         <label for="inputVehicleType">Vehicle type <span class="required">*</span></label>
                         <select id="inputVehicleType" name="vehicleType" class="form-control">
 
+                            @foreach($vehicleTypes as $vT)
+                                <option value={{$vT->vehicleType_id}}
 
-                            <option value="1"
-                            @if(isset($vehType))
-                                {{$vehType == "Shahzore" ? "selected" : ""}}
-                                @else
-                                {{old('vehicleType') == "Shahzore" ? "selected" : ""}}
-                                @endif
-                            >Shahzore</option>
+                                @if(isset($vehType))
+                                    {{$vehType == $vT->typeName ? "selected" : "" }}
+                                    @else
+                                    {{--                                            {{$oldCanDrive.contains($vT->vehicleType_id)  ? "selected" : ""}}--}}
+                                        {{old('vehicleType') == $vT->typeName ? "selected" : ""}}
+                                    @endif
 
-                            <option value="2"
-                            @if(isset($vehType))
+                                >{{$vT->typeName}}
+                                </option>
+                    @endforeach
 
-                                {{$vehType == "Suzuki" ? "selected" : ""}}
-                                @else
-                                {{old('vehicleType') == "Suzuki" ? "selected" : ""}}
-                                @endif
-                            >Suzuki</option>
 
-                            <option value="3"
-                            @if(isset($vehType))
-                                {{$vehType == "Hilux" ? "selected" : ""}}
-                                @else
-                                {{old('vehicleType') == "Hilux" ? "selected" : ""}}
-                                @endif
-                            >Hilux</option>
-
-                            <option value="4"
-                            @if(isset($vehType))
-                                {{$vehType == "Bike" ? "selected" : ""}}
-                                @else
-                                {{old('vehicleType') == "Bike" ? "selected" : ""}}
-
-                                @endif
-
-                            >Bike</option>
                         </select>
-                        <span class="text-danger">
-                    @error('canDrive')
-                            {{$message}}
-                            @enderror
+                    <span class="text-danger">
+                    @error('vehicleType')
+                        {{$message}}
+                        @enderror
                 </span>
+
+
+                    {{--                            <option value="1"--}}
+{{--                            @if(isset($vehType))--}}
+{{--                                {{$vehType == "Shahzore" ? "selected" : ""}}--}}
+{{--                                @else--}}
+{{--                                {{old('vehicleType') == "Shahzore" ? "selected" : ""}}--}}
+{{--                                @endif--}}
+{{--                            >Shahzore</option>--}}
+
+{{--                            <option value="2"--}}
+{{--                            @if(isset($vehType))--}}
+
+{{--                                {{$vehType == "Suzuki" ? "selected" : ""}}--}}
+{{--                                @else--}}
+{{--                                {{old('vehicleType') == "Suzuki" ? "selected" : ""}}--}}
+{{--                                @endif--}}
+{{--                            >Suzuki</option>--}}
+
+{{--                            <option value="3"--}}
+{{--                            @if(isset($vehType))--}}
+{{--                                {{$vehType == "Hilux" ? "selected" : ""}}--}}
+{{--                                @else--}}
+{{--                                {{old('vehicleType') == "Hilux" ? "selected" : ""}}--}}
+{{--                                @endif--}}
+{{--                            >Hilux</option>--}}
+
+{{--                            <option value="4"--}}
+{{--                            @if(isset($vehType))--}}
+{{--                                {{$vehType == "Bike" ? "selected" : ""}}--}}
+{{--                                @else--}}
+{{--                                {{old('vehicleType') == "Bike" ? "selected" : ""}}--}}
+
+{{--                                @endif--}}
+
+{{--                            >Bike</option>--}}
+{{--                        </select>--}}
+{{--                        <span class="text-danger">--}}
+{{--                    @error('canDrive')--}}
+{{--                            {{$message}}--}}
+{{--                            @enderror--}}
+{{--                </span>--}}
                     </div>
 
 
 
 
-                    <div class="form-group col-md-4 pr-5">
+{{--                    <div class="form-group col-md-4 pr-5">--}}
 
-                    <label for="inputStatus">Status <span class="required">*</span></label>
-                    <select id="inputStatus" name="status" class="form-control">
+{{--                    <label for="inputStatus">Status <span class="required">*</span></label>--}}
+{{--                    <select id="inputStatus" name="status" class="form-control">--}}
 
-                        <option value="Idle"
-                        @if(isset($vehicle->status))
-                            {{$vehicle->status == "Idle" ? "selected" : ""}}
+{{--                        <option value="Idle"--}}
+{{--                        @if(isset($vehicle->status))--}}
+{{--                            {{$vehicle->status == "Idle" ? "selected" : ""}}--}}
+{{--                            @else--}}
+{{--                            {{old('status') == "Idle" ? "selected" : ""}}--}}
+{{--                            @endif--}}
+{{--                        >Idle</option>--}}
+{{--                        <option value="Active"--}}
+{{--                        @if(isset($vehicle->status))--}}
+{{--                            {{$vehicle->status == "Active" ? "selected" : ""}}--}}
+
+{{--                            @else--}}
+{{--                            {{old('status') == "Active" ? "selected" : ""}}--}}
+
+{{--                            @endif--}}
+
+{{--                        >Active</option>--}}
+
+{{--                        <option value="In-Workshop"--}}
+{{--                        @if(isset($vehicle->status))--}}
+{{--                            {{$vehicle->status == "In-Workshop" ? "selected" : ""}}--}}
+{{--                            @else--}}
+{{--                            {{old('status') == "In-Workshop" ? "selected" : ""}}--}}
+{{--                            @endif--}}
+{{--                        >In-Workshop</option>--}}
+
+
+
+{{--                    </select>--}}
+{{--                    <span class="text-danger">--}}
+{{--                    @error('status')--}}
+{{--                        {{$message}}--}}
+{{--                        @enderror--}}
+{{--                </span>--}}
+{{--                </div>--}}
+
+
+
+
+                <div class="form-group col-md-4 pr-5">
+
+                    <label for="inputMake">Make <span class="required">*</span></label>
+                    <select id="inputMake" name="make" class="form-control">
+
+
+                        <option value="Toyota"
+                        @if(isset($vehicle->make))
+                            {{$vehicle->make == "Toyota" ? "selected" : ""}}
+
                             @else
-                            {{old('status') == "Idle" ? "selected" : ""}}
-                            @endif
-                        >Idle</option>
-                        <option value="Active"
-                        @if(isset($vehicle->status))
-                            {{$vehicle->status == "Active" ? "selected" : ""}}
+                            {{old('make') == "Toyota" ? "selected" : ""}}
 
+                            @endif
+
+                        >Toyota</option>
+                        <option value="Kia"
+                        @if(isset($vehicle->make))
+                            {{$vehicle->make == "Kia" ? "selected" : ""}}
                             @else
-                            {{old('status') == "Active" ? "selected" : ""}}
-
+                            {{old('make') == "Kia" ? "selected" : ""}}
                             @endif
-
-                        >Active</option>
-
-                        <option value="In-Workshop"
-                        @if(isset($vehicle->status))
-                            {{$vehicle->status == "In-Workshop" ? "selected" : ""}}
+                        >Kia</option>
+                        <option value="Suzuki"
+                        @if(isset($vehicle->make))
+                            {{$vehicle->make == "Suzuki" ? "selected" : ""}}
                             @else
-                            {{old('status') == "In-Workshop" ? "selected" : ""}}
+                            {{old('make') == "Suzuki" ? "selected" : ""}}
                             @endif
-                        >In-Workshop</option>
+                        >Suzuki</option>
 
+                        <option value="Honda"
+                        @if(isset($vehicle->make))
+                            {{$vehicle->make == "Honda" ? "selected" : ""}}
+                            @else
+                            {{old('make') == "Honda" ? "selected" : ""}}
+                            @endif
+                        >Honda</option>
+
+                        <option value="Foton"
+                        @if(isset($vehicle->make))
+                            {{$vehicle->make == "Foton" ? "selected" : ""}}
+                            @else
+                            {{old('make') == "Foton" ? "selected" : ""}}
+                            @endif
+                        >Foton</option>
+                        <option value="Hyundai"
+                        @if(isset($vehicle->make))
+                            {{$vehicle->make == "Hyundai" ? "selected" : ""}}
+                            @else
+                            {{old('make') == "Hyundai" ? "selected" : ""}}
+                            @endif
+                        >Hyundai</option>
 
 
                     </select>
                     <span class="text-danger">
-                    @error('status')
+                    @error('make')
                         {{$message}}
                         @enderror
                 </span>
                 </div>
 
+
+
+            </div>
+
+
+            <div class="form-row pr-5 mt-4">
+                <div class="form-group col-4 pr-5">
+                    <label for="inputOwnership">Ownership <span class="required">*</span></label>
+                    <select id="inputOwnership" name="ownership" class="form-control"
+                            required>
+                        @php
+                            $oship = old('ownership') ?? null;
+                        @endphp
+
+                        <option value="Company Owned"
+
+                        @if(isset($oship))
+                            {{$oship == "Company Owned" ? "selected" : ""}}
+                            @elseif(isset($vehicle->getCompVehicle->vehicle_id))
+                            selected
+                            @endif
+                        >Company Vehicle</option>
+                        <option value="Contractual Vehicle"
+                        @if(isset($oship))
+                            {{$oship == "Contractual Vehicle" ? "selected" : ""}}
+                            @elseif(isset($vehicle->getContVehicle->vehicle_id))
+                            selected
+                            @endif
+                        >Contractual Vehicle</option>
+
+
+                    </select>
+                    <span class="text-danger">
+                    @error('ownership')
+                        {{$message}}
+                        @enderror
+                </span>
+                </div>
 
                 <div class="form-group col-md-4 pr-5">
 
@@ -267,49 +340,14 @@
                         @enderror
                 </span>
                 </div>
+
             </div>
 
-
-            <div class="form-row pr-5 pt-3">
-                <div class="form-group col-4 pr-5">
-                    <label for="inputOwnership">Ownership <span class="required">*</span></label>
-                    <select id="inputOwnership" name="ownership" class="form-control"
-                            required>
-                        @php
-                            $oship = old('ownership') ?? null;
-                        @endphp
-
-                        <option value="Company Owned"
-
-                        @if(isset($oship))
-                            {{$oship == "Company Owned" ? "selected" : ""}}
-                            @elseif(isset($vehicle->getCompVehicle->vehicle_id))
-                            selected
-                            @endif
-                        >Company Vehicle</option>
-                        <option value="Contractual Vehicle"
-                        @if(isset($oship))
-                            {{$oship == "Contractual Vehicle" ? "selected" : ""}}
-                            @elseif(isset($vehicle->getContVehicle->vehicle_id))
-                            selected
-                            @endif
-                        >Contractual Vehicle</option>
-
-
-                    </select>
-                    <span class="text-danger">
-                    @error('ownership')
-                        {{$message}}
-                        @enderror
-                </span>
-                </div>
-            </div>
-
-            <div class="form-row pr-5 pt-4">
+            <div class="form-row pr-5 mt-4">
 
                         <div class="form-group col-md-4 pr-5">
                             <label for="inputPrice">Rent/Cost in PKR <span class="required">*</span> &nbsp;&nbsp;&nbsp;<label style="font-size: 0.9em;"> (in case of Contractual Vehicle enter Rent)</label> </label>
-                            <input type="text" name="price" value="{{$cost ?? old('price')}}" class="form-control" id="inputPrice" placeholder="e.g., 3500"
+                            <input type="text" name="price" pattern="[0-9]{1,}$" title="e.g., 3500" value="{{$cost ?? old('price')}}" class="form-control" id="inputPrice" placeholder="e.g., 3500"
                                    value="{{old('price')}}" required>
                             <span class="text-danger">
                     @error('price')
@@ -319,7 +357,7 @@
                         </div>
                         <div class="form-group col-md-4 pr-5">
                             <label for="inputDOP">Date of Purchase/Contract <span class="required">*</span> <label style="font-size: 0.9em;">(in case of Contractual Vehicle enter Contract Date)</label> </label>
-                            <input type="date" name="dop" max="2022-09-28" class="form-control" id="inputDOP" value="{{$date ?? old('dop')}}"
+                            <input type="date" name="dop" max="" class="form-control" id="inputDOP" value="{{$date ?? old('dop')}}"
                                    placeholder="">
                             <span class="text-danger">
                     @error('dop')
@@ -334,10 +372,19 @@
                     <div class="form-row pt-5">
 
                         <div>
+                            @if(isset($vehicle->vehicle_id))
+                                <a style="font-size: 21px;" href="{{route('view.singlevehicle', ['id'=>$vehicle->vehicle_id])}}">
+                                    <button id="cancel" type="button" style="width: 8em; margin-right: 2em;" class="btn btn-danger">Cancel
+                                    </button>
+                                </a>
+
+                            @else
+
                             <a href="{{url('/frontend/view-vehicle')}}">
                                 <button id="cancel" type="button" style="width: 8em; margin-right: 2em;" class="btn btn-danger">Cancel
                                 </button>
                             </a>
+                                @endif
                         </div>
                         <div>
 
@@ -353,5 +400,14 @@
 
 @endsection
 
+
+@section('scripts')
+
+    <script>
+        document.getElementById('inputDOP').max = new Date().toISOString().split("T")[0];
+
+    </script>
+
+@endsection
 
 

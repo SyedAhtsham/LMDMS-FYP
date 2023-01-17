@@ -263,7 +263,7 @@
         </div>
 
 
-        <table  class="table table-sm table-striped table-dark">
+        <table  class="table table-sm table-striped">
             <thead class="p-5" style="color:white; background-color: rgb(0, 73, 114);">
             <tr id="tableHeadings">
 

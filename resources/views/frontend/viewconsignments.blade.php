@@ -31,8 +31,8 @@
         <table  class="table table-sm table-striped" >
             <thead class="p-5" style="color:white; background-color: rgb(0, 73, 114);">
             <tr>
-                <th>Sr #</th>
-                <th>CN #</th>
+                <th style="width: 60px;">Sr #</th>
+                <th>CN Code</th>
                 <th style="width: 17em;" class="pl-1">From</th>
                 {{--            <th>Email</th>--}}
                 <th style="width: 17em; padding-left: 2em;" >To</th>
@@ -40,7 +40,8 @@
                 <th style="padding-left: 3em;">Weight</th>
                 {{--            <th>DOB</th>--}}
                 <th>Volume</th>
-                <th>COD</th>
+
+                <th>DSheet</th>
                 <th>Type</th>
                 {{--            <th>Years Experience</th>--}}
 
@@ -50,7 +51,7 @@
             <tbody>
             <tr>
                 @php
-                    $i = 0;
+                    $i = 1;
                     $size = sizeof($consignment);
 
                 @endphp
@@ -60,6 +61,7 @@
 
         <center><i> Sorry, no record found! </i></center>
         @else
+
             @foreach($consignment as $member)
 
 
@@ -67,7 +69,12 @@
                 <td>
                     <div class="d-inline-flex">
                         <div>
-                 {{++$i}}
+                            @php
+                                $total = (($consignment->currentPage()-1) * 20) + $i;
+                                echo $total;
+
+                                $i++;
+                            @endphp
                         </div>
                         @php
                            $createdAt = strtotime(\Carbon\Carbon::parse($member->created_at));
@@ -77,7 +84,7 @@
 
                            if($diff <= 24){
 
-                    echo '<div class="bg-warning rounded ml-1" style="width: 2.5em; text-align: center;">
+                    echo '<div class="bg-warning rounded ml-1 newMessage" style="width: 2.5em; text-align: center;">
                          New
                     </div>';
                         }
@@ -97,39 +104,25 @@
                     {{$member->consVolume}}<sup>3</sup>
                 </td>
 
-                <td>{{$member->COD ?? "----"}}</td>
+{{--                <td>{{$member->COD ?? "----"}}</td>--}}
 
+
+                <td> @if(isset($member->deliverySheet_id))
+                        <a href="{{route('view.deliverysheet', ['id'=>$member->deliverySheet_id])}}">
+                            {{$member->deliverySheet_id}}
+                        </a>
+
+                    @else
+                        ---
+                    @endif
+
+                </td>
                 <td>{{$member->consType}}</td>
 
 
 
-{{--                <td>--}}
-{{--                    <!-- Call to action buttons -->--}}
 
-{{--                    <ul class="list-inline m-0">--}}
 
-{{--                        --}}{{--                    <li class="list-inline-item">--}}
-{{--                        --}}{{--                       <a href="{{url('/frontend/edit-staff/{id}')}}">--}}
-{{--                        --}}{{--                        <button class="btn btn-success btn-sm rounded-0" style="background-color: rgb(11, 77, 114);" type="button" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-edit"></i></button>--}}
-{{--                        --}}{{--                       </a>--}}
-{{--                        --}}{{--                    </li>--}}
-{{--                        <li class="list-inline-item">--}}
-{{--                            <a href="{{route('staff.edit', ['id'=>$member->cons_id])}}">--}}
-{{--                                <button class="btn btn-success btn-sm rounded-0" style="background-color: rgb(11, 77, 114);" type="button" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-edit"></i></button>--}}
-{{--                            </a>--}}
-{{--                        </li>--}}
-{{--                        --}}{{--                    <li class="list-inline-item">--}}
-{{--                        --}}{{--                        <a href="{{url('/frontend/delete-staff/'.$member->staff_id)}}">--}}
-{{--                        --}}{{--                        <button class="btn btn-danger btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash"></i></button>--}}
-{{--                        --}}{{--                        </a>--}}
-{{--                        --}}{{--                    </li>--}}
-{{--                        <li class="list-inline-item">--}}
-{{--                            <a href="{{route('staff.delete', ['id'=>$member->cons_id])}}">--}}
-{{--                                <button class="btn btn-danger btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash"></i></button>--}}
-{{--                            </a>--}}
-{{--                        </li>--}}
-{{--                    </ul>--}}
-{{--                </td>--}}
                 </tr>
                 @endforeach
 
@@ -144,6 +137,23 @@
 
 
     </div>
+
+
+@endsection
+
+
+@section('scripts')
+
+    <script>
+        const allNewDivs = document.getElementsByClassName("newMessage");
+
+        setTimeout(function(){
+            for(let k=0; k<allNewDivs.length; k++) {
+                $(".newMessage").fadeOut();
+            }
+        }, 2000);
+
+    </script>
 
 
 @endsection

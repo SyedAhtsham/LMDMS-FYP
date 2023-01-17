@@ -54,11 +54,11 @@
         <thead class="p-5" style="color:white; background-color: rgb(0, 73, 114);">
         <tr>
 
-            <th>Sr #</th>
+            <th class="" style="width: 60px;">Sr #</th>
             <th>Staff ID</th>
             <th>Name</th>
 {{--            <th>Email</th>--}}
-            <th>Contact</th>
+{{--            <th>Contact</th>--}}
 {{--            <th>CNIC</th>--}}
             <th style="width: 17em;">Address</th>
 {{--            <th>DOB</th>--}}
@@ -67,7 +67,7 @@
             <th>License No.</th>
 {{--            <th>Years Experience</th>--}}
             <th>Can Drive</th>
-            <th>Action</th>
+            <th class="text-center">Action</th>
         </tr>
         </thead>
 
@@ -97,9 +97,9 @@
 
                         $diff = ($currentDate-$createdAt)/3600;
 
-                        if($diff <= 72){
+                        if($diff <= 1){
 
-                 echo '<div class="bg-warning rounded ml-1" style="width: 2.5em; text-align: center;">
+                 echo '<div class="bg-warning rounded ml-1 newMessage" style="width: 2.5em; text-align: center;">
                       New
                  </div>';
                      }
@@ -108,9 +108,15 @@
             </td>
 
             <td>{{$member->staffCode}}</td>
-            <td style="width: 10em;">{{$member->name}}</td>
+
+            <td style="width: 10em;">
+
+                <a href="{{route('view.singlestaff', ['id'=>$member->staff_id])}}">
+                {{$member->name}}
+                </a>
+            </td>
 {{--            <td>{{$member->email}}</td>--}}
-            <td>{{$member->contact}}</td>
+{{--            <td>{{$member->contact}}</td>--}}
 {{--            <td>{{$member->cnic}}</td>--}}
             <td style="width: 17em;">{{$member->address}}</td>
 {{--                        <td>{{$member->getDob($member->dob)}}</td>--}}
@@ -136,7 +142,7 @@
 
                 @endif
 
-            <td>
+            <td class="text-center">
                 <!-- Call to action buttons -->
 
                 <ul class="list-inline m-0">
@@ -162,11 +168,17 @@
 {{--                        <button class="btn btn-danger btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash"></i></button>--}}
 {{--                        </a>--}}
 {{--                    </li>--}}
+
                     <li class="list-inline-item">
 {{--                        <a href="{{route('staff.delete', ['id'=>$member->staff_id])}}">--}}
 {{--                            <button class="btn btn-danger btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash"></i></button>--}}
+                        @if(Session::get('staff_id') != $member->staff_id)
                         <button class="btn btn-sm rounded-2 change-color1 deleteStaffBtn" type="button" data-toggle="" data-placement="top" title="Delete" value="{{$member->staff_id}}"><i class="fa fa-trash"></i></button>
-{{--                        </a>--}}
+                        @else
+                            <button class="btn btn-sm border-0 change-color1 deleteStaffBtn" type="button" disabled data-toggle="" data-placement="top" title="Delete" value="{{$member->staff_id}}"><i class="fa fa-trash"></i></button>
+                            @endif
+
+                            {{--                        </a>--}}
                     </li>
                 </ul>
             </td>
@@ -200,6 +212,24 @@
            });
 
         });
+
+        const allNewDivs = document.getElementsByClassName("newMessage");
+
+        setTimeout(function(){
+            for(let k=0; k<allNewDivs.length; k++) {
+                $(".newMessage").fadeOut();
+            }
+        }, 2000);
+
+
+    </script>
+
+
+    <script>
+        if (performance.getEntriesByType("navigation")[0].type === "back_forward") {
+            window.history.back();
+        }
+
     </script>
 
 @endsection
