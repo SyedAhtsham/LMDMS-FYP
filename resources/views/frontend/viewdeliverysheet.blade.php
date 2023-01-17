@@ -101,13 +101,13 @@
 
 
 
-                <td class="p-lg-2"><div class="form-group mt-2 d-flex">
+                <td class="pl-lg-2"><div class="form-group d-flex">
 
                         <?php
-                        if(\Illuminate\Support\Facades\Session::get('position') == "Driver"){
+                        if((\Illuminate\Support\Facades\Session::get('position') == "Driver" || \Illuminate\Support\Facades\Session::get('position') == "Manager" || \Illuminate\Support\Facades\Session::get('position') == "Supervisor") && ($deliverySheet->status = "checked-out") ){
 
                             ?>
-                        <div class="form-group d-flex" style="margin-top: 45px;">
+                        <div class="form-group d-flex" style="margin-top: 30px;">
 
                         <a href="{{route('view.singlevehicle', ['id'=>$deliverySheet->vehicle_id])}}">
                             {{$vehicleCode ?? ""}}
@@ -162,7 +162,7 @@
                         </div>
                        &nbsp; <div class="mt-1" id="editBtn001Div">
 
-                            @if(Session::get('position') != "Driver")
+                            @if($deliverySheet->status != "checked-out")
                             <button class="btn btn-sm rounded-0 change-color rounded-2" onclick="edit()" id="editBtn001" type="button"
                                     data-toggle="" data-placement="top" title="Edit"><i
                                     class="fa fa-edit"></i></button>
@@ -177,9 +177,25 @@
 
                 <td ><b>Driver: </b></td>
 
-                <td class="p-lg-2"><div class="form-group mt-2 d-flex">
+                <td class="p-lg-2"><div class="form-group  d-flex">
 
-                        <div>
+                        <?php
+                        if((\Illuminate\Support\Facades\Session::get('position') == "Driver" || \Illuminate\Support\Facades\Session::get('position') == "Manager" || \Illuminate\Support\Facades\Session::get('position') == "Supervisor") && ($deliverySheet->status = "checked-out") ){
+
+                            ?>
+                        <div class="form-group d-flex" style="margin-top: 30px;">
+
+                            <a href="{{route('view.singlestaff', ['id'=>$deliverySheet->driver_id])}}">
+                                {{$driverCode ?? ""}}
+                            </a>
+
+                                <?php
+
+                            }else {
+                                ?>
+
+
+                            <div>
                         <select id="inputDriver"  name="driver" disabled class="form-control"
                                 required>
 
@@ -214,7 +230,7 @@
                                 }
 
                             }
-
+                            }
                             ?>
 
 
@@ -222,7 +238,7 @@
 
                     </div>
                     &nbsp; <div class="mt-1" id="btnDiv">
-                            @if(Session::get('position') != "Driver")
+                            @if($deliverySheet->status != "checked-out")
                         <button class="btn btn-sm rounded-0 change-color rounded-2" onclick="edit1()" id="editBtnID" type="button"
                                 data-toggle="" data-placement="top" title="Edit"><i
                                 class="fa fa-edit"></i></button>

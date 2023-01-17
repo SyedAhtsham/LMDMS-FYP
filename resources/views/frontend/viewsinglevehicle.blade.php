@@ -301,6 +301,8 @@
                                     </tr>
 
                                 @if(!isset($vehicle->deleted_at))
+
+                                    @if(( \Illuminate\Support\Facades\Session::get('position') == "Driver" && (\Illuminate\Support\Facades\Session::get('staff_id') == $driver->staff_id)))
                                     <tr>
                                         <td>
                                             <strong>
@@ -349,6 +351,8 @@
                                         @endif
                                     </td>
                                 </tr>
+
+                                    @endif
 
                                     @if(\Illuminate\Support\Facades\Session::get('position') != "Driver")
                                 <tr>
