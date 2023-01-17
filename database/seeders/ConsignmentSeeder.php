@@ -17,6 +17,15 @@ class ConsignmentSeeder extends Seeder
     public function run()
     {
 
+//        $lines = file('englishwords/addresses.txt');
+//
+//        $cons = Consignment::all();
+//
+//        foreach($lines as $line) {
+//
+//        $cons->
+//            echo $line;
+//        }
 
         $faker = Faker::create();
 

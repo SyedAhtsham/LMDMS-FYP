@@ -319,6 +319,15 @@ $n++;
                     }
 
                 }
+
+                if($lenBikeCons <= 40){
+                    if(isset($deliverySheet->deliverySheet_id)) {
+                        $consCount = DB::table('consignment')->where('deliverySheet_id', $deliverySheet->deliverySheet_id)->count();
+                        $deliverySheet->noOfCons = $consCount;
+                        $deliverySheet->fuelAssigned = ceil((70/($bikesArr[0]->mileage ?? 30)) + $area->extraFuel);
+                        $deliverySheet->save();
+                    }
+                }
             }
 
 
@@ -972,7 +981,13 @@ $driver = DB::table('staff')->select('staff.staff_id','staff.staffCode','staff.n
             $vehicleCode = $vehicleData->vehicleCode;
         }
 
-        $data = compact('deliverySheet', 'consignments', 'vehicleCode', 'search', 'totalWeight', 'totalVolume', 'vehicles','drivers', 'idleVehicles');
+        $driverCode = "";
+        if(isset($deliverySheet->driver_id)){
+            $driverData = Staff::find($deliverySheet->driver_id);
+            $driverCode = $driverData->staffCode;
+        }
+
+        $data = compact('deliverySheet', 'consignments', 'vehicleCode','driverCode', 'search', 'totalWeight', 'totalVolume', 'vehicles','drivers', 'idleVehicles');
 
 
 

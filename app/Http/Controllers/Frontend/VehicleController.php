@@ -799,7 +799,7 @@ if(isset($vehicleAssignment->assignedTo)) {
     $supervisor = null;
 }
 
-        $dSheet = DB::table('delivery_sheet')->where('vehicle_id','=', "$id")->orderByDesc('created_at')->first();
+        $dSheet = DB::table('delivery_sheet')->where('finished', 0)->where('vehicle_id','=', "$id")->orderByDesc('created_at')->first();
 
 
         if(!isset($vehicle)){
@@ -810,7 +810,6 @@ if(isset($vehicleAssignment->assignedTo)) {
 //        $data = compact('url', 'title');
 
         return view('frontend.viewsinglevehicle')->with($data);
-
 
 
     }

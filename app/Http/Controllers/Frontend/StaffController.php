@@ -419,7 +419,7 @@ if(isset($vehicleAssignment->vehicle_id)) {
     $vehicle = null;
 }
 
-$dSheet = DB::table('delivery_sheet')->where('driver_id','=', "$id")->orderByDesc('created_at')->first();
+$dSheet = DB::table('delivery_sheet')->where('finished',0)->where('driver_id','=', "$id")->orderByDesc('created_at')->first();
 
 
         $driver = Driver::find($id);
@@ -456,7 +456,6 @@ if(!isset($staff)){
         if(isset($user)){
             $user->password = $password;
 $user->save();
-
 
         }
         return response()->json([

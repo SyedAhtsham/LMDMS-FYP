@@ -49,8 +49,10 @@
             </a>
             @endif
             @if(Session::get('staff_id') != $staff->staff_id)
+                @if(\Session::get('position') != "Driver")
                 <button type="button" class="btn btn-danger text-white deleteStaffBtn" value="{{$staff->staff_id}}"><i class="fa fa-trash mr-1"></i> Delete</button>
         @endif
+                @endif
         </div>
                 @endif
         </div>
@@ -393,6 +395,8 @@
 
                                 @if(isset($account->email))
 
+                                    @if(\Illuminate\Support\Facades\Session::get('position') != "Driver")
+
                     <tr><td><br></td></tr>
                     <tr>
                         <td>  <strong style="font-size: 20px;">User Account</strong> </td>
@@ -439,6 +443,7 @@
                             </div>
                         </td>
                     </tr>
+                                        @endif
 
                                     @endif
 
