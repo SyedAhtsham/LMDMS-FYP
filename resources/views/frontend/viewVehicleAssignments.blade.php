@@ -104,7 +104,7 @@
 
                             $diff = ($currentDate-$createdAt)/3600;
 
-                            if($diff <= 1){
+                            if($diff <= 5){
 
                      echo '<div class="bg-warning rounded ml-1 newMessage" style="width: 2.5em; text-align: center;">
                           New
@@ -220,6 +220,17 @@
 
 @section('scripts')
     <script>
+
+
+        const allNewDivs = document.getElementsByClassName("newMessage");
+
+        setTimeout(function(){
+            for(let k=0; k<allNewDivs.length; k++) {
+                $(".newMessage").fadeOut();
+            }
+        }, 2000);
+
+
         $(document).ready(function(){
             $('.deleteVehicleBtn').click(function(e){
                 e.preventDefault();
@@ -231,13 +242,7 @@
 
         });
 
-        const allNewDivs = document.getElementsByClassName("newMessage");
 
-        setTimeout(function(){
-            for(let k=0; k<allNewDivs.length; k++) {
-                $(".newMessage").fadeOut();
-            }
-        }, 2000);
 
     </script>
 

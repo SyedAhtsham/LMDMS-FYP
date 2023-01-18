@@ -666,7 +666,7 @@ select.disabled = "";
                 buttons: false,
             }).then(
                 function () {
-                    location.reload();
+                    // location.reload();
                 },
                 // handling the promise rejection
                 function (dismiss) {
@@ -966,7 +966,7 @@ if( alreadySelected !== vehicleID) {
                         buttons: false,
                     }).then(
                         function () {
-                            location.reload();
+                            // location.reload();
                         },
                         // handling the promise rejection
                         function (dismiss) {
