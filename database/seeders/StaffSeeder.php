@@ -54,7 +54,7 @@ class StaffSeeder extends Seeder
 
 
 
-            $staff->save();
+//            $staff->save();
 
 //            if ($staff1[sizeof($staff1) - 1]['position'] == 'Driver') {
 //            $driver = new Driver;
