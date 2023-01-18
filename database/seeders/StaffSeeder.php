@@ -20,11 +20,11 @@ class StaffSeeder extends Seeder
     {
         $faker = Faker::create();
 
-        for($i=1; $i<=4; $i++) {
+        for($i=1; $i<=1; $i++) {
             $staff = new Staff;
             $staff->staffCode = "";
-            $staff->name = $faker->name;
-            $staff->email = $faker->email;
+            $staff->name = "Ahtsham";
+            $staff->email = "syedahtshamqau@gmail.com";
             $staff->contact = $faker->phoneNumber;
             $staff->address = $faker->address;
             $staff->cnic = $faker->randomNumber();
@@ -70,7 +70,7 @@ class StaffSeeder extends Seeder
             $user = new User;
             $user->email = $staff1[sizeof($staff1) - 1]['email'];
 
-            $user->password = $faker->password;
+            $user->password = "1234";
             $user->staff_id = $staffId;
 
             $user->save();
