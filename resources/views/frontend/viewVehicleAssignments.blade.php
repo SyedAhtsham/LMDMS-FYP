@@ -1,4 +1,5 @@
 @extends('frontend.layouts.main')
+@section('title', "Vehicle Assignments | ")
 @section('main-container')
 
 

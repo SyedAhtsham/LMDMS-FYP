@@ -1,5 +1,5 @@
 @extends('frontend.layouts.main')
-@section('title', $deliverySheet->deliverySheetCode)
+@section('title', $deliverySheet->deliverySheetCode . ' | ')
 @section('main-container')
 
 
@@ -296,6 +296,8 @@
                         </button>
                     </a>
                 </div>
+
+
                 @if(Session::get('position') != "Driver")
                 <div id="addConsignmentLong" class="col-2">
 {{--                    <a href="{{url('/frontend/add-consignments/'.$deliverySheet->deliverySheet_id)}}">--}}
@@ -318,10 +320,9 @@
                 <div class="col-2 ">
                     <form action="">
 
-                        @php
-                            if($deliverySheet->status == 'un-checked-out'){
 
-                        @endphp
+                            @if($deliverySheet->status != 'checked-out')
+
                         <button id="checkoutLong" type="submit" style=""
                                 class="btn btn-success btnCheckout" id="checkoutBtn" value={{$deliverySheet->deliverySheet_id}}> <i class="fa fa-check"></i> Check-out
                         </button>
@@ -329,11 +330,11 @@
                         <button id="checkoutShort" type="submit" style=""
                                 class="btn btn-success btnCheckout" id="checkoutBtn" title="Checkout" value={{$deliverySheet->deliverySheet_id}}> <i class="fa fa-check"></i>
                         </button>
-                        @php
-                            }
-                            else{
-                        @endphp
 
+
+
+                   @else
+                                <?php echo $deliverySheet->status; ?>
                         <button id="checkedOutShort" type="" class="btn btn-success" disabled> <i class="fa fa-check-double"></i>
                         </button>
                        <button id="checkedOutLong" type="" style=""
@@ -341,10 +342,7 @@
                         </button>
 
 
-                        @php
-                            }
-
-                        @endphp
+                      @endif
 
 
                     </form>

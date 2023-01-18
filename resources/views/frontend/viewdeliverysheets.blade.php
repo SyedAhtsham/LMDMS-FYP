@@ -1,4 +1,5 @@
 @extends('frontend.layouts.main')
+@section('title', "Delivery Sheets | ")
 @section('main-container')
 
 

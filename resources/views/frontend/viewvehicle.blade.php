@@ -1,4 +1,5 @@
 @extends('frontend.layouts.main')
+@section('title', "Vehicles | ")
 @section('main-container')
 
     {{--    <!-- Modal -->--}}

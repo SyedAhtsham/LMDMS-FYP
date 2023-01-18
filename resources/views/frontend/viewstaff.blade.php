@@ -1,5 +1,5 @@
 @extends('frontend.layouts.main')
-@section('title', 'All Staff')
+@section('title', 'Staff | ')
 
 @section('main-container')
     <!-- Modal -->

@@ -1,4 +1,5 @@
 @extends('frontend.layouts.main')
+@section('title', $title . " | ")
 @section('main-container')
 
     <script>
