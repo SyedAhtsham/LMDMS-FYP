@@ -45,7 +45,12 @@ $password = $request['password'];
         if(isset($user[0])) {
 
             if ($user[0]->password == $password) {
-                $staff = Staff::find($user[0]->staff_id);
+//                $staff = Staff::find($user[0]->staff_id);
+                $staff = Staff::all();
+
+                echo "<pre>";
+                print_r($staff);
+                die;
 
 
                 $request->session()->put('user', $staff->name);
