@@ -321,7 +321,7 @@
                     <form action="">
 
 
-                            @if($deliverySheet->status != 'checked-out')
+                            @if($deliverySheet->status == 'un-checked-out')
 
                         <button id="checkoutLong" type="submit" style=""
                                 class="btn btn-success btnCheckout" id="checkoutBtn" value={{$deliverySheet->deliverySheet_id}}> <i class="fa fa-check"></i> Check-out
@@ -334,7 +334,7 @@
 
 
                    @else
-                                <?php echo $deliverySheet->status; ?>
+                                <?php print_r($deliverySheet); ?>
                         <button id="checkedOutShort" type="" class="btn btn-success" disabled> <i class="fa fa-check-double"></i>
                         </button>
                        <button id="checkedOutLong" type="" style=""

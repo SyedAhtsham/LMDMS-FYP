@@ -737,13 +737,13 @@ $this->search = lcfirst($this->search);
 
 
 
-        $deliverySheets = DB::table('delivery_sheet')->select('delivery_sheet.*', 'spv.name AS spvName','drv.staff_id AS stID', 'drv.name AS drvName', 'drv.staffCode AS staffCode', 'vehicle.vehicleCode AS vhCode', 'vehicle.make AS make', 'vehicle_type.typeName AS tpName', 'area.areaCode AS arCD', 'area.areaName AS arNM', 'area.city AS arCT')
+        $deliverySheets = DB::table('delivery_sheet')->select('delivery_sheet.*', 'spv.name AS spvName','drv.staff_id AS stID', 'drv.name AS drvName', 'drv.staffCode AS staffCode', 'vehicle.vehicleCode AS vhCode', 'vehicle.make AS make', 'vehicle_type.typeName AS tpName', 'area.areaCode AS arCD', 'area.areaName AS arNM', 'area.city AS arCT')->where('delivery_sheet.deliverySheet_id', '=', "$id")
             ->leftJoin('staff AS drv', 'delivery_sheet.driver_id', '=', 'drv.staff_id')
             ->leftJoin('staff AS spv', 'delivery_sheet.supervisor_id', '=', 'spv.staff_id')
             ->leftJoin('vehicle', 'delivery_sheet.vehicle_id', '=', 'vehicle.vehicle_id')
             ->leftJoin('vehicle_type', 'vehicle.vehicleType_id', '=', 'vehicle_type.vehicleType_id')
             ->join('area', 'delivery_sheet.area_id', '=', 'area.area_id')
-            ->where('delivery_sheet.deliverySheet_id', '=', "$id")->get();
+            ->get();
 
 //        echo "<pre>";
 //        print_r($deliverySheet->toArray());
@@ -987,6 +987,11 @@ $driver = DB::table('staff')->select('staff.staff_id','staff.staffCode','staff.n
             $driverCode = $driverData->staffCode;
         }
 
+
+//        echo "<pre>";
+//        print_r($deliverySheet);
+//
+//        die;
         $data = compact('deliverySheet', 'consignments', 'vehicleCode','driverCode', 'search', 'totalWeight', 'totalVolume', 'vehicles','drivers', 'idleVehicles');
 
 
@@ -1252,9 +1257,10 @@ if($deliverySheet->tpName == "Bike") {
 
 
 
-//    echo "<pre>";
-//    print_r($vehicles);
-//    die;
+    echo "<pre>";
+    print_r($vehicles);
+    die;
+
 
         $data = compact('deliverySheet', 'consignments', 'search', 'totalWeight', 'totalVolume', 'vehicles','drivers', 'vehicleType');
 
