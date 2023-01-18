@@ -28,7 +28,7 @@ class ConsignmentSeeder extends Seeder
 //            echo $line;
 //        }
 
-//        $faker = Faker::create();
+        $faker = Faker::create();
 
 //        $consignment = Consignment::all();
 //
