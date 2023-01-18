@@ -1,4 +1,6 @@
 @extends('frontend.layouts.main')
+@section('title', 'All Staff')
+
 @section('main-container')
     <!-- Modal -->
     <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

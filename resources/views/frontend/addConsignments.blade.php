@@ -1,4 +1,6 @@
 @extends('frontend.layouts.main')
+@section('title', "Add Consignment")
+
 @section('main-container')
 
 

@@ -1,4 +1,6 @@
 @extends('frontend.layouts.main')
+@section('title', $vehicle->vehicleCode)
+
 @section('main-container')
 
 

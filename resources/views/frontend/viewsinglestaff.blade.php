@@ -1,4 +1,6 @@
 @extends('frontend.layouts.main')
+@section('title', $staff->name)
+
 @section('main-container')
 
 
