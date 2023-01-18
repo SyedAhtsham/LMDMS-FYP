@@ -24,7 +24,7 @@ class StaffSeeder extends Seeder
             $staff = new Staff;
 
             $staff->name = "Ahtsham";
-            $staff->email = "syedahtshamqau@gmail.com";
+            $staff->email = "m@gmail.com";
             $staff->contact = "0315-5726162";
             $staff->address = "Prince Road, North Banigala Islamabad";
             $staff->cnic = "61101-6869830-5";
