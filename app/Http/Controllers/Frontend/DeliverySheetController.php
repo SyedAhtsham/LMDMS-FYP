@@ -1044,7 +1044,11 @@ $driver = DB::table('staff')->select('staff.staff_id','staff.staffCode','staff.n
 
                 }
 
-                return redirect('/frontend/view-deliverysheet/'.$id)->withSuccessMessage('Successfully marked Finished!');
+                $deliverySheet->finished = 1;
+
+                $deliverySheet->save();
+
+                return redirect('/frontend/view-deliverysheet/'.$id)->withSuccessMessage('Successfully marked Delivered!');
             } else {
                 $deliverySheet->status = 'checked-out';
                 $deliverySheet->checkOutTime = date("Y-m-d H:i:s");

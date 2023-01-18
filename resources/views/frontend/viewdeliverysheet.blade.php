@@ -59,7 +59,7 @@
                 <form action="{{route('checkout.deliverySheet')}}" method="POST">
                     @csrf
                     <div class="modal-header">
-                        <h3 class="modal-title fs-5" id="exampleModalLabel">Mark Finish</h3>
+                        <h3 class="modal-title fs-5" id="exampleModalLabel">Mark Delivered</h3>
                         {{--                        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>--}}
                     </div>
                     <div class="modal-body">
@@ -68,7 +68,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-light" style="" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-success">Mark Finish</button>
+                        <button type="submit" class="btn btn-success">Mark Delivered</button>
                     </div>
                 </form>
             </div>
@@ -79,7 +79,7 @@
     <div class="main pt-5" style="margin-right: 2em;" >
 
 <input id="dsID" value="{{$deliverySheet->deliverySheet_id}}" hidden>
-        <h4>Delivery Sheet: <label style="font-weight: bolder; font-size: 20px;"> {{$deliverySheet->deliverySheetCode}}</label> <label class="text-success" style="font-weight: ; font-size: 18px;"> {{$deliverySheet->finished ? "Marked Delivered" :"" }}</label></h4>
+        <h4>Delivery Sheet: <label style="font-weight: bolder; font-size: 20px;"> {{$deliverySheet->deliverySheetCode}}</label> <label class="text-success" style="font-weight: ; font-size: 18px;"> {{($deliverySheet->finished == 1) ? "Marked Delivered" :"" }}</label></h4>
         <?php
 
         if($idleVehicles == 0){
@@ -104,7 +104,7 @@
                 <td class="pl-lg-2"><div class="form-group d-flex">
 
                         <?php
-                        if((\Illuminate\Support\Facades\Session::get('position') == "Driver" || \Illuminate\Support\Facades\Session::get('position') == "Manager" || \Illuminate\Support\Facades\Session::get('position') == "Supervisor") && ($deliverySheet->status = "checked-out") ){
+                        if((\Illuminate\Support\Facades\Session::get('position') == "Driver" || \Illuminate\Support\Facades\Session::get('position') == "Manager" || \Illuminate\Support\Facades\Session::get('position') == "Supervisor") && ($deliverySheet->status = "checked-out") && ($deliverySheet->vehicle_id != null) ){
 
                             ?>
                         <div class="form-group d-flex" style="margin-top: 30px;">
@@ -180,7 +180,7 @@
                 <td class="p-lg-2"><div class="form-group  d-flex">
 
                         <?php
-                        if((\Illuminate\Support\Facades\Session::get('position') == "Driver" || \Illuminate\Support\Facades\Session::get('position') == "Manager" || \Illuminate\Support\Facades\Session::get('position') == "Supervisor") && ($deliverySheet->status = "checked-out") ){
+                        if((\Illuminate\Support\Facades\Session::get('position') == "Driver" || \Illuminate\Support\Facades\Session::get('position') == "Manager" || \Illuminate\Support\Facades\Session::get('position') == "Supervisor") && ($deliverySheet->status = "checked-out") && ($deliverySheet->driver_id != null) ){
 
                             ?>
                         <div class="form-group d-flex" style="margin-top: 30px;">
@@ -351,10 +351,10 @@
                 </div>
                 @else
 
-                    @if(isset($deliverySheet->finished) && ($deliverySheet->finished == 0))
+                    @if($deliverySheet->finished == 0)
                     <div class="col-2">
                     <button id="checkoutLong" type="submit" style=""
-                            class="btn btn-success btnUnCheckout float-right" id="checkoutBtn" value={{$deliverySheet->deliverySheet_id}}> <i class="fa fa-flag-checkered"></i>  Finish Delivery
+                            class="btn btn-success btnUnCheckout float-right" id="checkoutBtn" value={{$deliverySheet->deliverySheet_id}}> <i class="fa fa-flag-checkered"></i>  Mark Deliver
                     </button>
 
                     <button id="checkoutShort" type="submit" style=""
@@ -365,7 +365,7 @@
                     @else
                         <div class="col-2">
                             <button id="checkoutLong" type="submit" style=""
-                                    class="btn btn-success btnUnCheckout float-right" disabled id="checkoutBtn" value={{$deliverySheet->deliverySheet_id}}> <i class="fa fa-flag-checkered"></i>  Finish Delivery
+                                    class="btn btn-success btnUnCheckout float-right" disabled id="checkoutBtn" value={{$deliverySheet->deliverySheet_id}}> <i class="fa fa-flag-checkered"></i>  Marked Delivered
                             </button>
 
                             <button id="checkoutShort" type="submit" style=""
