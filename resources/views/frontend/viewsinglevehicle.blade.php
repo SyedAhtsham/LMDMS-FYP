@@ -303,7 +303,7 @@
                                     </tr>
 
                                 @if(!isset($vehicle->deleted_at))
-
+                                    @if(isset($driver->staff_id))
                                     @if(( \Illuminate\Support\Facades\Session::get('position') == "Driver" && (\Illuminate\Support\Facades\Session::get('staff_id') == $driver->staff_id)))
                                     <tr>
                                         <td>
@@ -379,7 +379,7 @@
                                         @endif
 @endif
 
-
+@endif
 
 
                                 </tbody>

@@ -105,7 +105,7 @@
                 <td class="pl-lg-2"><div class="form-group d-flex">
 
                         <?php
-                        if((\Illuminate\Support\Facades\Session::get('position') == "Driver" || \Illuminate\Support\Facades\Session::get('position') == "Manager" || \Illuminate\Support\Facades\Session::get('position') == "Supervisor") && ($deliverySheet->status = "checked-out") && ($deliverySheet->vehicle_id != null) ){
+                        if((\Illuminate\Support\Facades\Session::get('position') == "Driver" || \Illuminate\Support\Facades\Session::get('position') == "Manager" || \Illuminate\Support\Facades\Session::get('position') == "Supervisor") && ($deliverySheet->status == "checked-out") && ($deliverySheet->vehicle_id != null) ){
 
                             ?>
                         <div class="form-group d-flex" style="margin-top: 30px;">
@@ -181,7 +181,7 @@
                 <td class="p-lg-2"><div class="form-group  d-flex">
 
                         <?php
-                        if((\Illuminate\Support\Facades\Session::get('position') == "Driver" || \Illuminate\Support\Facades\Session::get('position') == "Manager" || \Illuminate\Support\Facades\Session::get('position') == "Supervisor") && ($deliverySheet->status = "checked-out") && ($deliverySheet->driver_id != null) ){
+                        if((\Illuminate\Support\Facades\Session::get('position') == "Driver" || \Illuminate\Support\Facades\Session::get('position') == "Manager" || \Illuminate\Support\Facades\Session::get('position') == "Supervisor") && ($deliverySheet->status == "checked-out") && ($deliverySheet->driver_id != null) ){
 
                             ?>
                         <div class="form-group d-flex" style="margin-top: 30px;">
@@ -334,7 +334,7 @@
 
 
                    @else
-                                <?php print_r($deliverySheet); ?>
+
                         <button id="checkedOutShort" type="" class="btn btn-success" disabled> <i class="fa fa-check-double"></i>
                         </button>
                        <button id="checkedOutLong" type="" style=""
@@ -684,7 +684,9 @@ select.disabled = "";
     $(document).ready(function () {
 
 
-        const status = <?php echo json_encode($deliverySheet->status); ?>;
+        {{--const status = <?php echo json_encode($deliverySheet->status); ?>;--}}
+
+            const status = "un-checked-out";
         if(status  !== 'un-checked-out' ){
             addConsDiv = document.getElementById('addConsignmentLong');
 

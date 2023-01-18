@@ -995,7 +995,6 @@ $driver = DB::table('staff')->select('staff.staff_id','staff.staffCode','staff.n
         $data = compact('deliverySheet', 'consignments', 'vehicleCode','driverCode', 'search', 'totalWeight', 'totalVolume', 'vehicles','drivers', 'idleVehicles');
 
 
-
         return view('frontend.viewdeliverysheet')->with($data);
 
 
@@ -1257,9 +1256,7 @@ if($deliverySheet->tpName == "Bike") {
 
 
 
-    echo "<pre>";
-    print_r($vehicles);
-    die;
+
 
 
         $data = compact('deliverySheet', 'consignments', 'search', 'totalWeight', 'totalVolume', 'vehicles','drivers', 'vehicleType');
