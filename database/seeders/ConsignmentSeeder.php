@@ -63,7 +63,7 @@ class ConsignmentSeeder extends Seeder
         for($i=1; $i<=90; $i++) {
             $consignment = new Consignment;
             $consignment->consCode = "";
-            $consignment->area_id = $areas->area_id;
+            $consignment->area_id = $areas[0]->area_id;
             $consignment->consWeight = 2;
 //            $consignment->consVolume = $faker->randomNumber(2);
                         $consignment->consVolume = 0.5;
@@ -84,7 +84,7 @@ class ConsignmentSeeder extends Seeder
         for($i=1; $i<=90; $i++) {
             $consignment = new Consignment;
             $consignment->consCode = "";
-            $consignment->area_id = $area->area_id;
+            $consignment->area_id = $areas[1]->area_id;
             $consignment->consWeight = 25;
 //            $consignment->consVolume = $faker->randomNumber(2);
             $consignment->consVolume = 20;
