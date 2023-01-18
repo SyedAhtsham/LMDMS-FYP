@@ -38,30 +38,32 @@ class ConsignmentSeeder extends Seeder
 //            $cons->save();
 //        }
 
-        $area1 = new Area;
+//        $area1 = new Area;
+//
+//$area1->areaCode = "4400";
+//$area1->areaName = "Barakahu/Banigala";
+//$area1->extraFuel = 1.5;
+//$area1->city = "Islamabad";
+//
+//$area1->save();
+//
+//        $area = new Area;
+//
+//        $area->areaCode = "4100";
+//        $area->areaName = "G-5 Sector";
+//        $area->extraFuel = 0.5;
+//        $area->city = "Islamabad";
+//
+//        $area->save();
 
-$area1->areaCode = "4400";
-$area1->areaName = "Barakahu/Banigala";
-$area1->extraFuel = 1.5;
-$area1->city = "Islamabad";
-
-$area1->save();
-
-        $area = new Area;
-
-        $area->areaCode = "4100";
-        $area->areaName = "G-5 Sector";
-        $area->extraFuel = 0.5;
-        $area->city = "Islamabad";
-
-        $area->save();
+        $areas = Area::all();
 
 
 
         for($i=1; $i<=90; $i++) {
             $consignment = new Consignment;
             $consignment->consCode = "";
-            $consignment->area_id = $area1->area_id;
+            $consignment->area_id = $areas->area_id;
             $consignment->consWeight = 2;
 //            $consignment->consVolume = $faker->randomNumber(2);
                         $consignment->consVolume = 0.5;
