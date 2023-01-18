@@ -21,17 +21,17 @@ class StaffSeeder extends Seeder
 //        $faker = Faker::create();
 
         for($i=1; $i<=1; $i++) {
-//            $staff = new Staff;
-//            $staff->staffCode = "";
-//            $staff->name = "Ahtsham";
-//            $staff->email = "syedahtshamqau@gmail.com";
-//            $staff->contact = "0315-5726162";
-//            $staff->address = "Prince Road, North Banigala Islamabad";
-//            $staff->cnic = "61101-6869830-5";
-//            $staff->position = 'Manager';
-//            $staff->dob = null;
-//            $staff->gender = 'Male';
-//            $staff->staffCode = 'STM-4213';
+            $staff = new Staff;
+
+            $staff->name = "Ahtsham";
+            $staff->email = "syedahtshamqau@gmail.com";
+            $staff->contact = "0315-5726162";
+            $staff->address = "Prince Road, North Banigala Islamabad";
+            $staff->cnic = "61101-6869830-5";
+            $staff->position = 'Manager';
+            $staff->dob = null;
+            $staff->gender = 'Male';
+            $staff->staffCode = 'STM-4213';
 
 //            $staff->save();
 //            $staff1 = Staff::all();
@@ -67,11 +67,13 @@ class StaffSeeder extends Seeder
 //            $driver->save();
 //            }
 
+            $staff->save();
+
             $user = new User;
-            $user->email = "syedahtshamqau@gmail.com";
+            $user->email = "m@gmail.com";
 
             $user->password = "1234";
-            $user->staff_id = 123;
+            $user->staff_id = $staff->staff_id;
 
             $user->save();
 
