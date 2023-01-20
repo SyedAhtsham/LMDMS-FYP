@@ -291,8 +291,8 @@
 
                     <div class="col-md-6">
                         <div class="text-center" >
-
-                            <div class="rounded-top pt-4"  style=" margin-top:20em; height: 120px; color: white;  background-color: rgb(0, 73, 114)">
+<p>For demo purpose: use admin as email and password  </p>
+                            <div class="rounded-top pt-4"  style=" margin-top:10em; height: 120px; color: white;  background-color: rgb(0, 73, 114)">
                                 <h2 style="font-weight: bold">Welcome to LMDMS</h2>
                                 <h4 >Last Mile Delivery Management System</h4>
 
