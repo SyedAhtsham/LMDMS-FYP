@@ -362,7 +362,7 @@
                         <div style="display: none;" class="alert alert-success mt-3" id="logoutAlert" role="alert">
                             You're Logged Out Successfully!
                         </div>
-                        <p>For demo purpose: use admin as email and password, since this is a management system, therefore use desktop for a good experience. Thanks.  </p>
+                        <p style="text-align: center">For demo purpose: use admin@lmdms.com as email and admin as password, since this is a management system, therefore use desktop for a good experience. Thanks.  </p>
                     </div>
                 </div>
             </div>
