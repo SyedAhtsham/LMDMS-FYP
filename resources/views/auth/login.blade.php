@@ -291,13 +291,14 @@
 
                     <div class="col-md-6">
                         <div class="text-center" >
-<p>For demo purpose: use admin as email and password, since this is a management system, therefore use desktop for a good experience. Thanks.  </p>
+
                             <div class="rounded-top pt-4"  style=" margin-top:3em; height: 120px; color: white;  background-color: rgb(0, 73, 114)">
                                 <h2 style="font-weight: bold">Welcome to LMDMS</h2>
                                 <h4 >Last Mile Delivery Management System</h4>
 
 
                             </div>
+                            <p>For demo purpose: use admin as email and password, since this is a management system, therefore use desktop for a good experience. Thanks.  </p>
                         </div>
                         <div class="card">
 
