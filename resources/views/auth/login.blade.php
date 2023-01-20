@@ -292,7 +292,7 @@
                     <div class="col-md-6">
                         <div class="text-center" >
 
-                            <div class="rounded-top pt-4"  style=" margin-top:50em; height: 120px; color: white;  background-color: rgb(0, 73, 114)">
+                            <div class="rounded-top pt-4"  style=" margin-top:20em; height: 120px; color: white;  background-color: rgb(0, 73, 114)">
                                 <h2 style="font-weight: bold">Welcome to LMDMS</h2>
                                 <h4 >Last Mile Delivery Management System</h4>
 
