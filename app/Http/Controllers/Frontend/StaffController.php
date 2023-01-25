@@ -396,10 +396,14 @@ $staff->deleted_at = $timestamp;
         }
 
         $user = User::find($id);
-        if (!is_null($request['email'])) {
-            $user->email = $request['email'];
+        if(isset($user->email)) {
+            if (!is_null($request['email'])) {
+
+                $user->email = $request['email'];
+
+            }
+            $user->save();
         }
-        $user->save();
 
 //        return redirect('/frontend/view-staff')->withSuccessMessage('Successfully updated');
 
