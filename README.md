@@ -1,66 +1,111 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Last Mile Delivery Management System (LMDMS)
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+**Presented By:** Syed Ahtsham Ul Hassan (04071813015)  
+**Supervised By:** Dr. Khalid Saleem
 
-## About Laravel
+## Introduction
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+The Last Mile Delivery Management System (LMDMS) is a module of the ORPAI project, funded by HEC and supervised by Dr. Khalid Saleem. This web-based information system streamlines and automates the management of fleet operations, driver assignments, and consignment deliveries for courier services. The project was designed to replace the manual systems currently used by courier services in Pakistan, such as TCS, which rely heavily on Excel sheets and manual record-keeping.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Problem Statement
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Many courier services in Pakistan manage their vehicles, staff records, and delivery sheet generation manually, leading to inefficiencies, unnecessary vehicle assignments, and suboptimal operations. The mission of LMDMS is to automate these tasks, providing a more efficient and error-free system for managing last-mile deliveries.
 
-## Learning Laravel
+## Project Overview
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+LMDMS helps managers perform various operations on the fleet, drivers, and consignments. It automatically generates consignment delivery sheets, assigns suitable vehicles and drivers based on weight and volume considerations, and allows for better management of resources.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### Key Features:
+- **Automated Delivery Sheet Generation:** Sorts consignments by area, weight, and volume before adding them to the delivery sheets.
+- **Automatic Vehicle Assignment:** Assigns vehicles based on their capacity and current availability.
+- **Driver Profile Management:** Allows drivers to view their assigned vehicles and delivery sheets.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Proposed Solution
 
-## Laravel Sponsors
+LMDMS automates the process of delivery sheet generation by sorting consignments according to their areas, weights, and volumes, and assigning them to the most suitable vehicle. The system also manages vehicle assignments, staff members, and drivers' profiles.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+## Analysis
 
-### Premium Partners
+### Enhanced Entity-Relationship Diagram (EERD)
+This diagram demonstrates the entities and their relationships within the system, focusing on operations with higher frequency.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+### Use Case Diagram
+This diagram illustrates the users/actors, functionalities/use cases of the application, and their relationships.
 
-## Contributing
+### Data Flow Diagrams (DFD)
+- **Delivery Sheet Generation:** Demonstrates the flow of data during the generation of delivery sheets.
+- **Vehicle Assignment:** Shows the flow of data in the process of vehicle assignment.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Domain Model
+Illustrates all the objects and their relationships within the LMDMS domain.
 
-## Code of Conduct
+## Design and Implementation
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Class Diagram
+Shows all the classes created in LMDMS along with their attributes and methods, including data types.
 
-## Security Vulnerabilities
+### Tools and Techniques
+- **Laravel:** Chosen for its ease of use, support for MySQL, and the MVC design pattern, which is well-suited for a management system like LMDMS.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Interfaces
+The system includes multiple interfaces for managing vehicles, drivers, delivery sheets, and more.
 
-## License
+### Performance Checking
+LMDMS's performance was checked using Google Lighthouse to ensure it meets industry standards.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### SQL Queries
+The system utilizes optimized SQL queries to handle large datasets efficiently.
+
+## Future Enhancements
+
+- **Fuel Management System:** To track and manage fuel usage.
+- **Vehicle and Driver Inspection Management:** For regular inspections and maintenance.
+- **Attendance and Accident Management:** To track driver attendance and manage accident reports.
+- **Enhanced Search Filters:** To improve user experience with more refined search options.
+- **Multi-Branch Extension:** To extend the application to manage multiple branches.
+
+## Conclusion
+
+LMDMS has successfully automated the processes of vehicle assignment and delivery sheet generation. It has significantly improved the management of vehicles, staff, and delivery sheets compared to the previous manual system.
+
+## References
+
+- Zave, P., Jackson, M., Gunter, E.L., & Gunter, C.A. (2000). A reference model for requirements and specifications. *IEEE Software, 17(3),* pp.37–43. doi:10.1109/52.896248.
+- [IEEE.org](https://ieeexplore.ieee.org/). (2019).
+- Design and implementation of outdoor and indoor campus navigation system. (2016). *International Journal of Modern Trends in Engineering & Research, 3(10),* pp.8–10. doi: 10.21884/ijmter.2016.3074.tttpf.
+
+## Thank You
+
+
+
+
+<img src="public/images/img1.png" alt="Project Screenshot" width="100%"/>
+<img src="public/images/img2.png" alt="Project Screenshot" width="100%"/>
+<img src="public/images/img3.png" alt="Project Screenshot" width="100%"/>
+<img src="public/images/img4.png" alt="Project Screenshot" width="100%"/>
+<img src="public/images/img5.png" alt="Project Screenshot" width="100%"/>
+<img src="public/images/img6.png" alt="Project Screenshot" width="100%"/>
+<img src="public/images/img7.png" alt="Project Screenshot" width="100%"/>
+<img src="public/images/img8.png" alt="Project Screenshot" width="100%"/>
+<img src="public/images/img9.png" alt="Project Screenshot" width="100%"/>
+<img src="public/images/img10.png" alt="Project Screenshot" width="100%"/>
+<img src="public/images/img11.png" alt="Project Screenshot" width="100%"/>
+<img src="public/images/img12.png" alt="Project Screenshot" width="100%"/>
+<img src="public/images/img13.png" alt="Project Screenshot" width="100%"/>
+<img src="public/images/img14.png" alt="Project Screenshot" width="100%"/>
+<img src="public/images/img15.png" alt="Project Screenshot" width="100%"/>
+<img src="public/images/img16.png" alt="Project Screenshot" width="100%"/>
+<img src="public/images/img17.png" alt="Project Screenshot" width="100%"/>
+<img src="public/images/img18.png" alt="Project Screenshot" width="100%"/>
+<img src="public/images/img19.png" alt="Project Screenshot" width="100%"/>
+<img src="public/images/img20.png" alt="Project Screenshot" width="100%"/>
+<img src="public/images/img21.png" alt="Project Screenshot" width="100%"/>
+<img src="public/images/img22.png" alt="Project Screenshot" width="100%"/>
+<img src="public/images/img23.png" alt="Project Screenshot" width="100%"/>
+<img src="public/images/img24.png" alt="Project Screenshot" width="100%"/>
+<img src="public/images/img25.png" alt="Project Screenshot" width="100%"/>
+<img src="public/images/img26.png" alt="Project Screenshot" width="100%"/>
+<img src="public/images/img27.png" alt="Project Screenshot" width="100%"/>
+<img src="public/images/img28.png" alt="Project Screenshot" width="100%"/>
+
+
